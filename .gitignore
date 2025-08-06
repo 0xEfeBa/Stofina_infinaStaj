@@ -1,0 +1,101 @@
+### Java ###
+*.class
+*.log
+*.ctxt
+
+# Mobile tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### Spring Boot ###
+/target/
+/build/
+
+### Maven ###
+/.mvn/
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+### Gradle ###
+.gradle/
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Sonar
+/.sonar/
+/sonar-report.json
+
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# Environment-dependent path to Maven home directory
+/mavenHomeManager.xml
+
+# Datasource local storage
+/dataSources/
+/dataSources.local.xml
+
+# Run/debug configs
+/.idea/runConfigurations/
+
+# Local history
+/.idea/shelf/
+/.idea/workspace.xml
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# VSCode
+.vscode/
+*.code-workspace
+
+### Logs ###
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+### Other ###
+.env
+*.env
+*.key
+*.pem
+*.crt
+*.cert
+
+# OS Generated files #
+ehthumbs.db
+Thumbs.db
