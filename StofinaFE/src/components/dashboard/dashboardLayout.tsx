@@ -10,14 +10,15 @@ const quicksand = Quicksand({ subsets: ["latin"], weight: ["400", "600", "700"] 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isUserOpen, setIsUserOpen] = useState(false);
-  const settingsRef = useRef<HTMLDivElement>(null);
-  const userRef = useRef<HTMLDivElement>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Ayarlar açık mı kapalı mı
+  const [isUserOpen, setIsUserOpen] = useState(false); // Kullanıcı dropdown açık mı kapalı mı
+  const settingsRef = useRef<HTMLDivElement>(null); // Ayarlar dropdown'ının referansı
+  const userRef = useRef<HTMLDivElement>(null); // Kullanıcı dropdown'ının referansı
   const { t, i18n } = useTranslation();
 
   const path = usePathname();
 
+  // Menü öğelerini dinamik olarak oluştur
   const menuItems = [
     { label: t('dashboard.menu.dashboard'), href: "#", icon: "/menu-icon/trade.png" },
     { label: t('dashboard.menu.trading'), href: "#", icon: "/menu-icon/trade.png" },
@@ -34,13 +35,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   useEffect(() => {
-    setCurrentTime(new Date());
+    setCurrentTime(new Date()); // ilk değer
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
+  // Dropdown dışına tıklandığında kapatma
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
@@ -63,6 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   const handleLogout = () => {
+    // Çıkış işlemi burada yapılacak
     console.log('Çıkış yapılıyor...');
     setIsUserOpen(false);
   };
@@ -73,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className={`${styles.container} ${quicksand.className}`}>
-      {/* ÜST HEADER */}
+      {/* ✅ ÜST HEADER */}
       <header className={styles.header} style={{ fontFamily: quicksand.style.fontFamily }}>
         <img src="/logo.png" alt="Logo" className={styles.logo} />
         <h1 className="text-xl font-semibold mr-20 mt-1">{t('dashboard.header.title')}</h1>
@@ -153,6 +156,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
+        {/* 📆 Tarih & Saat */}
         <div className={styles.dateTimeBox}>
           <p className={styles.date}>
             {currentTime
@@ -170,6 +174,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
+      {/* HEADER ALTINDAKİ ANA ALAN */}
       <div className="flex flex-1 pt-20">
         {/* SOL YAN MENÜ */}
         <aside className={styles.sidebar}>
@@ -215,6 +220,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           )}
         </aside>
 
+        {/* ANA İÇERİK */}
         <main className={styles.main}>{children}</main>
       </div>
     </div>
