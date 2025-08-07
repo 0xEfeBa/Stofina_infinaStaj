@@ -1,104 +1,88 @@
 package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.app.orderservice.dto.request.OrderFilterRequest;
-import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.app.orderservice.dto.response.OrderResponse;
-import com.stofina.app.orderservice.entity.Order;
-import com.stofina.app.orderservice.exception.OrderNotFoundException;
-import com.stofina.app.orderservice.mapper.OrderMapper;
-import com.stofina.app.orderservice.repository.OrderRepository;
-import com.stofina.app.orderservice.repository.TradeRepository;
-import com.stofina.app.orderservice.service.OrderService;
-import com.stofina.app.orderservice.service.ValidationService;
-import com.stofina.app.orderservice.service.client.MarketDataClient;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.stofina.orderservice.common.ServiceResult;
+import com.stofina.orderservice.entity.Order;
+import com.stofina.orderservice.enums.OrderStatus;
+import com.stofina.orderservice.enums.OrderType;
+import com.stofina.orderservice.repository.OrderRepository;
+import com.stofina.orderservice.service.IOrderService;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Optional;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl implements IOrderService {
 
-    private final TradeRepository tradeRepository;
-    private final OrderRepository orderRepository;
-    private final ValidationService validationService;
-    private final MarketDataClient marketDataClient;
-    private final OrderMapper orderMapper;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
-    public OrderResponse createOrder(CreateOrderRequest request) {
-        validationService.validateOrderRequest(request);
+    public void executeMarketOrder(Order order) {
+        if (order == null || order.getOrderId() == null) {
+            log.warn("Geçersiz market emri: null order");
+            return;
+        }
 
-        Order order = orderMapper.toEntity(request);
-        order.setCreatedAt(LocalDateTime.now());
-        order.setStatus("NEW");
+        if (order.getOrderType() != OrderType.MARKET_BUY || order.getOrderType() != OrderType.MARKET_SELL) {
+            log.warn("Market emri değil: OrderId={}, Type={}", order.getOrderId(), order.getOrderType());
+            return;
+        }
 
-        Order savedOrder = orderRepository.save(order);
+        // Basit simülasyon: Tüm miktar sabit fiyattan eşleşti varsay
+        BigDecimal simulatedPrice = mockCurrentPrice(order.getSymbol());
+        BigDecimal total = simulatedPrice.multiply(order.getQuantity());
 
-        return orderMapper.toResponse(savedOrder);
+        order.setFilledQuantity(order.getQuantity());
+        order.setAveragePrice(simulatedPrice);
+        order.setStatus(OrderStatus.FILLED);
+
+        log.info("MARKET order executed → OrderId: {}, Price: {}, Quantity: {}, Total: {}",
+                order.getOrderId(), simulatedPrice, order.getQuantity(), total);
     }
 
-    @Override
-    public OrderResponse updateOrder(Long orderId, UpdateOrderRequest request) {
-        Order existing = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found: " + orderId));
-
-        validationService.validateOrderUpdate(existing, request);
-
-        orderMapper.updateEntity(existing, request);
-        existing.setUpdatedAt(LocalDateTime.now());
-
-        Order updated = orderRepository.save(existing);
-
-        return orderMapper.toResponse(updated);
+    private BigDecimal mockCurrentPrice(String symbol) {
+        return BigDecimal.valueOf(75.00); // test için sabit fiyat döndürülüyor
     }
 
     @Override
-    public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found: " + orderId));
-
-        order.setStatus("CANCELED");
-        order.setUpdatedAt(LocalDateTime.now());
-
-        orderRepository.save(order);
+    @Transactional
+    public ServiceResult<Order> createOrder(Order order) {
+        try {
+            Order savedOrder = orderRepository.save(order);
+            log.info("Yeni emir oluşturuldu. OrderId: {}", savedOrder.getOrderId());
+            return ServiceResult.success(savedOrder, "Emir başarıyla oluşturuldu.");
+        } catch (Exception e) {
+            log.error("Emir oluşturulurken hata oluştu: {}", e.getMessage(), e);
+            return ServiceResult.failure("Emir oluşturulamadı: " + e.getMessage());
+        }
     }
 
     @Override
-    public OrderResponse getOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found: " + orderId));
-        return orderMapper.toResponse(order);
+    @Transactional
+    public ServiceResult<Void> updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+
+        if (optionalOrder.isEmpty()) {
+            log.warn("Order bulunamadı. OrderId: {}", orderId);
+            return ServiceResult.failure("Order bulunamadı.");
+        }
+
+        try {
+            Order order = optionalOrder.get();
+            order.setStatus(newStatus);
+            orderRepository.save(order); // update işlemi
+
+            log.info("Order durumu güncellendi. OrderId: {}, Yeni Durum: {}", orderId, newStatus);
+            return ServiceResult.success(null, "Order durumu güncellendi.");
+        } catch (Exception e) {
+            log.error("Order durumu güncellenemedi. OrderId: {}, Hata: {}", orderId, e.getMessage(), e);
+            return ServiceResult.failure("Durum güncellenemedi: " + e.getMessage());
+        }
     }
 
-    @Override
-    public Page<OrderResponse> getOrders(OrderFilterRequest filter) {
-        // özel query yazmam lazım
-    }
-
-    @Override
-    public List<OrderResponse> getActiveOrdersBySymbol(String symbol) {
-        List<Order> orders = orderRepository.findBySymbolAndStatus(symbol, "ACTIVE");
-        return orderMapper.toResponseList(orders);
-    }
-
-    @Override
-    public int processExpiredOrders() {
-        List<Order> expiredOrders = orderRepository.findByExpiryDateBeforeAndStatus(LocalDateTime.now(), "NEW");
-        expiredOrders.forEach(order -> order.setStatus("EXPIRED"));
-        orderRepository.saveAll(expiredOrders);
-        return expiredOrders.size();
-    }
-
-    public void validateOrderRequest(CreateOrderRequest request) {
-        validationService.validateOrderRequest(request);
-    }
-
-    public void checkOrderPermissions(Order order) {
-    }
 }

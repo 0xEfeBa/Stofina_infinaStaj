@@ -13,4 +13,17 @@ public final class OrderConstants {
         
         private Market() {}
     }
+
+    public static final class StopLoss {
+        public static final String BASE_PATH = "/api/stop-loss";
+
+        public static final String ADD = "/add";
+        public static final String CHECK = "/check";
+        public static final String ALL = "/all";
+        public static final String IS_WATCHING = "/is-watching/{orderId}";
+        public static final String REMOVE = "/{orderId}";
+
+        private StopLoss() {
+        }
+    }
 }
