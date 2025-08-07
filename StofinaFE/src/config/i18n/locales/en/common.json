@@ -1,0 +1,684 @@
+{
+    "common": {
+        "buttons": {
+            "save": "Save",
+            "cancel": "Cancel",
+            "close": "Close",
+            "edit": "Edit",
+            "delete": "Delete",
+            "add": "Add",
+            "search": "Search",
+            "clear": "Clear",
+            "submit": "Submit",
+            "yes": "Yes",
+            "no": "No",
+            "ok": "OK"
+        },
+        "messages": {
+            "success": "Success",
+            "error": "Error",
+            "warning": "Warning",
+            "info": "Information",
+            "loading": "Loading...",
+            "noData": "No data found",
+            "confirmDelete": "Are you sure you want to delete this item?",
+            "operationSuccess": "Operation completed successfully",
+            "operationFailed": "Operation failed"
+        },
+        "validation": {
+            "required": "This field is required",
+            "email": "Please enter a valid email address",
+            "minLength": "Must be at least {{min}} characters",
+            "maxLength": "Must be at most {{max}} characters",
+            "phone": "Please enter a valid phone number"
+        },
+        "navigation": {
+            "dashboard": "Dashboard",
+            "customers": "Customers",
+            "orders": "Orders",
+            "reports": "Reports",
+            "settings": "Settings",
+            "logout": "Logout"
+        },
+        "back": "Back"
+    },
+    "transfer": {
+        "title": "ASSET AND MONEY TRANSFER",
+        "transferSection": {
+            "title": "Transfer Type",
+            "options": {
+                "accountsBetween": "BETWEEN ACCOUNTS",
+                "customersBetween": "BETWEEN CUSTOMERS",
+                "institutionsBetween": "BETWEEN INSTITUTIONS",
+                "external": "EXTERNAL"
+            }
+        },
+        "form": {
+            "transferType": {
+                "label": "Transfer Type",
+                "cash": "Cash",
+                "stock": "Stock"
+            },
+            "amount": {
+                "label": "Amount",
+                "placeholder": "Enter amount"
+            },
+            "stockCode": {
+                "label": "Stock Code",
+                "placeholder": "Enter stock code."
+            },
+            "quantity": {
+                "label": "Quantity",
+                "placeholder": "Quantity"
+            },
+            "transferDate": {
+                "label": "Transfer Date"
+            },
+            "senderAccount": {
+                "label": "Sender Account",
+                "placeholder": "Select"
+            },
+            "receiverAccount": {
+                "label": "Receiver Account",
+                "placeholder": "Select"
+            }
+        },
+        "buttons": {
+            "startTransfer": "Start Transfer"
+        }
+    },
+    "customerPortfolio": {
+        "search": {
+            "label": "Search Orders",
+            "placeholder": "Search by stock symbol."
+        },
+        "table": {
+            "headers": {
+                "symbol": "Stock Symbol",
+                "quantity": "Current Quantity",
+                "availableQuantity": "Available Quantity",
+                "t2Quantity": "T+2 Settlement Quantity",
+                "price": "Unit Price",
+                "currentValue": "Current Value",
+                "averageCost": "Average Cost",
+                "profitLoss": "Potential Profit/Loss",
+                "actions": "Actions"
+            },
+            "actions": {
+                "buy": "Buy",
+                "sell": "Sell",
+                "buyTitle": "Buy Stock",
+                "sellTitle": "Sell Stock"
+            }
+        },
+        "summary": {
+            "status": {
+                "label": "Status",
+                "active": "Active"
+            },
+            "totalAssets": {
+                "label": "Total Assets"
+            },
+            "totalCash": {
+                "label": "Total Cash Position"
+            },
+            "totalStockValue": {
+                "label": "Total Stock Value"
+            },
+            "totalProfitLoss": {
+                "label": "Total Potential Profit/Loss"
+            },
+            "availableCash": {
+                "label": "Available Cash"
+            },
+            "t2PendingBalance": {
+                "label": "T+2 Pending Balance"
+            },
+            "blockedAmount": {
+                "label": "Blocked Amount"
+            }
+        },
+        "notes": {
+            "title": "Important Note:",
+            "t2Balance": "• T+2 pending balance shows amounts that have been processed but not yet credited to the account.",
+            "blockedAmount": "• Blocked amount shows the balance amount that cannot be used or is in transaction."
+        }
+    },
+    "customer": {
+        "title": "Customer Management",
+        "individualCustomer": "Individual Customer",
+        "corporateCustomer": "Corporate Customer",
+        "addCustomer": "Add New Customer",
+        "editCustomer": "Edit Customer",
+        "customerInfo": "Customer Information",
+        "fields": {
+            "name": "Name",
+            "surname": "Surname",
+            "phone": "Phone",
+            "email": "Email",
+            "address": "Address",
+            "tradeName": "Trade Name",
+            "taxNumber": "Tax Number",
+            "authorizedPerson": "Authorized Person",
+            "authorizedPhone": "Authorized Phone",
+            "authorizedEmail": "Authorized Email",
+            "tckn": "Turkish ID Number"
+        },
+        "messages": {
+            "addSuccess": "Customer registration completed successfully!",
+            "corporateAddSuccess": "Corporate customer registration completed successfully!",
+            "updateSuccess": "Customer information updated",
+            "deleteSuccess": "Customer deleted"
+        },
+        "validation": {
+            "tcknRequired": "Please enter your Turkish ID number.",
+            "tcknFormat": "Turkish ID number must consist of 11 digits.",
+            "nameRequired": "Please enter your name.",
+            "nameMaxLength": "Your name cannot be longer than 30 characters.",
+            "nameFormat": "Your name can only contain letters.",
+            "surnameRequired": "Please enter your surname.",
+            "surnameMaxLength": "Your surname cannot be longer than 30 characters.",
+            "surnameFormat": "Your surname can only contain letters.",
+            "phoneRequired": "Please enter your phone number.",
+            "phoneFormat": "Your phone number must consist of 10 digits and cannot start with 0.",
+            "addressRequired": "Please enter your address.",
+            "addressMaxLength": "Your address cannot be longer than 400 characters.",
+            "suitabilityRequired": "You must approve the suitability test.",
+            "kvkkRequired": "You must give KVKK approval.",
+            "mkkRequired": "You must give MKK approval."
+        },
+        "individual": {
+            "title": "INDIVIDUAL CUSTOMER DEFINITION",
+            "tabs": {
+                "individual": "Individual",
+                "corporate": "Corporate"
+            },
+            "buttons": {
+                "back": "Back",
+                "clear": "Clear",
+                "listUsers": "List Users",
+                "save": "Save"
+            },
+            "form": {
+                "tckn": "Turkish ID Number",
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "email": "Email",
+                "phone": "Phone",
+                "address": "Address",
+                "required": "*",
+                "suitabilityTest": "SUITABILITY TEST",
+                "kvkkText": "The disclosure text prepared within the scope of the Personal Data Protection Law (KVKK) has been read and approved by the customer.",
+                "mkkText": "Customer approval has been given for the registration to be made with MKK and the sharing of information with relevant institutions."
+            },
+            "userList": {
+                "title": "User List",
+                "searchPlaceholder": "Search by name, phone or email...",
+                "headers": {
+                    "id": "ID",
+                    "firstName": "First Name",
+                    "lastName": "Last Name",
+                    "phone": "Phone",
+                    "email": "Email",
+                    "address": "Address"
+                },
+                "noData": "No users found."
+            },
+            "messages": {
+                "success": "Customer registration completed successfully!"
+            }
+        },
+        "corporate": {
+            "title": "CORPORATE CUSTOMER DEFINITION",
+            "tabs": {
+                "individual": "Individual",
+                "corporate": "Corporate"
+            },
+            "buttons": {
+                "back": "Back",
+                "clear": "Clear",
+                "listUsers": "List Users",
+                "save": "Save"
+            },
+            "form": {
+                "tradeName": "Trade Name",
+                "tradeRegistryNo": "Trade Registry No",
+                "taxNumber": "Tax Number (VKN)",
+                "taxOffice": "Tax Office",
+                "legalAddress": "Legal Address",
+                "authorizedPerson": "Authorized Person",
+                "authorizedPersonOptional": "Authorized Person (Optional)",
+                "authorizedTckn": "Authorized Person TCKN",
+                "authorizedTcknOptional": "Authorized Person TCKN (Optional)",
+                "authorizedPhone": "Authorized Person Phone",
+                "authorizedPhoneOptional": "Authorized Person Phone (Optional)",
+                "authorizedEmail": "Authorized Person Email",
+                "authorizedEmailOptional": "Authorized Person Email (Optional)",
+                "required": "*",
+                "suitabilityTest": "SUITABILITY TEST",
+                "mkkText": "Customer approval has been given for the registration to be made with MKK and the sharing of information with relevant institutions.",
+                "kvkkText": "I have read, understood and approve the disclosure text prepared within the scope of the Personal Data Protection Law (KVKK)."
+            },
+            "userList": {
+                "title": "Corporate Customer List",
+                "searchPlaceholder": "Search by trade name, authorized person or VKN...",
+                "headers": {
+                    "id": "ID",
+                    "tradeName": "Trade Name",
+                    "vkn": "VKN",
+                    "authorizedPerson": "Authorized Person",
+                    "authorizedPhone": "Authorized Person Phone",
+                    "authorizedEmail": "Authorized Person Email"
+                },
+                "noData": "No customers found."
+            },
+            "messages": {
+                "success": "Corporate customer registration completed successfully!"
+            },
+            "validation": {
+                "tradeNameRequired": "Trade name cannot be left empty.",
+                "tradeNameMin": "Trade name must be at least 3 characters.",
+                "tradeNameMax": "Trade name can be at most 100 characters.",
+                "tradeRegistryRequired": "Trade registry number cannot be left empty.",
+                "tradeRegistryFormat": "Trade registry number must be 5-10 digits and cannot start with 0.",
+                "taxNumberRequired": "Tax number cannot be left empty.",
+                "taxNumberFormat": "Tax number must be 10 digits.",
+                "taxOfficeRequired": "Tax office cannot be left empty.",
+                "taxOfficeMin": "Tax office name must be at least 5 characters.",
+                "taxOfficeMax": "Tax office name can be at most 100 characters.",
+                "legalAddressRequired": "Legal address cannot be left empty.",
+                "legalAddressMin": "Legal address must be at least 10 characters.",
+                "legalAddressMax": "Legal address can be at most 300 characters.",
+                "authorizedRequired": "Authorized person name cannot be left empty.",
+                "authorizedFormat": "Authorized person name can only contain letters and spaces (3-50 characters).",
+                "authorizedTcknRequired": "Authorized person TCKN cannot be left empty.",
+                "authorizedTcknFormat": "Authorized person TCKN must be 11 digits and cannot start with 0.",
+                "authorizedPhoneRequired": "Authorized person phone number cannot be left empty.",
+                "authorizedPhoneFormat": "Phone number must start with 5 and be 10 digits.",
+                "authorizedEmailRequired": "Authorized person email cannot be left empty.",
+                "authorizedEmailFormat": "Please enter a valid email address.",
+                "suitabilityRequired": "You must approve the suitability test.",
+                "mkkRequired": "You must give MKK approval.",
+                "kvkkRequired": "You must give KVKK approval."
+            }
+        },
+        "management": {
+            "description": "All accounts belonging to the selected customer are listed below. You can add, close and edit accounts.",
+            "buttons": {
+                "back": "Back",
+                "addNewAccount": "Add New Account"
+            },
+            "table": {
+                "headers": {
+                    "accountNumber": "Account Number",
+                    "portfolioValue": "Portfolio Value",
+                    "balance": "Balance",
+                    "lastTransactionDate": "Last Transaction Date",
+                    "status": "Status",
+                    "portfolioDetail": "Portfolio Detail",
+                    "accountOperations": "Account Operations"
+                },
+                "actions": {
+                    "portfolio": "Portfolio",
+                    "edit": "Edit",
+                    "close": "Close",
+                    "editAccount": "Edit Account",
+                    "closeAccount": "Close Account"
+                },
+                "tooltips": {
+                    "accountsWithBalanceCannotBeClosed": "Accounts with balance cannot be closed."
+                }
+            },
+            "summary": {
+                "totalAccounts": "Total Account Count",
+                "totalPortfolioValue": "Total Portfolio Value",
+                "totalBalance": "Total Balance"
+            },
+            "modal": {
+                "closeAccountConfirmation": "customer's account number account closing process?"
+            }
+        },
+        "modals": {
+            "newAccount": {
+                "title": "Add New Account",
+                "form": {
+                    "customerNumber": "Customer Number",
+                    "fullName": "Full Name",
+                    "tradeName": "Trade Name",
+                    "vkn": "VKN",
+                    "accountOpeningDate": "Account Opening Date"
+                },
+                "approval": {
+                    "title": "Our customer, within the scope of the Capital Markets Instruments Brokerage Framework Agreement they have signed;",
+                    "description": "has signed the relevant agreement and given the necessary explicit consents regarding stock investment account opening, closing and updating, user assignment/removal to accounts, customer information changes, investment account information and balance viewing in accordance with legal obligations, approval for use within the scope of clearing obligations, account opening at the brokerage firm, account registration at MKK and information sharing with relevant institutions, processing and transfer of personal data within the scope of KVKK.",
+                    "confirmation": "This approval confirms that the relevant agreement has been signed by the customer and that the authorities specified above are used in accordance with the customer's knowledge and request."
+                },
+                "buttons": {
+                    "cancel": "Cancel",
+                    "next": "Next"
+                },
+                "messages": {
+                    "accountOpeningConfirmation": "customer's account opening process?"
+                }
+            },
+            "closeAccount": {
+                "title": "Account Closing Confirmation",
+                "description": "Confirm the account closing process by verifying the information below.",
+                "form": {
+                    "customerName": "Customer Name",
+                    "customerNumber": "Customer Number",
+                    "accountNumber": "Account Number"
+                },
+                "warning": {
+                    "title": "Warning:",
+                    "description": "This account has a portfolio value of {portfolioValue} and cash balance of {balance}. Clearing these balances before closing the account is mandatory according to SPK and BIST regulations."
+                },
+                "regulations": {
+                    "title": "BIST/SPK/MKK Warning:",
+                    "subtitle": "After the account closing process:",
+                    "items": [
+                        "All customer's open positions must be closed",
+                        "Securities at MKK must be transferred",
+                        "Account closing form must be signed by the customer",
+                        "Legal waiting period (30 days) must be applied"
+                    ]
+                },
+                "irreversible": "This process cannot be undone.",
+                "buttons": {
+                    "cancel": "Cancel",
+                    "closeAccount": "Close Account"
+                }
+            }
+        },
+        "search": {
+            "customerType": {
+                "individual": "Individual",
+                "corporate": "Corporate"
+            },
+            "placeholder": {
+                "enabled": "Enter name or account number.",
+                "disabled": "Please select customer type first..."
+            },
+            "dropdown": {
+                "customerName": "Customer Name / Trade Name:",
+                "accountNumber": "Account No:",
+                "selectedCustomer": "Customer Name/Trade Name: "
+            }
+        },
+        "auth": {
+            "login": {
+                "failed": {
+                    "title": "Login Failed",
+                    "message": "Please check your information."
+                },
+                "serverError": {
+                    "title": "Server Error",
+                    "message": "An error occurred during login. Please try again later."
+                }
+            }
+        },
+        "constants": {
+            "customerType": {
+                "individual": "Individual",
+                "corporate": "Corporate"
+            }
+        }
+    },
+    "userManagement": {
+        "title": "USER DEFINITION",
+        "buttons": {
+            "back": "Back",
+            "clear": "Clear",
+            "listUsers": "List Users",
+            "save": "Save"
+        },
+        "form": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "username": "Username",
+            "email": "Email",
+            "phone": "Phone Number",
+            "title": "Title",
+            "authority": "Authority",
+            "required": "*",
+            "titleSelect": "Select Title",
+            "authoritySelect": "Select Authority",
+            "titleOptions": {
+                "engineer": "Engineer",
+                "expert": "Expert",
+                "manager": "Manager"
+            },
+            "authorityOptions": {
+                "admin": "Admin",
+                "user": "User",
+                "manager": "Manager"
+            }
+        },
+        "userList": {
+            "title": "User List",
+            "searchPlaceholder": "Search...",
+            "headers": {
+                "id": "ID",
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "phone": "Phone",
+                "email": "Email",
+                "username": "Username",
+                "title": "Title",
+                "authority": "Authority"
+            },
+            "noData": "No users found."
+        },
+        "messages": {
+            "formSubmitted": "Form submitted successfully!",
+            "validationErrors": {
+                "firstNameRequired": "First name field is required.",
+                "firstNameMaxLength": "First name cannot be longer than 30 characters.",
+                "firstNameFormat": "First name must contain only letters.",
+                "lastNameRequired": "Last name field is required.",
+                "lastNameMaxLength": "Last name cannot be longer than 30 characters.",
+                "lastNameFormat": "Last name must contain only letters.",
+                "phoneRequired": "Phone field is required.",
+                "phoneFormat": "Phone must be 10 digits and cannot start with 0.",
+                "emailRequired": "Email field is required.",
+                "emailFormat": "Please enter a valid email address.",
+                "usernameRequired": "Username is required.",
+                "usernameMinLength": "Username must be at least 3 characters.",
+                "titleRequired": "Title selection is required.",
+                "authorityRequired": "Authority selection is required."
+            }
+        }
+    },
+    "report": {
+        "status": {
+            "pending": "Pending",
+            "notReady": "Not Ready",
+            "ready": "Ready"
+        },
+        "type": {
+            "endOfDay": "END OF DAY"
+        },
+        "statusMessage": "Intraday orders have been checked for compliance with the stock exchange order book. The date has been prepared for the day after the closing time.",
+        "systemDate": {
+            "title": "System Date",
+            "subtitle": "Active Trading Day",
+            "systemDateLabel": "System Date",
+            "currentPeriod": "Current Trading Day",
+            "currentPeriodSubtitle": "Active period",
+            "endOfDayButton": "End of Day"
+        },
+        "statusCard": {
+            "title": "Report Status",
+            "ready": "Report Ready",
+            "pending": "Report Pending",
+            "notReady": "Report Not Ready",
+            "lastReport": "Last Report",
+            "lastUpdate": "Last Update",
+            "download": "Download",
+            "reportPreparing": "Report Preparing"
+        },
+        "endOfDayCard": {
+            "title": "END OF DAY REPORT",
+            "date": "DATE",
+            "time": "TIME",
+            "reportType": "REPORT TYPE",
+            "status": "STATUS",
+            "ok": "OK",
+            "printReport": "Print Report"
+        },
+        "sendResultDocument": {
+            "button": "Send Result Document"
+        }
+    },
+    "modal": {
+        "titles": {
+            "success": "Success",
+            "error": "Error",
+            "warning": "Warning",
+            "info": "Information",
+            "confirm": "Confirm"
+        },
+        "buttons": {
+            "confirm": "Yes",
+            "cancel": "No",
+            "ok": "OK"
+        }
+    },
+    "orderTracking": {
+        "title": "Order Tracking Table",
+        "search": {
+            "label": "Search Orders",
+            "placeholder": "By Order No or Stock Symbol"
+        },
+        "filters": {
+            "orderType": {
+                "label": "Order Type",
+                "all": "All",
+                "limit": "Limit",
+                "market": "Market",
+                "stop": "Stop"
+            },
+            "status": {
+                "label": "Order Status",
+                "all": "All",
+                "completed": "Completed",
+                "partial": "Partial",
+                "pending": "Pending",
+                "cancelled": "Cancelled"
+            }
+        },
+        "table": {
+            "headers": {
+                "orderNo": "Order No",
+                "symbol": "Stock Symbol",
+                "orderType": "Order Type",
+                "orderStatus": "Order Status",
+                "price": "Price",
+                "quantity": "Quantity",
+                "filledQuantity": "Filled Quantity",
+                "filledPrice": "Filled Price",
+                "status": "Status",
+                "date": "Date",
+                "action": "Action"
+            },
+            "actions": {
+                "cancel": "Cancel",
+                "cancelDisabled": "Cancel"
+            }
+        },
+        "modal": {
+            "cancelOrder": "account number",
+            "customer": "customer's",
+            "orderNumber": "numbered order transaction?"
+        }
+    },
+    "types": {
+        "account": {
+            "status": {
+                "active": "ACTIVE",
+                "passive": "PASSIVE"
+            }
+        },
+        "order": {
+            "side": {
+                "buy": "BUY",
+                "sell": "SELL"
+            },
+            "type": {
+                "limit": "LIMIT",
+                "market": "MARKET",
+                "stop": "STOP"
+            },
+            "status": {
+                "completed": "COMPLETED",
+                "partial": "PARTIAL",
+                "pending": "PENDING",
+                "cancelled": "CANCELLED"
+            }
+        },
+        "portfolio": {
+            "fields": {
+                "symbol": "Symbol",
+                "quantity": "Quantity",
+                "availableQuantity": "Available Quantity",
+                "t2Quantity": "T+2 Quantity",
+                "price": "Price",
+                "currentValue": "Current Value",
+                "averageCost": "Average Cost",
+                "profitLoss": "Profit/Loss",
+                "profitLossPercentage": "Profit/Loss Percentage"
+            }
+        },
+        "customer": {
+            "type": {
+                "individual": "INDIVIDUAL",
+                "corporate": "CORPORATE"
+            },
+            "fields": {
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "tradeName": "Trade Name",
+                "vkn": "VKN",
+                "email": "Email",
+                "birthDate": "Birth Date",
+                "birthPlace": "Birth Place",
+                "accountNumber": "Account Number",
+                "tckn": "Turkish ID Number"
+            }
+        }
+    },
+    "dashboard": {
+        "header": {
+            "title": "STOFINA Refleks",
+            "userName": "İrem Türen",
+            "settings": "Settings",
+            "loading": "Loading..."
+        },
+        "menu": {
+            "dashboard": "Dashboard",
+            "trading": "Stock Trading",
+            "stocks": "Stocks",
+            "stockDefinition": "Stock Definition",
+            "customerDefinition": "Customer Definition",
+            "customerPortfolio": "Customer Portfolio",
+            "customerAccountManagement": "Customer Account Management",
+            "balanceAndStockManagement": "Balance and Stock Management",
+            "orderTracking": "Order Tracking",
+            "reporting": "Reporting",
+            "userManagement": "User Management",
+            "transfer": "Asset and Money Transfer"
+        },
+        "sidebar": {
+            "search": {
+                "placeholder": "Search...",
+                "noResults": "No results found"
+            },
+            "logout": "Logout"
+        },
+        "settings": {
+            "languageSelection": "Language Selection",
+            "turkish": "Türkçe",
+            "english": "English"
+        }
+    }
+}
