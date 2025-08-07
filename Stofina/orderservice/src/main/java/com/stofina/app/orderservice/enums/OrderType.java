@@ -1,9 +1,9 @@
-package com.stofina.app.orderservice.enums;
+package com.stofina.orderservice.enums;
 
 public enum OrderType {
-    MARKET("Market Order", "Piyasa fiyatından anlık işlem"),
-    LIMIT("Limit Order", "Belirtilen fiyat veya daha iyisinden işlem"),
-    STOP_LOSS("Stop Loss Order", "Zarar durdurma emri");
+    LIMIT_BUY("Limit Alış", "Belirtilen fiyat veya daha düşüğünden alış"),
+    MARKET_BUY("Market Alış", "Piyasa fiyatından anlık alış"),  
+    STOP_LOSS_SELL("Stop Loss Satış", "Zarar durdurma satış emri");
 
     private final String displayName;
     private final String description;
@@ -22,10 +22,29 @@ public enum OrderType {
     }
 
     public boolean requiresPrice() {
-        return this == LIMIT;
+        return this == LIMIT_BUY || this == STOP_LOSS_SELL;
     }
 
     public boolean requiresStopPrice() {
-        return this == STOP_LOSS;
+        return this == STOP_LOSS_SELL;
+    }
+    
+    public OrderSide getSide() {
+        return switch(this) {
+            case LIMIT_BUY, MARKET_BUY -> OrderSide.BUY;
+            case STOP_LOSS_SELL -> OrderSide.SELL;
+        };
+    }
+    
+    public boolean isLimitOrder() {
+        return this == LIMIT_BUY;
+    }
+    
+    public boolean isMarketOrder() {
+        return this == MARKET_BUY;
+    }
+    
+    public boolean isStopLossOrder() {
+        return this == STOP_LOSS_SELL;
     }
 }

@@ -1,9 +1,12 @@
-package com.stofina.app.orderservice.repository;
+package com.stofina.orderservice.repository;
 
+import com.stofina.orderservice.entity.Order;
 import com.stofina.orderservice.enums.OrderSide;
 import com.stofina.orderservice.enums.OrderStatus;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

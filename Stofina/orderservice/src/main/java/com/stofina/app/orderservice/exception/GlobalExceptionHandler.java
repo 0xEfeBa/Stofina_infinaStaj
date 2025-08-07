@@ -1,6 +1,6 @@
 package com.stofina.app.orderservice.exception;
 
-import com.stofina.orderservice.dto.response.ValidationErrorResponse;
+import com.stofina.app.orderservice.dto.response.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

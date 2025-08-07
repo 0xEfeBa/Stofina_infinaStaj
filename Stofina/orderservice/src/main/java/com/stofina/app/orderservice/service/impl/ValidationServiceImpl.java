@@ -1,9 +1,10 @@
 package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.orderservice.service.ValidationService;
-import com.stofina.orderservice.service.client.MarketDataClient;
+import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.service.ValidationService;
+import com.stofina.app.orderservice.service.client.MarketDataClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.time.ZoneId;
 @RequiredArgsConstructor
 public class ValidationServiceImpl implements ValidationService {
 
-    private final MarketDataClient marketDataClient;
+    
 
     private static final BigDecimal DEFAULT_ACCOUNT_BALANCE = new BigDecimal("100000");
     private static final BigDecimal DEFAULT_ACCOUNT_POSITION = new BigDecimal("1000");
@@ -23,12 +24,12 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void validateOrderRequest(CreateOrderRequest request) {
-        if (request.getQuantity() == null || request.getQuantity().compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getQuantity() == null || request.getQuantity() <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }
-        if (request.getOrderType().equalsIgnoreCase("LIMIT") &&
+        if (request.getOrderType().requiresPrice() &&
                 (request.getPrice() == null || request.getPrice().compareTo(BigDecimal.ZERO) <= 0)) {
-            throw new IllegalArgumentException("Price must be provided for LIMIT orders");
+            throw new IllegalArgumentException("Price must be provided for this order type");
         }
     }
 
@@ -42,7 +43,8 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void checkPriceLimits(String symbol, BigDecimal price) {
-        BigDecimal referencePrice = marketDataClient.getReferencePrice(symbol);
+        // TODO: Implement proper price limit checking
+        BigDecimal referencePrice = new BigDecimal("100"); // Mock reference price
         BigDecimal upperLimit = referencePrice.add(referencePrice.multiply(DAILY_LIMIT_PERCENT));
         BigDecimal lowerLimit = referencePrice.subtract(referencePrice.multiply(DAILY_LIMIT_PERCENT));
 

@@ -1,4 +1,4 @@
-package com.stofina.app.orderservice.service;
+package com.stofina.orderservice.service;
 
 import com.stofina.orderservice.dto.request.CreateOrderRequest;
 import com.stofina.orderservice.dto.request.OrderFilterRequest;
@@ -7,6 +7,7 @@ import com.stofina.orderservice.dto.response.OrderResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OrderService {
 
@@ -21,6 +22,10 @@ public interface OrderService {
     Page<OrderResponse> getOrders(OrderFilterRequest filter);
 
     List<OrderResponse> getActiveOrdersBySymbol(String symbol);
+
+    List<OrderResponse> getOrdersByAccount(Long accountId);
+
+    Map<String, Object> validateOrder(CreateOrderRequest request);
 
     int processExpiredOrders();
 
