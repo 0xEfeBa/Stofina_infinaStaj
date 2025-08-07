@@ -104,6 +104,23 @@ public class SimpleOrderBook {
         return getTopLevels(asks, TOP_LEVELS);
     }
     
+    // CHECKPOINT ENTEGRASYON 2.5 - Get orders for matching
+    public List<Order> getBidOrders() {
+        List<Order> bidOrders = new ArrayList<>();
+        for (Queue<Order> orders : bids.values()) {
+            bidOrders.addAll(orders);
+        }
+        return bidOrders;
+    }
+    
+    public List<Order> getAskOrders() {
+        List<Order> askOrders = new ArrayList<>();
+        for (Queue<Order> orders : asks.values()) {
+            askOrders.addAll(orders);
+        }
+        return askOrders;
+    }
+    
     private TreeMap<BigDecimal, Queue<Order>> getTargetSide(OrderSide side) {
         return side == OrderSide.BUY ? bids : asks;
     }

@@ -1,20 +1,23 @@
-package com.stofina.app.orderservice.mapper;
+package com.stofina.orderservice.mapper;
 
-import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.app.orderservice.dto.response.OrderResponse;
-import com.stofina.app.orderservice.entity.Order;
+import com.stofina.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.orderservice.dto.response.OrderResponse;
+import com.stofina.orderservice.entity.Order;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class OrderMapper {
 
     /**
      * CreateOrderRequest -> Order entity dönüşümü
      */
-    public static Order toEntity(CreateOrderRequest request) {
+    public Order toEntity(CreateOrderRequest request) {
         Order order = new Order();
+        order.setTenantId(request.getTenantId()); // DÜZELTME: tenantId mapping eklendi
         order.setAccountId(request.getAccountId());
         order.setSymbol(request.getSymbol());
         order.setOrderType(request.getOrderType());
@@ -32,23 +35,23 @@ public class OrderMapper {
     /**
      * Order entity -> OrderResponse dönüşümü
      */
-    public static OrderResponse toResponse(Order order) {
+    public OrderResponse toResponse(Order order) {
         return OrderResponse.fromEntity(order);
     }
 
     /**
      * List<Order> -> List<OrderResponse> dönüşümü
      */
-    public static List<OrderResponse> toResponseList(List<Order> orders) {
+    public List<OrderResponse> toResponseList(List<Order> orders) {
         return orders.stream()
-                .map(OrderMapper::toResponse)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     /**
      * UpdateOrderRequest -> var olan Order entity güncellemesi
      */
-    public static void updateEntity(Order existing, UpdateOrderRequest request) {
+    public void updateEntity(Order existing, UpdateOrderRequest request) {
         if (request.getPrice() != null) {
             existing.setPrice(request.getPrice());
         }

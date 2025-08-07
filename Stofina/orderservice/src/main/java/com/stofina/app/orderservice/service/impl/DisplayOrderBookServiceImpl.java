@@ -1,17 +1,20 @@
-package com.stofina.orderservice.service.impl;
+package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.enums.OrderSide;
-import com.stofina.orderservice.model.DisplayOrder;
-import com.stofina.orderservice.model.OrderLevel;
-import com.stofina.orderservice.model.SimpleOrderBookSnapshot;
-import com.stofina.orderservice.service.DisplayOrderBookService;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.enums.OrderSide;
+import com.stofina.app.orderservice.model.DisplayOrder;
+import com.stofina.app.orderservice.model.OrderLevel;
+import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
+import com.stofina.app.orderservice.service.DisplayOrderBookService;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,13 +22,18 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
     
-    // CHECKPOINT 4.1 - Display-Only Order Book Implementation
-    private final Map<String, List<DisplayOrder>> displayBids = new ConcurrentHashMap<>();
-    private final Map<String, List<DisplayOrder>> displayAsks = new ConcurrentHashMap<>();
+    // CHECKPOINT 4.1 - Display-Only Order Book Implementation with Redis
+    private final RedisTemplate<String, Object> jsonRedisTemplate;
     private final Map<String, List<DisplayOrder>> userOrders = new ConcurrentHashMap<>();
     private final Random random = new Random();
+    
+    // Redis Keys
+    private static final String REDIS_KEY_BIDS = "orderbook:display:%s:bids";
+    private static final String REDIS_KEY_ASKS = "orderbook:display:%s:asks";
+    private static final Duration REDIS_TTL = Duration.ofHours(1);
     
     // TODO: ENTEGRASYON SIRASINDA KALDIRILACAK - Mock BIST symbols
     private static final List<String> MOCK_BIST_SYMBOLS = Arrays.asList(
@@ -68,8 +76,7 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
         String normalizedSymbol = symbol.trim().toUpperCase();
         
         // Clear existing display orders
-        displayBids.put(normalizedSymbol, new ArrayList<>());
-        displayAsks.put(normalizedSymbol, new ArrayList<>());
+        clearBotOrdersFromRedis(normalizedSymbol);
         userOrders.put(normalizedSymbol, new ArrayList<>());
         
         // Create unique bot orders
@@ -77,8 +84,8 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
         createUniqueAskOrders(normalizedSymbol, currentPrice);
         
         log.info("Display order book initialized for {}: {} BID, {} ASK orders", 
-                normalizedSymbol, displayBids.get(normalizedSymbol).size(), 
-                displayAsks.get(normalizedSymbol).size());
+                normalizedSymbol, getBotOrdersFromRedis(normalizedSymbol, OrderSide.BUY).size(), 
+                getBotOrdersFromRedis(normalizedSymbol, OrderSide.SELL).size());
     }
     
     @Override
@@ -178,8 +185,8 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
         }
         
         String normalizedSymbol = symbol.trim().toUpperCase();
-        int botCount = displayBids.getOrDefault(normalizedSymbol, new ArrayList<>()).size() +
-                      displayAsks.getOrDefault(normalizedSymbol, new ArrayList<>()).size();
+        int botCount = getBotOrdersFromRedis(normalizedSymbol, OrderSide.BUY).size() +
+                      getBotOrdersFromRedis(normalizedSymbol, OrderSide.SELL).size();
         int userCount = userOrders.getOrDefault(normalizedSymbol, new ArrayList<>()).size();
         
         return botCount + userCount;
@@ -210,8 +217,7 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
         }
         
         String normalizedSymbol = symbol.trim().toUpperCase();
-        displayBids.remove(normalizedSymbol);
-        displayAsks.remove(normalizedSymbol);
+        clearBotOrdersFromRedis(normalizedSymbol);
         userOrders.remove(normalizedSymbol);
         
         log.debug("Display order book cleared for symbol: {}", normalizedSymbol);
@@ -225,8 +231,8 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
         
         String normalizedSymbol = symbol.trim().toUpperCase();
         
-        List<DisplayOrder> bids = displayBids.get(normalizedSymbol);
-        List<DisplayOrder> asks = displayAsks.get(normalizedSymbol);
+        List<DisplayOrder> bids = getBotOrdersFromRedis(normalizedSymbol, OrderSide.BUY);
+        List<DisplayOrder> asks = getBotOrdersFromRedis(normalizedSymbol, OrderSide.SELL);
         
         // If less than 15 orders on either side, refill
         if (bids == null || bids.size() < 15) {
@@ -274,7 +280,7 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
             bids.add(new DisplayOrder(symbol, OrderSide.BUY, price, quantity, true));
         }
         
-        displayBids.put(symbol, bids);
+        setBotOrdersToRedis(symbol, OrderSide.BUY, bids);
     }
     
     private void createUniqueAskOrders(String symbol, BigDecimal currentPrice) {
@@ -313,12 +319,11 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
             asks.add(new DisplayOrder(symbol, OrderSide.SELL, price, quantity, true));
         }
         
-        displayAsks.put(symbol, asks);
+        setBotOrdersToRedis(symbol, OrderSide.SELL, asks);
     }
     
     private void clearBotOrders(String symbol) {
-        displayBids.put(symbol, new ArrayList<>());
-        displayAsks.put(symbol, new ArrayList<>());
+        clearBotOrdersFromRedis(symbol);
     }
     
     private List<DisplayOrder> combineOrders(String symbol, OrderSide side) {
@@ -327,9 +332,9 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
         }
         
         String normalizedSymbol = symbol.trim().toUpperCase();
-        List<DisplayOrder> botOrders = side == OrderSide.BUY ? 
-            displayBids.getOrDefault(normalizedSymbol, new ArrayList<>()) :
-            displayAsks.getOrDefault(normalizedSymbol, new ArrayList<>());
+        
+        // Get bot orders from Redis
+        List<DisplayOrder> botOrders = getBotOrdersFromRedis(normalizedSymbol, side);
         
         List<DisplayOrder> userOrderList = userOrders.getOrDefault(normalizedSymbol, new ArrayList<>())
             .stream()
@@ -374,10 +379,9 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
     }
     
     private void addMoreBidOrders(String symbol, BigDecimal currentPrice, int count) {
-        List<DisplayOrder> existingBids = displayBids.get(symbol);
+        List<DisplayOrder> existingBids = getBotOrdersFromRedis(symbol, OrderSide.BUY);
         if (existingBids == null) {
             existingBids = new ArrayList<>();
-            displayBids.put(symbol, existingBids);
         }
         
         for (int i = 0; i < count; i++) {
@@ -388,13 +392,15 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
             BigDecimal quantity = BigDecimal.valueOf(random.nextInt(500, 2001));
             existingBids.add(new DisplayOrder(symbol, OrderSide.BUY, price, quantity, true));
         }
+        
+        // Save updated list back to Redis
+        setBotOrdersToRedis(symbol, OrderSide.BUY, existingBids);
     }
     
     private void addMoreAskOrders(String symbol, BigDecimal currentPrice, int count) {
-        List<DisplayOrder> existingAsks = displayAsks.get(symbol);
+        List<DisplayOrder> existingAsks = getBotOrdersFromRedis(symbol, OrderSide.SELL);
         if (existingAsks == null) {
             existingAsks = new ArrayList<>();
-            displayAsks.put(symbol, existingAsks);
         }
         
         for (int i = 0; i < count; i++) {
@@ -405,6 +411,9 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
             BigDecimal quantity = BigDecimal.valueOf(random.nextInt(500, 2001));
             existingAsks.add(new DisplayOrder(symbol, OrderSide.SELL, price, quantity, true));
         }
+        
+        // Save updated list back to Redis
+        setBotOrdersToRedis(symbol, OrderSide.SELL, existingAsks);
     }
     
     @Override
@@ -422,5 +431,61 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
         
         // Return copy to avoid external modifications
         return new ArrayList<>(userOrderList);
+    }
+    
+    // REDIS HELPER METHODS
+    private List<DisplayOrder> getBotOrdersFromRedis(String symbol, OrderSide side) {
+        try {
+            String key = side == OrderSide.BUY ? 
+                String.format(REDIS_KEY_BIDS, symbol) : 
+                String.format(REDIS_KEY_ASKS, symbol);
+            
+            // Use Spring's TypeReference for proper deserialization
+            List<DisplayOrder> result = (List<DisplayOrder>) jsonRedisTemplate.opsForValue().get(key);
+            return result != null ? result : new ArrayList<>();
+        } catch (Exception e) {
+            log.warn("Failed to get bot orders from Redis for {}: {}", symbol, e.getMessage());
+            // Fallback: return empty list and recreate bot orders
+            createBotOrdersForSymbol(symbol);
+            return new ArrayList<>();
+        }
+    }
+    
+    private void createBotOrdersForSymbol(String symbol) {
+        try {
+            BigDecimal mockPrice = new BigDecimal("50.00"); // Default mock price
+            clearBotOrdersFromRedis(symbol);
+            createUniqueBidOrders(symbol, mockPrice);
+            createUniqueAskOrders(symbol, mockPrice);
+            log.info("Recreated bot orders for {} due to Redis deserialization issue", symbol);
+        } catch (Exception e) {
+            log.error("Failed to recreate bot orders for {}: {}", symbol, e.getMessage());
+        }
+    }
+    
+    private void setBotOrdersToRedis(String symbol, OrderSide side, List<DisplayOrder> orders) {
+        try {
+            String key = side == OrderSide.BUY ? 
+                String.format(REDIS_KEY_BIDS, symbol) : 
+                String.format(REDIS_KEY_ASKS, symbol);
+            
+            jsonRedisTemplate.opsForValue().set(key, orders, REDIS_TTL);
+            log.debug("Stored {} {} bot orders in Redis for {}", orders.size(), side, symbol);
+        } catch (Exception e) {
+            log.error("Failed to store bot orders to Redis for {}: {}", symbol, e.getMessage());
+        }
+    }
+    
+    private void clearBotOrdersFromRedis(String symbol) {
+        try {
+            String bidKey = String.format(REDIS_KEY_BIDS, symbol);
+            String askKey = String.format(REDIS_KEY_ASKS, symbol);
+            
+            jsonRedisTemplate.delete(bidKey);
+            jsonRedisTemplate.delete(askKey);
+            log.debug("Cleared bot orders from Redis for {}", symbol);
+        } catch (Exception e) {
+            log.error("Failed to clear bot orders from Redis for {}: {}", symbol, e.getMessage());
+        }
     }
 }

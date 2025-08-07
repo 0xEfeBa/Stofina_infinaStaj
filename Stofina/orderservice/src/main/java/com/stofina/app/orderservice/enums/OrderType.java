@@ -34,7 +34,7 @@ public enum OrderType {
     public OrderSide getSide() {
         return switch(this) {
             case LIMIT_BUY, MARKET_BUY -> OrderSide.BUY;
-            case STOP_LOSS_SELL -> OrderSide.SELL;
+            case LIMIT_SELL, MARKET_SELL, STOP_LOSS_SELL -> OrderSide.SELL;
         };
     }
     

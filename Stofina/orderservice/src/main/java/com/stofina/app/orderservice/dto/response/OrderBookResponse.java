@@ -41,7 +41,7 @@ public class OrderBookResponse {
             snapshot.getBestBid(),
             snapshot.getBestAsk(),
             snapshot.getSpread(),
-            snapshot.getLastUpdateTime(),
+            snapshot.getTimestamp(),
             snapshot.getTotalBidQuantity(),
             snapshot.getTotalAskQuantity(),
             snapshot.getTotalOrderCount(),

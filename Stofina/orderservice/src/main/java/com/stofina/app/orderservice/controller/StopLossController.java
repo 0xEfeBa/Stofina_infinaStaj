@@ -1,17 +1,15 @@
-package com.stofina.app.orderservice.controller;
+    package com.stofina.app.orderservice.controller;
 
-import com.stofina.orderservice.common.ServiceResult;
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.service.IStopLossService;
-import jakarta.validation.Valid;
+import com.stofina.app.orderservice.common.ServiceResult;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.service.IStopLossService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.stofina.orderservice.constants.OrderConstants.StopLoss.*;
+import static com.stofina.app.orderservice.constants.OrderConstants.StopLoss.*;
 
 @RestController
 @RequestMapping(BASE_PATH)
@@ -50,7 +48,4 @@ public class StopLossController {
         ServiceResult<Boolean> result = stopLossService.remove(orderId);
         return ResponseEntity.status(result.getHttpStatus()).body(result);
     }
-
-
-}
 }

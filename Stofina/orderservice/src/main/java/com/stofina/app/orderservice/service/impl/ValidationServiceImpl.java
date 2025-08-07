@@ -1,10 +1,10 @@
-package com.stofina.app.orderservice.service.impl;
+package com.stofina.orderservice.service.impl;
 
-import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.app.orderservice.entity.Order;
-import com.stofina.app.orderservice.service.ValidationService;
-import com.stofina.app.orderservice.service.client.MarketDataClient;
+import com.stofina.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.orderservice.entity.Order;
+import com.stofina.orderservice.service.ValidationService;
+import com.stofina.orderservice.service.client.MarketDataClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.time.ZoneId;
 @RequiredArgsConstructor
 public class ValidationServiceImpl implements ValidationService {
 
-    
+    private final MarketDataClient marketDataClient;
 
     private static final BigDecimal DEFAULT_ACCOUNT_BALANCE = new BigDecimal("100000");
     private static final BigDecimal DEFAULT_ACCOUNT_POSITION = new BigDecimal("1000");

@@ -18,6 +18,8 @@ public final class ApiEndpoints {
     // Order Book endpoint paths
     public static final String GET_SYMBOLS = "/symbols";
     public static final String GET_ORDER_BOOK = SYMBOL_PATH_VAR;
+    public static final String GET_ORDER_BOOK_SNAPSHOT = SYMBOL_PATH_VAR + "/snapshot";
+    public static final String GET_ORDER_BOOK_DEPTH = SYMBOL_PATH_VAR + "/depth";
     public static final String GET_BEST_PRICES = SYMBOL_PATH_VAR + "/best-prices";
     public static final String GET_ORDER_BOOK_STATS = SYMBOL_PATH_VAR + "/stats";
     public static final String CREATE_ORDER = "/orders";
@@ -25,6 +27,8 @@ public final class ApiEndpoints {
     // Full endpoint paths (for documentation/reference)
     public static final String SYMBOLS_ENDPOINT = ORDER_BOOK_BASE + GET_SYMBOLS;
     public static final String ORDER_BOOK_ENDPOINT = ORDER_BOOK_BASE + GET_ORDER_BOOK;
+    public static final String SNAPSHOT_ENDPOINT = ORDER_BOOK_BASE + GET_ORDER_BOOK_SNAPSHOT;
+    public static final String DEPTH_ENDPOINT = ORDER_BOOK_BASE + GET_ORDER_BOOK_DEPTH;
     public static final String BEST_PRICES_ENDPOINT = ORDER_BOOK_BASE + GET_BEST_PRICES;
     public static final String STATS_ENDPOINT = ORDER_BOOK_BASE + GET_ORDER_BOOK_STATS;
     public static final String ORDERS_ENDPOINT = ORDER_BOOK_BASE + CREATE_ORDER;

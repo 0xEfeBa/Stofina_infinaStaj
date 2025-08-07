@@ -18,5 +18,5 @@ public interface ValidationService {
 
     void checkAccountPosition(Long accountId, String symbol, BigDecimal quantity);
 
-    void validateOrderUpdate(com.stofina.orderservice.entity.Order existing, UpdateOrderRequest request);
+    void validateOrderUpdate(com.stofina.app.orderservice.entity.Order existing, UpdateOrderRequest request);
 }
