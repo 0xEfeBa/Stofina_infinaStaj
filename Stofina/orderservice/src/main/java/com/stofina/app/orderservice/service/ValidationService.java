@@ -1,7 +1,8 @@
 package com.stofina.app.orderservice.service;
 
-import com.stofina.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.app.orderservice.entity.Order;
 
 import java.math.BigDecimal;
 
@@ -17,5 +18,5 @@ public interface ValidationService {
 
     void checkAccountPosition(Long accountId, String symbol, BigDecimal quantity);
 
-    void validateOrderUpdate(Order existing, UpdateOrderRequest request);
+    void validateOrderUpdate(com.stofina.orderservice.entity.Order existing, UpdateOrderRequest request);
 }

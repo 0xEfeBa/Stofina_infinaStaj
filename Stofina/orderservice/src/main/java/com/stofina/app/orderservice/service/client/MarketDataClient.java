@@ -1,6 +1,6 @@
 package com.stofina.app.orderservice.service.client;
 
-import com.stofina.orderservice.dto.response.external.PriceResponse;
+import com.stofina.app.orderservice.dto.response.external.PriceResponse;
 
 import java.math.BigDecimal;
 import java.util.List;

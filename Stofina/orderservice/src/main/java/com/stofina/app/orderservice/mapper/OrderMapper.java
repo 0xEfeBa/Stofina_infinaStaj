@@ -1,8 +1,9 @@
 package com.stofina.app.orderservice.mapper;
 
-import com.stofina.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.orderservice.dto.response.OrderResponse;
+import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.app.orderservice.dto.response.OrderResponse;
+import com.stofina.app.orderservice.entity.Order;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +18,8 @@ public class OrderMapper {
         order.setAccountId(request.getAccountId());
         order.setSymbol(request.getSymbol());
         order.setOrderType(request.getOrderType());
-        order.setSide(request.getSide());
-        order.setQuantity(request.getQuantity());
+        order.setSide(request.getOrderType().getSide());
+        order.setQuantity(java.math.BigDecimal.valueOf(request.getQuantity()));
         order.setPrice(request.getPrice());
         order.setStopPrice(request.getStopPrice());
         order.setTimeInForce(request.getTimeInForce());
@@ -32,25 +33,7 @@ public class OrderMapper {
      * Order entity -> OrderResponse dönüşümü
      */
     public static OrderResponse toResponse(Order order) {
-        return OrderResponse.builder()
-                .orderId(order.getOrderId())
-                .accountId(order.getAccountId())
-                .symbol(order.getSymbol())
-                .orderType(order.getOrderType())
-                .side(order.getSide())
-                .quantity(order.getQuantity())
-                .price(order.getPrice())
-                .filledQuantity(order.getFilledQuantity())
-                .remainingQuantity(order.getRemainingQuantity())
-                .averagePrice(order.getAveragePrice())
-                .status(order.getStatus())
-                .timeInForce(order.getTimeInForce())
-                .stopPrice(order.getStopPrice())
-                .expiryDate(order.getExpiryDate())
-                .createdAt(order.getCreatedAt())
-                .updatedAt(order.getUpdatedAt())
-                .trades(order.getTrades())  // trades için ayrı bir mapper gerekebilir
-                .build();
+        return OrderResponse.fromEntity(order);
     }
 
     /**
