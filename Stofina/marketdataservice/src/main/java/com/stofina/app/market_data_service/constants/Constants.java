@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 public final class Constants {
 
     private Constants() {
-       
+       throw new UnsupportedOperationException("Utility class");
     }
 
     public static final class Stocks {

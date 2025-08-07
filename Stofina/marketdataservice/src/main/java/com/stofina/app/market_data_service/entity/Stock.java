@@ -1,4 +1,4 @@
-package com.stofina.market_data_service.entity;
+package com.stofina.app.market_data_service.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Stock {
-    @Id
+       @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
