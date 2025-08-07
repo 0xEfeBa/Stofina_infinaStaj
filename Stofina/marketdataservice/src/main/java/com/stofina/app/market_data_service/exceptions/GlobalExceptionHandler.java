@@ -1,36 +1,88 @@
-package com.stofina.app.market_data_service.exception;
+package com.stofina.app.market_data_service.exceptions;
 
-import com.stofina.market_data_service.dto.response.ErrorResponse;
-import lombok.extern.slf4j.Slf4j;
+
+import com.stofina.app.market_data_service.constants.Constants;
+import com.stofina.app.market_data_service.dto.response.ErrorResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
-import java.time.LocalDateTime;
-
-@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-        ErrorResponse response = new ErrorResponse(
-                "Internal Server Error",
-                ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                LocalDateTime.now()
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(StockNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleStockNotFound(StockNotFoundException ex, WebRequest request) {
+        logger.warn("Stock not found: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            "STOCK_NOT_FOUND",
+            ex.getMessage(),
+            HttpStatus.NOT_FOUND.value(),
+            request.getDescription(false).replace("uri=", "")
         );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<ErrorResponse> handleGeneralException(StockNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(
-                "Not Found",
-                ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                LocalDateTime.now()
+    @ExceptionHandler(InvalidSymbolException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSymbol(InvalidSymbolException ex, WebRequest request) {
+        logger.warn("Invalid symbol: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            "INVALID_SYMBOL",
+            ex.getMessage(),
+            HttpStatus.BAD_REQUEST.value(),
+            request.getDescription(false).replace("uri=", "")
         );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-}
+
+    @ExceptionHandler(MarketClosedException.class)
+    public ResponseEntity<ErrorResponse> handleMarketClosed(MarketClosedException ex, WebRequest request) {
+        logger.info("Market closed request: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            "MARKET_CLOSED",
+            ex.getMessage(),
+            HttpStatus.SERVICE_UNAVAILABLE.value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, WebRequest request) {
+        logger.warn("Illegal argument: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            "INVALID_REQUEST",
+            ex.getMessage(),
+            HttpStatus.BAD_REQUEST.value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex, WebRequest request) {
+        logger.error("Unhandled exception: {}", ex.getMessage(), ex);
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            "INTERNAL_SERVER_ERROR",
+            Constants.ErrorMessages.INTERNAL_SERVER_ERROR,
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }}

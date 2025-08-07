@@ -1,4 +1,4 @@
-package com.stofina.app.market_data_service.entity;
+package com.stofina.market_data_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
