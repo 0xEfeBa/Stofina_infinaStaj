@@ -6,6 +6,7 @@ import axiosInstance from "@/config/axiosInstance";
 import { AppThunk } from "@/store";
 import { SliceGlobalModal } from "@/slice/common/sliceGlobalModal";
 import { SliceUser } from "@/slice/UserSlice";
+import i18n from "@/config/i18n";
 
 export const loginUser = (email: string, password: string):
     AppThunk<Promise<User | null>> =>
@@ -28,8 +29,8 @@ export const loginUser = (email: string, password: string):
                 dispatch(
                     SliceGlobalModal.actions.openModal({
                         modalType: "error",
-                        title: "Giriş Başarısız",
-                        message: data.message || "Lütfen bilgilerinizi kontrol ediniz.",
+                        title: i18n.t('auth.login.failed.title'),
+                        message: data.message || i18n.t('auth.login.failed.message'),
                     })
                 );
                 return null;
@@ -38,8 +39,8 @@ export const loginUser = (email: string, password: string):
             dispatch(
                 SliceGlobalModal.actions.openModal({
                     modalType: "error",
-                    title: "Sunucu Hatası",
-                    message: "Giriş yapılırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
+                    title: i18n.t('auth.login.serverError.title'),
+                    message: i18n.t('auth.login.serverError.message'),
                 })
             );
             return null;
