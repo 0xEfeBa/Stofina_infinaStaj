@@ -1,0 +1,149 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  font-family: 'Quicksand', sans-serif;
+  background-size: cover;
+  background-position: center;
+}
+
+.left {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  width: 320px;
+  height: 300px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+}
+
+.title {
+  font-size: 3.75rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 6px rgba(41, 41, 41, 0.5);
+  color: white;
+  text-align: center;
+  line-height: 1.2;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.title span {
+  display: block;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  margin-top: 8px;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.right {
+  width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.formContainer {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 40px;
+  width: 500px;
+  text-align: center;
+}
+
+.welcome {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.loginTitle {
+  margin-top: 8px;
+  font-weight: 600;
+  color: #813FB4;
+}
+
+.form {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  color: #4b5563;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #813FB4;
+  box-shadow: 0 0 0 2px #813FB4;
+}
+
+.passwordWrapper {
+  width: 100%;
+  position: relative;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.button {
+  width: 100%;
+  background-color: #813FB4;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.button:hover {
+  background-color: #653496;
+}
+
+.forgotPassword {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #813FB4;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
+}
+
+.version {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 24px;
+}
