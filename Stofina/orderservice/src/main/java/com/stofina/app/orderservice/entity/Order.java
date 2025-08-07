@@ -1,4 +1,4 @@
-package com.stofina.orderservice.entity;
+package com.stofina.app.orderservice.entity;
 
 import com.stofina.orderservice.enums.OrderSide;
 import com.stofina.orderservice.enums.OrderStatus;
@@ -12,121 +12,108 @@ import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.stofina.orderservice.enums.OrderSide;
+import com.stofina.orderservice.enums.OrderStatus;
+import com.stofina.orderservice.enums.OrderType;
+import com.stofina.orderservice.enums.TimeInForce;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "orders", indexes = {
-    @Index(name = "idx_account_status", columnList = "accountId, status"),
-    @Index(name = "idx_symbol_status", columnList = "symbol, status"),
-    @Index(name = "idx_created_at", columnList = "createdAt"),
-    @Index(name = "idx_tenant_symbol", columnList = "tenantId, symbol")
-})
 @Data
-@EqualsAndHashCode(of = "orderId")
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "orders")
 public class Order {
 
-    // CHECKPOINT 2.1 - Core Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
     @Column(nullable = false)
-    private Long tenantId;
+    private Long tenantId; // Hangi şirkete/ kullanıcıya ait olduğunu belirtir
 
     @Column(nullable = false)
-    private Long accountId;
+    private Long accountId; //Emri veren müşterinin id'si
 
     @Column(nullable = false, length = 10)
-    @Pattern(regexp = "^[A-Z]{4,6}$")
-    private String symbol;
+    private String symbol; // İşlem sembolü (örn: AAPL, BTCUSDT)
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderType orderType;
+    private OrderType orderType; // Emrin tipi (örn: LIMIT, MARKET, STOP_LOSS)
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderSide side;
+    private OrderSide side; // Emrin yönü (örn: BUY, SELL)
 
-    @Column(nullable = false, precision = 19, scale = 2)
-    @Positive
-    private BigDecimal quantity;
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal quantity; // Emrin miktarı (örn: 10.5 BTC, 100 AAPL)
 
     @Column(precision = 19, scale = 4)
-    @DecimalMin(value = "0.01")
-    private BigDecimal price;
-
-    @Column(precision = 19, scale = 2)
-    @PositiveOrZero
-    private BigDecimal filledQuantity = BigDecimal.ZERO;
+    private BigDecimal price; //Sadece LIMIT emirlerde geçerli olan limit fiyat
 
     @Column(precision = 19, scale = 4)
-    @PositiveOrZero
-    private BigDecimal averagePrice = BigDecimal.ZERO;
+    private BigDecimal filledQuantity = BigDecimal.ZERO; //Emir gerçekleşmeye başladıysa o ana kadar gerçekleşen miktar.
+
+    @Column(precision = 19, scale = 4)
+    private BigDecimal averagePrice; // Emir gerçekleştiğinde ortalama fiyatı tutar
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status = OrderStatus.NEW;
+    private OrderStatus status = OrderStatus.NEW; //NEW, ACTIVE, FILLED, CANCELLED, vb.
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TimeInForce timeInForce = TimeInForce.DAY;
+    private TimeInForce timeInForce; // Emrin geçerlilik süresi (örn: DAY, GTC, IOC)
 
     @Column(precision = 19, scale = 4)
-    @DecimalMin(value = "0.01")
-    private BigDecimal stopPrice;
+    private BigDecimal stopPrice; // Stop loss emirleri için tetikleme fiyatı
 
-    private LocalDateTime expiryDate;
+    private LocalDateTime expiryDate; // Emrin geçerlilik süresi dolma tarihi (örn: 2023-12-31T18:00:00)
 
-    @Column(length = 50)
-    @Pattern(regexp = "^[A-Z0-9_-]{1,50}$")
-    private String clientOrderId;
+    @Column(length = 64, unique = true)
+    private String clientOrderId; //Kullanıcının frontend üzerinden oluşturduğu özel emir ID’si
 
-    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @Version
-    private Long version;
+    private Integer version;
 
-    @Column(nullable = false)
-    private Boolean isBot = false;
+    private Boolean isBot = false; // Emri bir bot tarafından mı verildiğini belirtir
 
-    public BigDecimal getRemainingQuantity() {
-        if (quantity == null || filledQuantity == null) {
-            return BigDecimal.ZERO;
-        }
-        return quantity.subtract(filledQuantity);
+
+    public BigDecimal getRemainingQuantity() { // Emir miktarından gerçekleşen miktarı çıkararak kalan miktarı hesaplar
+        return quantity.subtract(filledQuantity != null ? filledQuantity : BigDecimal.ZERO);
     }
 
-    public boolean isFullyFilled() {
-        if (filledQuantity == null || quantity == null) {
-            return false;
-        }
-        return filledQuantity.compareTo(quantity) >= 0;
+    public boolean isFullyFilled() { // Emrin tamamen gerçekleşip gerçekleşmediğini kontrol eder
+        return filledQuantity != null && quantity != null && filledQuantity.compareTo(quantity) >= 0;
     }
 
-    public boolean canBeCancelled() {
-        return status != null && status.canCancel();
+    public boolean canBeCancelled() { // Emrin iptal edilebilir olup olmadığını kontrol eder
+        return status.canCancel();
     }
 
     public boolean canBeUpdated() {
-        return status != null && status.canUpdate();
+        return status.canUpdate();
     }
 
     @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        createdAt = now;
-        updatedAt = now;
-        
-        if (expiryDate == null && timeInForce != null) {
-            expiryDate = timeInForce.getDefaultExpiry();
-        }
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
     }
 
     @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
+
+}
 }

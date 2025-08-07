@@ -1,8 +1,10 @@
-package com.stofina.orderservice.enums;
+package com.stofina.app.orderservice.enums;
 
 public enum OrderType {
     LIMIT_BUY("Limit Alış", "Belirtilen fiyat veya daha düşüğünden alış"),
-    MARKET_BUY("Market Alış", "Piyasa fiyatından anlık alış"),  
+    LIMIT_SELL("Limit Satış", "Belirtilen fiyat veya daha yüksekten satış"),
+    MARKET_BUY("Market Alış", "Piyasa fiyatından anlık alış"),
+    MARKET_SELL("Market Satış", "Piyasa fiyatından anlık satış"),
     STOP_LOSS_SELL("Stop Loss Satış", "Zarar durdurma satış emri");
 
     private final String displayName;
