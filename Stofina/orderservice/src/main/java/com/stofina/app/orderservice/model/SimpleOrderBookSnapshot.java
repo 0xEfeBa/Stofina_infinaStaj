@@ -2,37 +2,38 @@ package com.stofina.app.orderservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class SimpleOrderBookSnapshot {
-    private String symbol;
-    private List<OrderLevel> bids;
-    private List<OrderLevel> asks;
-    private BigDecimal bestBid;
-    private BigDecimal bestAsk;
-    private BigDecimal spread;
-    private LocalDateTime timestamp;
-    private int totalBidQuantity;
-    private int totalAskQuantity;
+    
+    // CHECKPOINT 5.2 - WebSocket Ready Snapshot
+    private final String symbol;
+    private final List<OrderLevel> bids;
+    private final List<OrderLevel> asks;
+    private final BigDecimal bestBid;
+    private final BigDecimal bestAsk;
+    private final BigDecimal spread;
+    private final LocalDateTime lastUpdateTime;
+    private final int totalBidQuantity;
+    private final int totalAskQuantity;
     
     public boolean isEmpty() {
-        return (bids == null || bids.isEmpty()) && (asks == null || asks.isEmpty());
+        return (bids == null || bids.isEmpty()) && 
+               (asks == null || asks.isEmpty());
     }
     
     public boolean hasSpread() {
-        return bestBid != null && bestAsk != null;
+        return spread != null && spread.compareTo(BigDecimal.ZERO) > 0;
     }
     
     public int getTotalOrderCount() {
-        int bidCount = bids != null ? bids.size() : 0;
-        int askCount = asks != null ? asks.size() : 0;
+        int bidCount = bids != null ? bids.stream().mapToInt(OrderLevel::getOrderCount).sum() : 0;
+        int askCount = asks != null ? asks.stream().mapToInt(OrderLevel::getOrderCount).sum() : 0;
         return bidCount + askCount;
     }
 }

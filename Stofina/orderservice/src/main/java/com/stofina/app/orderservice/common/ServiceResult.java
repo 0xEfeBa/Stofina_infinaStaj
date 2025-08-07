@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ServiceResult<T> {
+public class ServiceResult<T>  {
     private boolean success;
     private String message;
     private T data;
@@ -34,7 +34,6 @@ public class ServiceResult<T> {
                 .message(message)
                 .build();
     }
-
     public HttpStatus getHttpStatus() {
         return success ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     }

@@ -1,5 +1,6 @@
 package com.stofina.app.orderservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.stofina.app.orderservice.enums.OrderSide;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DisplayOrder {
     
     // CHECKPOINT 4.1 - Display-Only Bot Order Model

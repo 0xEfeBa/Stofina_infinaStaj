@@ -1,9 +1,11 @@
 package com.stofina.app.orderservice.service.client.impl;
 
 
-import com.stofina.orderservice.config.MarketDataConfig;
-import com.stofina.orderservice.dto.response.external.PriceResponse;
-import com.stofina.orderservice.service.client.MarketDataClient;
+import com.stofina.app.orderservice.config.MarketDataConfig;
+import com.stofina.app.orderservice.dto.response.external.PriceResponse;
+import com.stofina.app.orderservice.service.KafkaPriceCache;
+import com.stofina.app.orderservice.service.client.MarketDataClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,40 +16,61 @@ import java.time.Duration;
 import java.util.List;
 
 
+@Slf4j
 @Service
 public class MarketDataClientImpl implements MarketDataClient {
 
     private final WebClient webClient;
     private final MarketDataConfig marketDataConfig;
     private final RedisTemplate<String, BigDecimal> redisTemplate;
+    private final KafkaPriceCache kafkaPriceCache;
 
-    public MarketDataClientImpl(WebClient webClient, MarketDataConfig marketDataConfig, RedisTemplate<String, BigDecimal> redisTemplate) {
+    public MarketDataClientImpl(WebClient webClient, MarketDataConfig marketDataConfig, 
+                                RedisTemplate<String, BigDecimal> redisTemplate, KafkaPriceCache kafkaPriceCache) {
         this.webClient = webClient;
         this.marketDataConfig = marketDataConfig;
         this.redisTemplate = redisTemplate;
+        this.kafkaPriceCache = kafkaPriceCache;
     }
 
     @Override
     public BigDecimal getCurrentPrice(String symbol) {
-        String endpoint = marketDataConfig.getEndpoints().get("price");
-        String url = endpoint.replace("{symbol}", symbol);
-
-        // Önce cacheden dene
+        // 1. Önce Kafka'dan gelen real-time fiyatı kontrol et
+        BigDecimal kafkaPrice = kafkaPriceCache.getCurrentPrice(symbol);
+        if (kafkaPrice != null) {
+            log.debug("Kafka cache'den fiyat alındı - symbol: {}, price: {}", symbol, kafkaPrice);
+            return kafkaPrice;
+        }
+        
+        // 2. Kafka'da yoksa Redis cache'i kontrol et
         BigDecimal cachedPrice = getCachedPrice(symbol);
         if (cachedPrice != null) {
+            log.debug("Redis cache'den fiyat alındı - symbol: {}, price: {}", symbol, cachedPrice);
             return cachedPrice;
         }
 
-        PriceResponse response = webClient.get()
-                .uri(url)
-                .retrieve()
-                .bodyToMono(PriceResponse.class)
-                .block(Duration.ofSeconds(5));
+        // 3. Son çare: HTTP API çağrısı (fallback)
+        log.warn("Kafka ve Redis cache'de fiyat bulunamadı, HTTP API'ye fallback - symbol: {}", symbol);
+        
+        String endpoint = marketDataConfig.getEndpoints().get("price");
+        String url = endpoint.replace("{symbol}", symbol);
 
-        if (response != null) {
-            setCachedPrice(symbol, response.getPrice());
-            return response.getPrice();
+        try {
+            PriceResponse response = webClient.get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToMono(PriceResponse.class)
+                    .block(Duration.ofSeconds(5));
+
+            if (response != null) {
+                setCachedPrice(symbol, response.getPrice());
+                log.info("HTTP API'den fiyat alındı - symbol: {}, price: {}", symbol, response.getPrice());
+                return response.getPrice();
+            }
+        } catch (Exception e) {
+            log.error("HTTP API çağrısı başarısız - symbol: {}, error: {}", symbol, e.getMessage());
         }
+        
         return null;
     }
 

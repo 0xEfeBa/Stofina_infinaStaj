@@ -1,10 +1,10 @@
-package com.stofina.orderservice.controller;
+package com.stofina.app.orderservice.controller;
 
-import com.stofina.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.orderservice.dto.request.OrderFilterRequest;
-import com.stofina.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.orderservice.dto.response.OrderResponse;
-import com.stofina.orderservice.service.OrderService;
+import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.app.orderservice.dto.request.OrderFilterRequest;
+import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.app.orderservice.dto.response.OrderResponse;
+import com.stofina.app.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

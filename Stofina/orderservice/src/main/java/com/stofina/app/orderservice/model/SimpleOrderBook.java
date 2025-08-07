@@ -1,7 +1,7 @@
-package com.stofina.orderservice.model;
+package com.stofina.app.orderservice.model;
 
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.enums.OrderSide;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.enums.OrderSide;
 import lombok.Getter;
 
 import java.math.BigDecimal;
