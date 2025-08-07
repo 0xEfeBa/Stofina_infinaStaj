@@ -1,0 +1,198 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  margin-top: 25px;
+}
+
+.form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 750px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formTitle {
+  font-size: 25px;
+  font-weight: 700;
+  text-align: center;
+  color: #189345;
+  margin-bottom: 15px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.formGroupRow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: #868686;
+  font-weight: 600;
+}
+
+.input, .select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4d4d4d;
+  transition: border-color 0.2s;
+}
+
+.input:focus, .select:focus {
+  border-color: #813FB4;
+  box-shadow: 0 0 0 2px rgba(129, 63, 180, 0.2);
+}
+
+.input[name="kodu"] {
+  text-transform: uppercase;
+}
+
+.submitButton {
+  width: 300px;
+  background-color: #813FB4;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+  margin: 20px auto 0 auto;
+  display: block;
+}
+
+.submitButton:hover {
+  background-color: #653496;
+}
+
+
+.topButtons {
+  display: flex;
+  width: 600px;
+  margin-bottom: 20px;
+  gap: 12px;
+  margin-left: -130px;
+}
+
+.secondaryButton {
+  background-color: #e5e7eb;
+  color: #494949;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.secondaryButton:hover {
+  background-color: #d1d5db;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 35px 35px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  height: 150px;
+}
+
+.modal p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.closeButton {
+  background: #813FB4;
+  color: white;
+  padding: 5px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.closeButton:hover {
+  background: #6d32a5;
+}
+
+.popup {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+  color: white;
+  max-width: 300px;
+}
+
+.popupSuccess {
+  background-color: #189345;
+}
+
+.popupError {
+  background-color: #e74c3c;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
