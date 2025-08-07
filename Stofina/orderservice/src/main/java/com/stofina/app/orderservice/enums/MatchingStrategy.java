@@ -1,4 +1,4 @@
-package com.stofina.orderservice.enums;
+package com.stofina.app.orderservice.enums;
 
 public enum MatchingStrategy {
     

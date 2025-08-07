@@ -39,7 +39,7 @@ public interface SimpleOrderBookManager {
     
     boolean isSymbolActive(String symbol);
     
-    // CHECKPOINT ENTEGRASYON 2.4 - Order Matching Methods
+    // CHECKPOINT ENTEGRASYON 2.1 - Matching methods
     List<Trade> matchOrder(Order newOrder);
     
     List<Order> getMatchingOrders(Order newOrder);

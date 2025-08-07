@@ -1,4 +1,4 @@
-package com.stofina.orderservice.entity;
+package com.stofina.app.orderservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

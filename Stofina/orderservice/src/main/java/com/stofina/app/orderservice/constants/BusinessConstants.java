@@ -1,4 +1,4 @@
-package com.stofina.orderservice.constants;
+package com.stofina.app.orderservice.constants;
 
 import java.math.BigDecimal;
 

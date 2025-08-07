@@ -1,4 +1,4 @@
-package com.stofina.orderservice.service;
+package com.stofina.app.orderservice.service;
 
 public interface ScheduledOrderBookService {
     

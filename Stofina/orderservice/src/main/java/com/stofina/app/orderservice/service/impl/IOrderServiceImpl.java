@@ -1,10 +1,10 @@
-package com.stofina.orderservice.service.impl;
+package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.orderservice.common.ServiceResult;
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.enums.OrderStatus;
-import com.stofina.orderservice.repository.OrderRepository;
-import com.stofina.orderservice.service.IOrderService;
+import com.stofina.app.orderservice.common.ServiceResult;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.enums.OrderStatus;
+import com.stofina.app.orderservice.repository.OrderRepository;
+import com.stofina.app.orderservice.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,14 +1,14 @@
-package com.stofina.orderservice.service.impl;
+package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.orderservice.constants.BusinessConstants;
-import com.stofina.orderservice.constants.LogMessages;
-import com.stofina.orderservice.constants.MockDataConstants;
-import com.stofina.orderservice.dto.MatchingResult;
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.model.DisplayOrder;
-import com.stofina.orderservice.service.DisplayOrderBookService;
-import com.stofina.orderservice.service.ScheduledOrderBookService;
-import com.stofina.orderservice.service.UserOrderMatchingEngine;
+import com.stofina.app.orderservice.constants.BusinessConstants;
+import com.stofina.app.orderservice.constants.LogMessages;
+import com.stofina.app.orderservice.constants.MockDataConstants;
+import com.stofina.app.orderservice.dto.MatchingResult;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.model.DisplayOrder;
+import com.stofina.app.orderservice.service.DisplayOrderBookService;
+import com.stofina.app.orderservice.service.ScheduledOrderBookService;
+import com.stofina.app.orderservice.service.UserOrderMatchingEngine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

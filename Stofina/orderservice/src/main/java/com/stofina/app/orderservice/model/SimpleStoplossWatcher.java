@@ -1,4 +1,4 @@
-package com.stofina.orderservice.model;
+package com.stofina.app.orderservice.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

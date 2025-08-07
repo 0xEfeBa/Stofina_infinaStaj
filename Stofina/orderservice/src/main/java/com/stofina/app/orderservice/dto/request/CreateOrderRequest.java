@@ -1,12 +1,10 @@
 package com.stofina.app.orderservice.dto.request;
-import com.stofina.app.orderservice.enums.OrderSide;
 import com.stofina.app.orderservice.enums.OrderType;
 import com.stofina.app.orderservice.enums.TimeInForce;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 
 @Data
 public class CreateOrderRequest {

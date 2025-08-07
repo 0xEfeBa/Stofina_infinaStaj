@@ -261,7 +261,7 @@ public class AlgorithmicMatchingServiceImpl implements AlgorithmicMatchingServic
         trade.setBuyAccountId(buyOrder.getAccountId());
         trade.setSellAccountId(sellOrder.getAccountId());
         trade.setTenantId(userOrder.getTenantId());
-        trade.setBotTrade(true); // Mark as algorithmic trade
+        trade.setIsBotTrade(true); // Mark as algorithmic trade
         
         return trade;
     }

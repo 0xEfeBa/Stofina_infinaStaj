@@ -1,8 +1,8 @@
-package com.stofina.orderservice.service;
+package com.stofina.app.orderservice.service;
 
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.model.DisplayOrder;
-import com.stofina.orderservice.model.SimpleOrderBookSnapshot;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.model.DisplayOrder;
+import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
 
 import java.math.BigDecimal;
 import java.util.List;

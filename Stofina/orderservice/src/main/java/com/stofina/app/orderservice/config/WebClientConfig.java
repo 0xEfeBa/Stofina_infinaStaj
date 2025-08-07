@@ -51,8 +51,9 @@ public class WebClientConfig {
         return webClientBuilder -> webClientBuilder
                 .defaultHeader("Content-Type", "application/json")
                 .filter((request, next) -> {
-                    log.info(" WebClient Request → {} {}", request.method(), request.url());
+                    log.info("📡 WebClient Request → {} {}", request.method(), request.url());
                     return next.exchange(request);
                 });
     }
 }
+

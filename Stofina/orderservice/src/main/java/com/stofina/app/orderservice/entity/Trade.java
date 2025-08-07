@@ -10,24 +10,20 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Entity
+@Table(name = "trades", indexes = {
+    @Index(name = "idx_account_executed", columnList = "buyAccountId, executedAt"),
+    @Index(name = "idx_account_executed_sell", columnList = "sellAccountId, executedAt"),
+    @Index(name = "idx_symbol_executed", columnList = "symbol, executedAt"),
+    @Index(name = "idx_buy_order", columnList = "buyOrderId"),
+    @Index(name = "idx_sell_order", columnList = "sellOrderId"),
+    @Index(name = "idx_tenant_symbol", columnList = "tenantId, symbol")
+})
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "trades")
+@EqualsAndHashCode(of = "tradeId")
 public class Trade {
 
+    // CHECKPOINT 2.2 - Trade Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tradeId;
@@ -51,37 +47,42 @@ public class Trade {
     private Long sellAccountId;
 
     @Column(nullable = false, precision = 19, scale = 4)
+    @NotNull
+    @Positive
     private BigDecimal price;
 
-    @Column(nullable = false, precision = 19, scale = 4)
+    @Column(nullable = false, precision = 19, scale = 2)
+    @NotNull
+    @Positive
     private BigDecimal quantity;
 
-    @Column(precision = 19, scale = 4)
-    private BigDecimal buyCommission; //Alıcının ödediği komisyon
+    @Column(nullable = false)
+    private Boolean isBotTrade = false;
 
-    @Column(precision = 19, scale = 4)
-    private BigDecimal sellCommission; //Satıcının ödediği komisyon
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime executedAt;
 
-    private boolean isBotTrade = false;
-
-    private LocalDateTime executedAt; // İşlemin gerçekleştiği zaman
-
-    @Column(length = 64, unique = true)
-    private String tradeRef; // Trade referans numarası, UUID formatında
-
+    @Column(nullable = false, unique = true, length = 36)
+    private String tradeRef;
 
     @PrePersist
-    public void onCreate() {
-        this.executedAt = LocalDateTime.now();
-        this.tradeRef = generateTradeRef();
+    protected void onCreate() {
+        executedAt = LocalDateTime.now();
+        if (tradeRef == null) {
+            tradeRef = generateTradeRef();
+        }
     }
 
-    public String generateTradeRef() {// Trade referans numarasını UUID formatında oluşturur
-        return UUID.randomUUID().toString();
+    public String generateTradeRef() {
+        String prefix = symbol != null ? symbol : "UNK";
+        String uuid = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        return "TRD_" + prefix + "_" + uuid;
     }
 
-    public BigDecimal getTradeAmount() { // İşlem tutarını hesaplar
+    public BigDecimal getTradeAmount() {
+        if (price == null || quantity == null) {
+            return BigDecimal.ZERO;
+        }
         return price.multiply(quantity);
     }
-
 }

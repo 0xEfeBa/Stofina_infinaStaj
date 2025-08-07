@@ -1,9 +1,9 @@
-package com.stofina.orderservice.mapper;
+package com.stofina.app.orderservice.mapper;
 
-import com.stofina.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.orderservice.dto.response.OrderResponse;
-import com.stofina.orderservice.entity.Order;
+import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.app.orderservice.dto.response.OrderResponse;
+import com.stofina.app.orderservice.entity.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

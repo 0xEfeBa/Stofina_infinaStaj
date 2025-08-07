@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 
 public interface UserOrderMatchingEngine {
     
+    // CHECKPOINT 4.2 - User Order Matching Engine Contract
+    
     boolean isWithinValidRange(Order userOrder, BigDecimal currentPrice);
     
     MatchingStrategy selectRandomStrategy();

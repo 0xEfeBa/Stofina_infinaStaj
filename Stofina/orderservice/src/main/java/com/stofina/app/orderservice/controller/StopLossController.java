@@ -1,4 +1,4 @@
-    package com.stofina.app.orderservice.controller;
+package com.stofina.app.orderservice.controller;
 
 import com.stofina.app.orderservice.common.ServiceResult;
 import com.stofina.app.orderservice.entity.Order;
@@ -6,6 +6,7 @@ import com.stofina.app.orderservice.service.IStopLossService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class StopLossController {
     }
 
     @PostMapping(CHECK)
-    public ResponseEntity<ServiceResult<List<Order>>> checkStopLossTriggers(@RequestParam("symbol") String symbol, @RequestParam("price") BigDecimal price
+    public ResponseEntity<ServiceResult<List<Order>>> checkStopLossTriggers (@RequestParam("symbol") String symbol, @RequestParam("price") BigDecimal price
     ) {
         ServiceResult<List<Order>> result = stopLossService.checkPrice(symbol, price);
         return ResponseEntity.status(result.getHttpStatus()).body(result);
@@ -48,4 +49,7 @@ public class StopLossController {
         ServiceResult<Boolean> result = stopLossService.remove(orderId);
         return ResponseEntity.status(result.getHttpStatus()).body(result);
     }
+
+
+
 }

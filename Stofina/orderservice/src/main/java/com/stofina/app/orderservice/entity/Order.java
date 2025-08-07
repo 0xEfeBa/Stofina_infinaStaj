@@ -1,106 +1,132 @@
 package com.stofina.app.orderservice.entity;
 
-
 import com.stofina.app.orderservice.enums.OrderSide;
 import com.stofina.app.orderservice.enums.OrderStatus;
 import com.stofina.app.orderservice.enums.OrderType;
 import com.stofina.app.orderservice.enums.TimeInForce;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "orders", indexes = {
+    @Index(name = "idx_account_status", columnList = "accountId, status"),
+    @Index(name = "idx_symbol_status", columnList = "symbol, status"),
+    @Index(name = "idx_created_at", columnList = "createdAt"),
+    @Index(name = "idx_tenant_symbol", columnList = "tenantId, symbol")
+})
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "orders")
+@EqualsAndHashCode(of = "orderId")
 public class Order {
 
+    // CHECKPOINT 2.1 - Core Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
     @Column(nullable = false)
-    private Long tenantId; // Hangi şirkete/ kullanıcıya ait olduğunu belirtir
+    private Long tenantId;
 
     @Column(nullable = false)
-    private Long accountId; //Emri veren müşterinin id'si
+    private Long accountId;
 
     @Column(nullable = false, length = 10)
-    private String symbol; // İşlem sembolü (örn: AAPL, BTCUSDT)
+    @Pattern(regexp = "^[A-Z]{4,6}$")
+    private String symbol;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderType orderType; // Emrin tipi (örn: LIMIT, MARKET, STOP_LOSS)
+    private OrderType orderType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderSide side; // Emrin yönü (örn: BUY, SELL)
+    private OrderSide side;
 
-    @Column(nullable = false, precision = 19, scale = 4)
-    private BigDecimal quantity; // Emrin miktarı (örn: 10.5 BTC, 100 AAPL)
-
-    @Column(precision = 19, scale = 4)
-    private BigDecimal price; //Sadece LIMIT emirlerde geçerli olan limit fiyat
+    @Column(nullable = false, precision = 19, scale = 2)
+    @Positive
+    private BigDecimal quantity;
 
     @Column(precision = 19, scale = 4)
-    private BigDecimal filledQuantity = BigDecimal.ZERO; //Emir gerçekleşmeye başladıysa o ana kadar gerçekleşen miktar.
+    @DecimalMin(value = "0.01")
+    private BigDecimal price;
+
+    @Column(precision = 19, scale = 2)
+    @PositiveOrZero
+    private BigDecimal filledQuantity = BigDecimal.ZERO;
 
     @Column(precision = 19, scale = 4)
-    private BigDecimal averagePrice; // Emir gerçekleştiğinde ortalama fiyatı tutar
+    @PositiveOrZero
+    private BigDecimal averagePrice = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status = OrderStatus.NEW; //NEW, ACTIVE, FILLED, CANCELLED, vb.
+    private OrderStatus status = OrderStatus.NEW;
 
     @Enumerated(EnumType.STRING)
-    private TimeInForce timeInForce; // Emrin geçerlilik süresi (örn: DAY, GTC, IOC)
+    @Column(nullable = false)
+    private TimeInForce timeInForce = TimeInForce.DAY;
 
     @Column(precision = 19, scale = 4)
-    private BigDecimal stopPrice; // Stop loss emirleri için tetikleme fiyatı
+    @DecimalMin(value = "0.01")
+    private BigDecimal stopPrice;
 
-    private LocalDateTime expiryDate; // Emrin geçerlilik süresi dolma tarihi (örn: 2023-12-31T18:00:00)
+    private LocalDateTime expiryDate;
 
-    @Column(length = 64, unique = true)
-    private String clientOrderId; //Kullanıcının frontend üzerinden oluşturduğu özel emir ID’si
+    @Column(length = 50)
+    @Pattern(regexp = "^[A-Z0-9_-]{1,50}$")
+    private String clientOrderId;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @Version
-    private Integer version;
+    private Long version;
 
-    private Boolean isBot = false; // Emri bir bot tarafından mı verildiğini belirtir
+    @Column(nullable = false)
+    private Boolean isBot = false;
 
-
-    public BigDecimal getRemainingQuantity() { // Emir miktarından gerçekleşen miktarı çıkararak kalan miktarı hesaplar
-        return quantity.subtract(filledQuantity != null ? filledQuantity : BigDecimal.ZERO);
+    public BigDecimal getRemainingQuantity() {
+        if (quantity == null || filledQuantity == null) {
+            return BigDecimal.ZERO;
+        }
+        return quantity.subtract(filledQuantity);
     }
 
-    public boolean isFullyFilled() { // Emrin tamamen gerçekleşip gerçekleşmediğini kontrol eder
-        return filledQuantity != null && quantity != null && filledQuantity.compareTo(quantity) >= 0;
+    public boolean isFullyFilled() {
+        if (filledQuantity == null || quantity == null) {
+            return false;
+        }
+        return filledQuantity.compareTo(quantity) >= 0;
     }
 
-    public boolean canBeCancelled() { // Emrin iptal edilebilir olup olmadığını kontrol eder
-        return status.canCancel();
+    public boolean canBeCancelled() {
+        return status != null && status.canCancel();
     }
 
     public boolean canBeUpdated() {
-        return status.canUpdate();
+        return status != null && status.canUpdate();
     }
 
     @PrePersist
-    public void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = this.createdAt;
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+        
+        if (expiryDate == null && timeInForce != null) {
+            expiryDate = timeInForce.getDefaultExpiry();
+        }
     }
 
     @PreUpdate
-    public void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

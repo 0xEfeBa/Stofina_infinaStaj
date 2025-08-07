@@ -1,7 +1,7 @@
-package com.stofina.orderservice.service;
+package com.stofina.app.orderservice.service;
 
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.entity.Trade;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.entity.Trade;
 
 import java.util.List;
 

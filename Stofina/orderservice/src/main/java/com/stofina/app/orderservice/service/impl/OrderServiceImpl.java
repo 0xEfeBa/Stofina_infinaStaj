@@ -1,25 +1,22 @@
-package com.stofina.orderservice.service.impl;
+package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.orderservice.dto.request.OrderFilterRequest;
-import com.stofina.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.orderservice.dto.response.OrderResponse;
-import com.stofina.orderservice.exception.OrderNotFoundException;
-import com.stofina.orderservice.mapper.OrderMapper;
-import com.stofina.orderservice.repository.OrderRepository;
-import com.stofina.orderservice.repository.TradeRepository;
-import com.stofina.orderservice.service.OrderService;
-import com.stofina.orderservice.service.ValidationService;
-import com.stofina.orderservice.service.AlgorithmicMatchingService;
-import com.stofina.orderservice.service.DisplayOrderBookService;
-import com.stofina.orderservice.service.SimpleOrderBookManager;
-import com.stofina.orderservice.service.client.MarketDataClient;
-
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.entity.Trade;
-import com.stofina.orderservice.enums.OrderStatus;
-import com.stofina.orderservice.enums.OrderType;
-import com.stofina.orderservice.service.IStopLossService;
+import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.app.orderservice.dto.request.OrderFilterRequest;
+import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.app.orderservice.dto.response.OrderResponse;
+import com.stofina.app.orderservice.exception.OrderNotFoundException;
+import com.stofina.app.orderservice.mapper.OrderMapper;
+import com.stofina.app.orderservice.repository.OrderRepository;
+import com.stofina.app.orderservice.service.OrderService;
+import com.stofina.app.orderservice.service.ValidationService;
+import com.stofina.app.orderservice.service.AlgorithmicMatchingService;
+import com.stofina.app.orderservice.service.DisplayOrderBookService;
+import com.stofina.app.orderservice.service.SimpleOrderBookManager;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.entity.Trade;
+import com.stofina.app.orderservice.enums.OrderStatus;
+import com.stofina.app.orderservice.enums.OrderType;
+import com.stofina.app.orderservice.service.IStopLossService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,10 +33,9 @@ import java.util.Map;
 @Slf4j
 public class OrderServiceImpl implements OrderService {
 
-    private final TradeRepository tradeRepository;
+    
     private final OrderRepository orderRepository;
     private final ValidationService validationService;
-    private final MarketDataClient marketDataClient;
     private final OrderMapper orderMapper;
     private final DisplayOrderBookService displayOrderBookService;
     private final SimpleOrderBookManager simpleOrderBookManager;

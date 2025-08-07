@@ -1,15 +1,15 @@
-package com.stofina.orderservice.service.impl;
+package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.entity.Trade;
-import com.stofina.orderservice.enums.OrderSide;
-import com.stofina.orderservice.enums.OrderStatus;
-import com.stofina.orderservice.model.SimpleOrderBook;
-import com.stofina.orderservice.model.SimpleOrderBookSnapshot;
-import com.stofina.orderservice.repository.OrderRepository;
-import com.stofina.orderservice.repository.TradeRepository;
-import com.stofina.orderservice.service.AlgorithmicMatchingService;
-import com.stofina.orderservice.service.SimpleOrderBookManager;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.entity.Trade;
+import com.stofina.app.orderservice.enums.OrderSide;
+import com.stofina.app.orderservice.enums.OrderStatus;
+import com.stofina.app.orderservice.model.SimpleOrderBook;
+import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
+import com.stofina.app.orderservice.repository.OrderRepository;
+import com.stofina.app.orderservice.repository.TradeRepository;
+import com.stofina.app.orderservice.service.AlgorithmicMatchingService;
+import com.stofina.app.orderservice.service.SimpleOrderBookManager;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -292,7 +292,7 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
         );
     }
     
-    private int calculateTotalQuantity(java.util.List<com.stofina.orderservice.model.OrderLevel> levels) {
+    private int calculateTotalQuantity(java.util.List<com.stofina.app.orderservice.model.OrderLevel> levels) {
         return levels != null ? 
             levels.stream().mapToInt(level -> level.getQuantity().intValue()).sum() : 0;
     }

@@ -1,13 +1,12 @@
-package com.stofina.orderservice.controller;
+package com.stofina.app.orderservice.controller;
 
-import com.stofina.orderservice.constants.ApiEndpoints;
-import com.stofina.orderservice.constants.MockDataConstants;
-import com.stofina.orderservice.dto.response.OrderBookResponse;
-import com.stofina.orderservice.model.SimpleOrderBookSnapshot;
-import com.stofina.orderservice.service.DisplayOrderBookService;
+import com.stofina.app.orderservice.constants.ApiEndpoints;
+import com.stofina.app.orderservice.constants.MockDataConstants;
+import com.stofina.app.orderservice.dto.response.OrderBookResponse;
+import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
+import com.stofina.app.orderservice.service.DisplayOrderBookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;

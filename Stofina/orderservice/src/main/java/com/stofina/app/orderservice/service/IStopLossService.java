@@ -1,7 +1,7 @@
 package com.stofina.app.orderservice.service;
 
-import com.stofina.orderservice.common.ServiceResult;
-import com.stofina.orderservice.entity.Order;
+import com.stofina.app.orderservice.common.ServiceResult;
+import com.stofina.app.orderservice.entity.Order;
 
 import java.math.BigDecimal;
 import java.util.List;

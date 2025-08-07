@@ -1,4 +1,4 @@
-package com.stofina.orderservice.config;
+package com.stofina.app.orderservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
