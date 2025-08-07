@@ -1,0 +1,66 @@
+package com.stofina.app.orderservice.controller;
+
+import com.stofina.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.orderservice.dto.request.OrderFilterRequest;
+import com.stofina.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.orderservice.dto.response.OrderResponse;
+import com.stofina.orderservice.service.OrderService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@Validated
+@RequestMapping("api/v1/orders")
+@RequiredArgsConstructor
+public class OrderController {
+
+    private final OrderService orderService;
+
+    @PostMapping
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request){
+        return ResponseEntity.ok(orderService.createOrder(request));
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.getOrder(orderId));
+    }
+
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> updateOrder(@PathVariable Long orderId,
+                                                     @RequestBody UpdateOrderRequest request) {
+        return ResponseEntity.ok(orderService.updateOrder(orderId, request));
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId) {
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<OrderResponse>> getOrders(@ModelAttribute OrderFilterRequest filter) {
+        return ResponseEntity.ok(orderService.getOrders(filter));
+    }
+
+    @GetMapping("/account/{accountId}")
+    public ResponseEntity<List<OrderResponse>> getOrdersByAccount(@PathVariable Long accountId) {
+        //orderService
+    }
+
+    @GetMapping("/symbol/{symbol}")
+    public ResponseEntity<List<OrderResponse>> getOrdersBySymbol(@PathVariable String symbol) {
+        return ResponseEntity.ok(orderService.getActiveOrdersBySymbol(symbol));
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<Map<String, Object>> validateOrder (@RequestBody CreateOrderRequest request) {
+        //orderService
+    }
+}
