@@ -1,4 +1,4 @@
-package com.stofina.app.market_data_service.service;
+package com.stofina.market_data_service.service;
 
 import com.stofina.market_data_service.dto.response.PriceResponse;
 import com.stofina.market_data_service.service.interfaces.IStatisticsService;
