@@ -1,4 +1,4 @@
-package com.stofina.orderservice.exception;
+package com.stofina.app.orderservice.exception;
 
 import lombok.Getter;
 import lombok.Setter;

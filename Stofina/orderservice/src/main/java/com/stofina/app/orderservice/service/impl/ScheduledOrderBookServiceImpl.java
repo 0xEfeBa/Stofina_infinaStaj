@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -33,8 +34,8 @@ public class ScheduledOrderBookServiceImpl implements ScheduledOrderBookService 
     private final AtomicBoolean scheduledTaskEnabled = new AtomicBoolean(true);
     private final Random random = new Random();
     
-    // Using MockDataConstants for current prices
-    private static final Map<String, BigDecimal> CURRENT_PRICES = MockDataConstants.INITIAL_PRICES;
+    // Using MockDataConstants for current prices (mutable copy)
+    private static final Map<String, BigDecimal> CURRENT_PRICES = new HashMap<>(MockDataConstants.INITIAL_PRICES);
     
     @Override
     @Scheduled(fixedDelay = BusinessConstants.SCHEDULED_TASK_DELAY_MS)
@@ -47,7 +48,7 @@ public class ScheduledOrderBookServiceImpl implements ScheduledOrderBookService 
         
         try {
             updateAllMarketPrices();
-            processActiveUserOrders();
+            // processActiveUserOrders(); // KAPATTIK! Artık AlgorithmicMatching kullanıyoruz
             refreshDisplayOrderBooks();
             
             log.info(LogMessages.SCHEDULED_MAINTENANCE_SUCCESS);

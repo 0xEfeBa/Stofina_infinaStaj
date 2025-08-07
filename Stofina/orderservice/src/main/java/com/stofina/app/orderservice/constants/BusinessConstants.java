@@ -1,4 +1,4 @@
-package com.stofina.app.orderservice.constants;
+package com.stofina.orderservice.constants;
 
 import java.math.BigDecimal;
 
@@ -10,7 +10,7 @@ public final class BusinessConstants {
     }
     
     // Order validation
-    public static final BigDecimal VALID_PRICE_RANGE_PERCENT = new BigDecimal("0.01"); // ±1%
+    public static final BigDecimal VALID_PRICE_RANGE_PERCENT = new BigDecimal("0.10"); // ±10%
     public static final BigDecimal WORSE_PRICE_OFFSET_PERCENT = new BigDecimal("0.02"); // 2% for NO_FILL
     
     // Strategy probabilities (must sum to 100)

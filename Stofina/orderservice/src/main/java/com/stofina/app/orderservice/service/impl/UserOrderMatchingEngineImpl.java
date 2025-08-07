@@ -1,16 +1,16 @@
-package com.stofina.orderservice.service.impl;
+package com.stofina.app.orderservice.service.impl;
 
-import com.stofina.orderservice.constants.BusinessConstants;
-import com.stofina.orderservice.constants.LogMessages;
-import com.stofina.orderservice.constants.MockDataConstants;
-import com.stofina.orderservice.dto.MatchingResult;
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.entity.Trade;
-import com.stofina.orderservice.enums.MatchingStrategy;
-import com.stofina.orderservice.enums.OrderSide;
-import com.stofina.orderservice.enums.OrderStatus;
-import com.stofina.orderservice.enums.OrderType;
-import com.stofina.orderservice.service.UserOrderMatchingEngine;
+import com.stofina.app.orderservice.constants.BusinessConstants;
+import com.stofina.app.orderservice.constants.LogMessages;
+import com.stofina.app.orderservice.constants.MockDataConstants;
+import com.stofina.app.orderservice.dto.MatchingResult;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.entity.Trade;
+import com.stofina.app.orderservice.enums.MatchingStrategy;
+import com.stofina.app.orderservice.enums.OrderSide;
+import com.stofina.app.orderservice.enums.OrderStatus;
+import com.stofina.app.orderservice.enums.OrderType;
+import com.stofina.app.orderservice.service.UserOrderMatchingEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -236,7 +236,7 @@ public class UserOrderMatchingEngineImpl implements UserOrderMatchingEngine {
     }
     
     private MatchingResult handleOutOfRangeOrder(Order userOrder, BigDecimal currentPrice) {
-        String reason = String.format("Order price %s is outside ±1%% range of current price %s", 
+        String reason = String.format("Order price %s is outside ±10%% range of current price %s", 
                                     userOrder.getPrice(), currentPrice);
         log.warn(LogMessages.ORDER_REJECTED_OUT_OF_RANGE, reason);
         return MatchingResult.outOfRange(reason);

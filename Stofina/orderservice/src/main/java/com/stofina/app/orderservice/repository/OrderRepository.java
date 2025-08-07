@@ -21,10 +21,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findBySymbolAndStatusIn(String symbol, List<OrderStatus> statuses);
 
-    @Query("")
+    @Query("SELECT o FROM Order o WHERE o.symbol = :symbol AND o.side = :side AND o.status IN ('ACTIVE', 'PARTIALLY_FILLED') ORDER BY o.price ASC, o.createdAt ASC")
     List<Order> findActiveOrdersForMatching(String symbol, OrderSide side);
 
-    @Query("")
+    @Query("SELECT o FROM Order o WHERE o.status = 'PENDING_TRIGGER' AND o.stopPrice IS NOT NULL")
     List<Order> findStopLossOrdersToCheck();
 
     Page<Order> findByTenantIdAndCreatedAtBetween(Long tenantId,
@@ -32,11 +32,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                                                   LocalDateTime end,
                                                   Pageable pageable);
 
-    @Query("")
+    @Query("SELECT o FROM Order o WHERE o.expiryDate < :now AND o.status IN ('NEW', 'ACTIVE', 'PARTIALLY_FILLED', 'PENDING_TRIGGER')")
     List<Order> findExpiredOrders(LocalDateTime now);
 
     @Modifying
     @Transactional
-    @Query("")
+    @Query("UPDATE Order o SET o.status = :newStatus, o.updatedAt = CURRENT_TIMESTAMP WHERE o.orderId = :orderId")
     int updateOrderStatus(Long orderId, OrderStatus newStatus);
 }

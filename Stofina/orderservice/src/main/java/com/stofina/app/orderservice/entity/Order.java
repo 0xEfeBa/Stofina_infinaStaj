@@ -1,21 +1,10 @@
 package com.stofina.app.orderservice.entity;
 
-import com.stofina.orderservice.enums.OrderSide;
-import com.stofina.orderservice.enums.OrderStatus;
-import com.stofina.orderservice.enums.OrderType;
-import com.stofina.orderservice.enums.TimeInForce;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import com.stofina.orderservice.enums.OrderSide;
-import com.stofina.orderservice.enums.OrderStatus;
-import com.stofina.orderservice.enums.OrderType;
-import com.stofina.orderservice.enums.TimeInForce;
+import com.stofina.app.orderservice.enums.OrderSide;
+import com.stofina.app.orderservice.enums.OrderStatus;
+import com.stofina.app.orderservice.enums.OrderType;
+import com.stofina.app.orderservice.enums.TimeInForce;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -114,6 +103,4 @@ public class Order {
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-}
 }

@@ -1,10 +1,10 @@
-package com.stofina.orderservice.dto.response;
+package com.stofina.app.orderservice.dto.response;
 
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.enums.OrderSide;
-import com.stofina.orderservice.enums.OrderStatus;
-import com.stofina.orderservice.enums.OrderType;
-import com.stofina.orderservice.enums.TimeInForce;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.enums.OrderSide;
+import com.stofina.app.orderservice.enums.OrderStatus;
+import com.stofina.app.orderservice.enums.OrderType;
+import com.stofina.app.orderservice.enums.TimeInForce;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.stofina.app.orderservice.model;
+package com.stofina.orderservice.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,6 +10,7 @@ public class SimpleStopLossWatcher {
     private BigDecimal triggerPrice; // 145₺
     private BigDecimal quantity;    // 100
     private Long accountId;         // 12345
+    private Long tenantId;          // Tenant ID
     private LocalDateTime createdAt;
     private LocalDateTime lastCheckAt;
     private int checkCount;

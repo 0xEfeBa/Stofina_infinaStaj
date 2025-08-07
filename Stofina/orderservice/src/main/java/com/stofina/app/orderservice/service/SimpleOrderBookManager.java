@@ -1,10 +1,12 @@
-package com.stofina.orderservice.service;
+package com.stofina.app.orderservice.service;
 
-import com.stofina.orderservice.entity.Order;
-import com.stofina.orderservice.model.SimpleOrderBook;
-import com.stofina.orderservice.model.SimpleOrderBookSnapshot;
+import com.stofina.app.orderservice.entity.Order;
+import com.stofina.app.orderservice.entity.Trade;
+import com.stofina.app.orderservice.model.SimpleOrderBook;
+import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 public interface SimpleOrderBookManager {
@@ -13,7 +15,7 @@ public interface SimpleOrderBookManager {
     
     void initializeOrderBook(String symbol);
     
-    boolean addOrder(Order order);
+    List<Trade> addOrder(Order order);
     
     boolean removeOrder(Long orderId, String symbol);
     
@@ -36,4 +38,9 @@ public interface SimpleOrderBookManager {
     int getTotalOrderCount(String symbol);
     
     boolean isSymbolActive(String symbol);
+    
+    // CHECKPOINT ENTEGRASYON 2.4 - Order Matching Methods
+    List<Trade> matchOrder(Order newOrder);
+    
+    List<Order> getMatchingOrders(Order newOrder);
 }

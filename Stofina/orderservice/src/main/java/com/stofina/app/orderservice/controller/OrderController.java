@@ -1,11 +1,12 @@
-package com.stofina.app.orderservice.controller;
+package com.stofina.orderservice.controller;
 
-import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
-import com.stofina.app.orderservice.dto.request.OrderFilterRequest;
-import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
-import com.stofina.app.orderservice.dto.response.OrderResponse;
-import com.stofina.app.orderservice.service.OrderService;
+import com.stofina.orderservice.dto.request.CreateOrderRequest;
+import com.stofina.orderservice.dto.request.OrderFilterRequest;
+import com.stofina.orderservice.dto.request.UpdateOrderRequest;
+import com.stofina.orderservice.dto.response.OrderResponse;
+import com.stofina.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,13 +19,19 @@ import java.util.Map;
 @Validated
 @RequestMapping("api/v1/orders")
 @RequiredArgsConstructor
+@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
 
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request){
-        return ResponseEntity.ok(orderService.createOrder(request));
+        log.info("🚀 LIFECYCLE-1: OrderController.createOrder() - ENTRY - symbol={}, orderType={}, quantity={}, price={}", 
+                 request.getSymbol(), request.getOrderType(), request.getQuantity(), request.getPrice());
+        OrderResponse response = orderService.createOrder(request);
+        log.info("🚀 LIFECYCLE-1: OrderController.createOrder() - EXIT - orderId={}, status={}", 
+                 response.getOrderId(), response.getStatus());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{orderId}")
@@ -51,7 +58,7 @@ public class OrderController {
 
     @GetMapping("/account/{accountId}")
     public ResponseEntity<List<OrderResponse>> getOrdersByAccount(@PathVariable Long accountId) {
-        //orderService
+        return ResponseEntity.ok(orderService.getOrdersByAccount(accountId));
     }
 
     @GetMapping("/symbol/{symbol}")
@@ -60,7 +67,7 @@ public class OrderController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<Map<String, Object>> validateOrder (@RequestBody CreateOrderRequest request) {
-        //orderService
+    public ResponseEntity<Map<String, Object>> validateOrder(@RequestBody CreateOrderRequest request) {
+        return ResponseEntity.ok(orderService.validateOrder(request));
     }
-}
+}  
