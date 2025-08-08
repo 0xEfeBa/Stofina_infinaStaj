@@ -25,13 +25,12 @@ public class MarketWebSocketController {
         headerAccessor.getSessionAttributes().put("subscribedSymbol", request.getSymbol());
 
         PriceUpdateMessage message = new PriceUpdateMessage(
-                request.getSymbol(),
-                250.00,
-                0.0,
-                0.0,
-                System.currentTimeMillis()
-        );
-        broadcastService.broadcastPriceUpdate(request.getSymbol(), message);
+              broadcastService.broadcastPriceUpdate(
+               BigDecimal.valueOf(250.00),
+                BigDecimal.valueOf(0.0),
+                BigDecimal.valueOf(0.0)
+        ));
+
     }
 
     @MessageMapping("/unsubscribe")

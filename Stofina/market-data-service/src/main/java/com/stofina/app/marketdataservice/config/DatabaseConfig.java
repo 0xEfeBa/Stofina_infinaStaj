@@ -11,6 +11,8 @@ import java.util.TimeZone;
 @Configuration
 public class DatabaseConfig {
 
+ //TODO: Database bilgileri geldikten sonra bu sınıfı güncell
+
     @PostConstruct
     public void init() {
         TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("Europe/Istanbul")));
