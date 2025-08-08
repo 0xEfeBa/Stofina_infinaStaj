@@ -20,8 +20,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const menuItems = [
     { label: t('dashboard.menu.dashboard'), href: "/dashboard", icon: "/menu-icon/kontrol.png" },
-    { label: t('dashboard.menu.trading'), href: "#", icon: "/menu-icon/trade.png" },
-    { label: t('dashboard.menu.stocks'), href: "#", icon: "/menu-icon/stock.png" },
+    { label: t('dashboard.menu.trading'), href: "/dashboard/trading", icon: "/menu-icon/trade.png" },
+    { label: t('dashboard.menu.stocks'), href: "/dashboard/stock", icon: "/menu-icon/stock.png" },
     { label: t('dashboard.menu.stockDefinition'), href: "/dashboard/stock-management", icon: "/menu-icon/add_stock.png" },
     { label: t('dashboard.menu.customerDefinition'), href: "/dashboard/bireysel", icon: "/menu-icon/add_customer.png" },
     { label: t('dashboard.menu.customerPortfolio'), href: "/dashboard/customer-portfolio", icon: "/menu-icon/basket.png" },

@@ -680,5 +680,124 @@
             "turkish": "Türkçe",
             "english": "English"
         }
+    },
+    "trading": {
+        "title": "STOCK TRADING",
+        "interface": {
+            "description": "Real-time order book and order placement",
+            "customerSearch": "Search Customer",
+            "customerName": "Customer Name: {{name}}",
+            "accountNumber": "Account No: {{number}}",
+            "totalBalance": "Total Balance: {{balance}}",
+            "totalCustomers": "Total Customers: {{count}}"
+        },
+        "orderForm": {
+            "title": "Place Order",
+            "stockSelection": "Stock Selection",
+            "stockSelectionRequired": "Stock Selection*",
+            "stocksLoading": "Loading stocks...",
+            "orderType": "Order Type",
+            "priceType": "Price Type",
+            "quantity": "Quantity",
+            "limitPrice": "Limit Price (₺)",
+            "stopPrice": "Stop Price (₺)",
+            "currentPrice": "Current price:",
+            "scheduledOrder": "Scheduled Order",
+            "submitOrder": "Place Order"
+        },
+        "orderTypes": {
+            "buy": "Buy",
+            "sell": "Sell",
+            "buyOrder": "BUY",
+            "sellOrder": "SELL",
+            "buyButton": "Place Buy Order",
+            "sellButton": "Place Sell Order"
+        },
+        "priceTypes": {
+            "market": "Market",
+            "limit": "Limit",
+            "stop": "Stop"
+        },
+        "orderBook": {
+            "buyOrders": "Buy Orders",
+            "sellOrders": "Sell Orders",
+            "price": "Price",
+            "quantity": "Quantity",
+            "total": "Total",
+            "spread": "Spread: {{value}}",
+            "loading": "Loading order book..."
+        },
+        "priceInfo": {
+            "opening": "Open",
+            "high": "High",
+            "low": "Low",
+            "volume": "Volume",
+            "live": "Live"
+        },
+        "connection": {
+            "allActive": "All connections active",
+            "partial": "Partial connection",
+            "problem": "Connection problem",
+            "connected": "Connected",
+            "connecting": "Connecting",
+            "reconnecting": "Reconnecting",
+            "error": "Error",
+            "disconnected": "Disconnected",
+            "status": "Connection Status",
+            "marketData": "Market Data",
+            "orderBook": "Order Book",
+            "tradeStream": "Trade Stream"
+        },
+        "messages": {
+            "submitting": "SUBMITTING ORDER...",
+            "success": "{{type}} order placed successfully!",
+            "orderId": "Order ID: {{id}}",
+            "invalidSymbol": "Stock selection is required",
+            "invalidQuantity": "Enter a valid quantity",
+            "invalidPrice": "Enter a valid price",
+            "marketPriceError": "Cannot get market price",
+            "unexpectedError": "An unexpected error occurred. Please try again."
+        }
+    },
+    "stock": {
+        "title": "STOCKS",
+        "list": {
+            "symbol": "Symbol",
+            "name": "Company",
+            "price": "Price",
+            "change": "Change",
+            "volume": "Volume",
+            "lastUpdate": "Last Update"
+        },
+        "filters": {
+            "all": "All",
+            "gainers": "Gainers",
+            "losers": "Losers",
+            "mostActive": "Most Active"
+        },
+        "search": {
+            "placeholder": "Search stocks (symbol or company name)"
+        }
+    },
+    "scheduledOrder": {
+        "title": "Scheduled Order",
+        "quickOptions": {
+            "in5Minutes": "In 5 Minutes",
+            "in15Minutes": "In 15 Minutes",
+            "in30Minutes": "In 30 Minutes",
+            "in1Hour": "In 1 Hour",
+            "marketOpen": "Market Open",
+            "marketClose": "Market Close",
+            "custom": "Custom"
+        },
+        "customTime": {
+            "selectDay": "Select day",
+            "selectTime": "Select time"
+        },
+        "validation": {
+            "timeRequired": "Time selection required for scheduled order",
+            "pastTime": "Cannot select past time",
+            "marketHours": "Cannot place orders outside market hours"
+        }
     }
 }

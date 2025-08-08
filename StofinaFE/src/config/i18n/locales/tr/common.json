@@ -679,5 +679,124 @@
             "turkish": "Türkçe",
             "english": "English"
         }
+    },
+    "trading": {
+        "title": "HİSSE ALIM SATIM",
+        "interface": {
+            "description": "Gerçek zamanlı emir defteri ve emir verme",
+            "customerSearch": "Müşteri Ara",
+            "customerName": "Müşteri Adı: {{name}}",
+            "accountNumber": "Hesap No: {{number}}",
+            "totalBalance": "Toplam Bakiye: {{balance}}",
+            "totalCustomers": "Toplam Müşteri: {{count}}"
+        },
+        "orderForm": {
+            "title": "Emir Ver",
+            "stockSelection": "Hisse Seçimi",
+            "stockSelectionRequired": "Hisse Seçimi*",
+            "stocksLoading": "Hisseler yükleniyor...",
+            "orderType": "İşlem Tipi",
+            "priceType": "Fiyat Tipi",
+            "quantity": "Adet",
+            "limitPrice": "Limit Fiyat (₺)",
+            "stopPrice": "Stop Fiyat (₺)",
+            "currentPrice": "Güncel fiyat:",
+            "scheduledOrder": "Zamansal Emir",
+            "submitOrder": "Emir Ver"
+        },
+        "orderTypes": {
+            "buy": "Alım",
+            "sell": "Satım",
+            "buyOrder": "ALIM",
+            "sellOrder": "SATIM",
+            "buyButton": "Alım Emri Ver",
+            "sellButton": "Satım Emri Ver"
+        },
+        "priceTypes": {
+            "market": "Piyasa",
+            "limit": "Limit",
+            "stop": "Stop"
+        },
+        "orderBook": {
+            "buyOrders": "Alım Emirleri",
+            "sellOrders": "Satım Emirleri",
+            "price": "Fiyat",
+            "quantity": "Adet",
+            "total": "Toplam",
+            "spread": "Spread: {{value}}",
+            "loading": "Order book yükleniyor..."
+        },
+        "priceInfo": {
+            "opening": "Açılış",
+            "high": "Yüksek",
+            "low": "Düşük",
+            "volume": "Hacim",
+            "live": "Live"
+        },
+        "connection": {
+            "allActive": "Tüm bağlantılar aktif",
+            "partial": "Kısmi bağlantı",
+            "problem": "Bağlantı problemi",
+            "connected": "Bağlı",
+            "connecting": "Bağlanıyor",
+            "reconnecting": "Yeniden bağlanıyor",
+            "error": "Hata",
+            "disconnected": "Bağlantı yok",
+            "status": "Bağlantı Durumu",
+            "marketData": "Market Data",
+            "orderBook": "Order Book",
+            "tradeStream": "Trade Stream"
+        },
+        "messages": {
+            "submitting": "EMİR GÖNDERİLİYOR...",
+            "success": "{{type}} emri başarıyla gönderildi!",
+            "orderId": "Emir ID: {{id}}",
+            "invalidSymbol": "Hisse seçimi yapılmalıdır",
+            "invalidQuantity": "Geçerli bir miktar girin",
+            "invalidPrice": "Geçerli bir fiyat girin",
+            "marketPriceError": "Piyasa fiyatı alınamıyor",
+            "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin."
+        }
+    },
+    "stock": {
+        "title": "HİSSE SENETLERİ",
+        "list": {
+            "symbol": "Sembol",
+            "name": "Şirket",
+            "price": "Fiyat",
+            "change": "Değişim",
+            "volume": "Hacim",
+            "lastUpdate": "Son Güncelleme"
+        },
+        "filters": {
+            "all": "Tümü",
+            "gainers": "Yükselenler",
+            "losers": "Düşenler",
+            "mostActive": "En Aktif"
+        },
+        "search": {
+            "placeholder": "Hisse ara (sembol veya şirket adı)"
+        }
+    },
+    "scheduledOrder": {
+        "title": "Zamansal Emir",
+        "quickOptions": {
+            "in5Minutes": "5 Dk İçinde",
+            "in15Minutes": "15 Dk İçinde",
+            "in30Minutes": "30 Dk İçinde",
+            "in1Hour": "1 Saat İçinde",
+            "marketOpen": "Piyasa Açılışında",
+            "marketClose": "Piyasa Kapanışında",
+            "custom": "Özel"
+        },
+        "customTime": {
+            "selectDay": "Gün seçin",
+            "selectTime": "Saat seçin"
+        },
+        "validation": {
+            "timeRequired": "Zamansal emir için zaman seçimi gereklidir",
+            "pastTime": "Geçmiş bir zaman seçilemez",
+            "marketHours": "Piyasa saatleri dışında emir verilemez"
+        }
     }
 }
