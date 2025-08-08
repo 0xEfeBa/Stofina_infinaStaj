@@ -22,10 +22,10 @@ public interface IPriceSimulationService {
     boolean isSimulationActive(String symbol);
     
    
-    com.stofina.app.market_data_service.entity.Stock getStockBySymbol(String symbol);
+    com.stofina.app.marketdataservice.entity.Stock getStockBySymbol(String symbol);
     
     
-    java.util.Map<String, com.stofina.app.market_data_service.entity.Stock> getAllStocks();
+    java.util.Map<String, com.stofina.app.marketdataservice.entity.Stock> getAllStocks();
     
     /**
      * Fiyatları default değerlere sıfırlar

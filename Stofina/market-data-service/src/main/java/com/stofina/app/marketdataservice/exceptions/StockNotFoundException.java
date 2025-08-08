@@ -1,4 +1,4 @@
-package com.stofina.market_data_service.exception;
+package com.stofina.app.marketdataservice.exceptions;
 
 
 public class StockNotFoundException extends RuntimeException {
