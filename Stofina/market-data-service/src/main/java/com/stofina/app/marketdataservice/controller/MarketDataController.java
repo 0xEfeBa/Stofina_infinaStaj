@@ -130,6 +130,26 @@ public class MarketDataController {
         Map<String, Object> dailyStats = createDailyStatsResponse(symbol);
         return ResponseEntity.ok(dailyStats);
     }
+    @GetMapping("/symbols/{symbol}")
+    public ResponseEntity<Map<String, Object>> getStockBySymbol(@PathVariable String symbol) {
+        Stock stock = priceSimulationService.getStockBySymbol(symbol.toUpperCase());
+
+        if (stock == null) {
+            throw new StockNotFoundException(symbol, Constants.ErrorMessages.STOCK_NOT_FOUND);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("symbol", stock.getSymbol());
+        response.put("companyName", stock.getCompanyName());
+        response.put("currentPrice", stock.getCurrentPrice());
+        response.put("defaultPrice", stock.getDefaultPrice());
+        response.put("dailyHigh", stock.getDailyHigh());
+        response.put("dailyLow", stock.getDailyLow());
+        response.put("previousClose", stock.getPreviousClose());
+        response.put("lastUpdated", stock.getLastUpdated());
+
+        return ResponseEntity.ok(response);
+    }
 
     // Helper methods
     private BigDecimal getCachedPrice(String cacheKey) {

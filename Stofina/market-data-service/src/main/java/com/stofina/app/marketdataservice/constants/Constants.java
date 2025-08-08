@@ -121,6 +121,7 @@ public final class Constants {
     public static final class Validation {
         public static final int MAX_SYMBOL_LENGTH = 10;
         public static final int MIN_SYMBOL_LENGTH = 3;
+        public static final int MAX_SYMBOLS_PER_REQUEST = 10;
         public static final String SYMBOL_PATTERN = "^[A-Z]+$";
         public static final BigDecimal MIN_PRICE = new BigDecimal("0.01");
         public static final BigDecimal MAX_PRICE = new BigDecimal("99999.99");
