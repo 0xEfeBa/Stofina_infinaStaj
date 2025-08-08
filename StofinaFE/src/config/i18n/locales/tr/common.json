@@ -189,7 +189,7 @@
             "noData": "Kullanıcı bulunamadı."
         },
         "messages": {
-            "formSubmitted": "Form başarıyla gönderildi!",
+            "formSubmitted": "Kullanıcı başarıyla oluşturudu!",
             "validationErrors": {
                 "firstNameRequired": "Ad alanı zorunludur.",
                 "firstNameMaxLength": "Ad 30 karakterden uzun olamaz.",

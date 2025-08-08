@@ -20,10 +20,23 @@ export default function CreatePasswordPage() {
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
 
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>/?]).{8,16}$/;
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!newPassword || !confirmPassword) {
+      setError("Lütfen tüm alanları doldurun.");
+      return;
+    }
+
+    if (!passwordRegex.test(newPassword)) {
+      setError("Şifre belirtilen kurallara uymuyor.");
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       setError("Şifreler eşleşmiyor.");
@@ -44,6 +57,14 @@ export default function CreatePasswordPage() {
     }
   };
 
+  const validations = [
+    { label: "En az 1 büyük harf", valid: /[A-Z]/.test(newPassword) },
+    { label: "En az 1 küçük harf", valid: /[a-z]/.test(newPassword) },
+    { label: "En az 1 rakam", valid: /\d/.test(newPassword) },
+    { label: "En az 1 özel karakter", valid: /[!@#$%^&*()_+[\]{};':"\\|,.<>/?]/.test(newPassword) },
+    { label: "En az 8, en fazla 16 karakter", valid: /^.{8,16}$/.test(newPassword) },
+  ];
+
   return (
     <div className={`${quicksand.className} ${styles.container}`}>
       <div className={styles.card}>
@@ -57,7 +78,6 @@ export default function CreatePasswordPage() {
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Enter your new password"
               className={styles.input}
-              required
             />
             <img
               src={showPassword ? "/eye.png" : "/eye-off.png"}
@@ -74,7 +94,6 @@ export default function CreatePasswordPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your new password"
               className={styles.input}
-              required
             />
             <img
               src={showConfirmPassword ? "/eye.png" : "/eye-off.png"}
@@ -83,6 +102,15 @@ export default function CreatePasswordPage() {
               onClick={() => setShowConfirmPassword((prev) => !prev)}
             />
           </div>
+
+          {/* Şifre kuralları */}
+          <ul className={styles.rules}>
+            {validations.map((rule, idx) => (
+              <li key={idx} className={rule.valid ? styles.valid : styles.invalid}>
+                {rule.label}
+              </li>
+            ))}
+          </ul>
 
           <button type="submit" className={styles.submitButton}>
             Create
