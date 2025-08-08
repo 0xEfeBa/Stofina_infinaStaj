@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 public final class Constants {
 
     private Constants() {
-       throw new UnsupportedOperationException("Utility class");
+        // Prevent instantiation
     }
 
     public static final class Stocks {
@@ -79,6 +79,7 @@ public final class Constants {
         public static final int SESSION_TTL_SECONDS = 3600;
         public static final int STATS_TTL_SECONDS = 86400;
 
+
         private Cache() {
         }
     }
@@ -87,7 +88,7 @@ public final class Constants {
         public static final String ENDPOINT = "/ws";
         public static final String TOPIC_PREFIX = "/topic";
         public static final String APP_PREFIX = "/app";
-        public static final String PRICE_TOPIC = "/topic/prices";
+        public static final String PRICE_TOPIC = "/topic/market-data";
         public static final String MARKET_STATUS_TOPIC = "/topic/market-status";
         public static final String SYMBOL_TOPIC_PREFIX = "/topic/prices/";
         public static final String CONNECTION_TOPIC = "/topic/connections";

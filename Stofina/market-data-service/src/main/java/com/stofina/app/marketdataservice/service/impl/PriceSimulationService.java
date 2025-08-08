@@ -2,16 +2,13 @@ package com.stofina.app.marketdataservice.service.impl;
 
 import com.stofina.app.marketdataservice.constants.Constants;
 import com.stofina.app.marketdataservice.entity.Stock;
-import com.stofina.app.marketdataservice.repository.StockRepository;
-import com.stofina.app.marketdataservice.service.IMarketHoursService;
-import com.stofina.app.marketdataservice.service.IPriceSimulationService;
-import com.stofina.app.marketdataservice.service.IWebSocketBroadcastService;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,17 +16,17 @@ import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import jakarta.annotation.PostConstruct;
 
 @Service
-public class PriceSimulationServiceImpl implements IPriceSimulationService {
+public class PriceSimulationService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PriceSimulationServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PriceSimulationService.class);
     private final SecureRandom random = new SecureRandom(); 
     
     // In-memory stock storage (thread-safe)
@@ -41,10 +38,10 @@ public class PriceSimulationServiceImpl implements IPriceSimulationService {
     // StockRepository kaldırıldı - artık database yok
 
     @Autowired
-    private IMarketHoursService marketHoursService;
+    private MarketHoursService marketHoursService;
     
     @Autowired
-    private IWebSocketBroadcastService webSocketBroadcastService;
+    private WebSocketBroadcastService webSocketBroadcastService;
 
     @PostConstruct
     public void initializeStocks() {
@@ -94,7 +91,7 @@ public class PriceSimulationServiceImpl implements IPriceSimulationService {
     public void updateAllStockPrices() {
         // Market saatleri kontrolü
         if (!marketHoursService.isMarketOpen()) {
-            logger.debug("Market closed - price updates paused");
+            logger.debug("Market closed - price updates paused. Status: {}", marketHoursService.getMarketStatus());
             return;
         }
         
@@ -261,71 +258,17 @@ public class PriceSimulationServiceImpl implements IPriceSimulationService {
             }
             
             // GERÇEK WebSocket broadcast - tüm client'lara gönder
-            com.stofina.app.marketdataservice.dto.websocket.PriceUpdateMessage message = 
-                new com.stofina.app.marketdataservice.dto.websocket.PriceUpdateMessage(
-                    stock.getSymbol(), 
-                    currentPrice, 
-                    changeAmount, 
-                    changePercent, 
-                    java.time.LocalDateTime.now(), 
-                    "PRICE_UPDATE"
-                );
-            webSocketBroadcastService.broadcastPriceUpdate(stock.getSymbol(), message);
+            webSocketBroadcastService.broadcastPriceUpdate(
+                stock.getSymbol(), 
+                currentPrice, 
+                changeAmount, 
+                changePercent
+            );
             
             logger.debug("Broadcasted {} - Price: {}, Change: {}%", 
                 stock.getSymbol(), currentPrice, changePercent);
         }
         
         logger.info("WebSocket price broadcast completed for {} stocks", stocksInMemory.size());
-    }
-
-    // Interface metodlarını implement et
-    @Override
-    public void startPriceSimulation(String symbol) {
-        logger.info("Starting price simulation for symbol: {}", symbol);
-        // Simülasyon zaten sürekli çalışıyor, bu metod sadece log için
-    }
-
-    @Override
-    public void stopPriceSimulation(String symbol) {
-        logger.info("Stopping price simulation for symbol: {}", symbol);
-        // Simülasyonu durdurma işlemi - şimdilik sadece log
-    }
-
-    @Override
-    public void stopAllSimulations() {
-        logger.info("Stopping all price simulations");
-        // Tüm simülasyonları durdurma işlemi - şimdilik sadece log
-    }
-
-    @Override
-    public com.stofina.app.marketdataservice.dto.response.PriceResponse getSimulatedPrice(String symbol) {
-        Stock stock = stocksInMemory.get(symbol.toUpperCase());
-        if (stock != null) {
-            return new com.stofina.app.marketdataservice.dto.response.PriceResponse(
-                stock.getSymbol(), 
-                stock.getCurrentPrice().doubleValue(), 
-                System.currentTimeMillis()
-            );
-        }
-        return null;
-    }
-
-    @Override
-    public List<com.stofina.app.marketdataservice.dto.response.PriceResponse> getAllSimulatedPrices() {
-        List<com.stofina.app.marketdataservice.dto.response.PriceResponse> prices = new ArrayList<>();
-        for (Stock stock : stocksInMemory.values()) {
-            prices.add(new com.stofina.app.marketdataservice.dto.response.PriceResponse(
-                stock.getSymbol(), 
-                stock.getCurrentPrice().doubleValue(), 
-                System.currentTimeMillis()
-            ));
-        }
-        return prices;
-    }
-
-    @Override
-    public boolean isSimulationActive(String symbol) {
-        return stocksInMemory.containsKey(symbol.toUpperCase());
     }
 }
