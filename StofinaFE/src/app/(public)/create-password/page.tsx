@@ -1,6 +1,6 @@
 "use client";
 import { Quicksand } from "next/font/google";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 import axios from "axios";
 import styles from "./CreatePasswordPage.module.css";
@@ -10,6 +10,7 @@ const quicksand = Quicksand({ subsets: ["latin"], weight: ["400", "600", "700"] 
 export default function CreatePasswordPage() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const router = useRouter();
 
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -44,13 +45,18 @@ export default function CreatePasswordPage() {
     }
 
     try {
-      await axios.post("http://localhost:8080/api/v1/users/create-password", {
+      await axios.put("http://localhost:9002/api/v1/users/create-password", {
         token,
         newPassword,
       });
+
       setSuccess("Şifre başarıyla oluşturuldu!");
       setNewPassword("");
       setConfirmPassword("");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
     } catch (err) {
       console.error(err);
       setError("Şifre oluştururken hata oluştu.");

@@ -9,36 +9,56 @@ const quicksand = Quicksand({ subsets: ["latin"], weight: ["400", "600", "700"] 
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccessMsg("");
 
-    if (!username.trim()) {
-      setError("Kullanıcı adı boş bırakılamaz");
+    if (!email.trim()) {
+      setError("Email boş bırakılamaz");
       return;
     }
-
     if (!password) {
       setError("Parola boş bırakılamaz");
       return;
     }
 
-    if (username === "admin" && password === "1234") {
-      setLoading(true);
-      setSuccessMsg("Giriş başarılı, yönlendiriliyorsunuz...");
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:9002/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
+      if (!res.ok) {
+        throw new Error("Email veya şifre yanlış");
+      }
+
+      const data = await res.json();
+
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data.userDto));
+
+      setSuccessMsg("Giriş başarılı, yönlendiriliyorsunuz...");
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
-    } else {
-      setError("Kullanıcı adı veya şifre yanlış");
+
+    } catch (err: any) {
+      setError(err.message || "Giriş sırasında hata oluştu");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,10 +86,10 @@ export default function LoginPage() {
           <form className={styles.form} onSubmit={handleSubmit}>
             <input
               type="text"
-              placeholder="Kullanıcı Adı"
+              placeholder="Email"
               className={styles.input}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
             />
 
@@ -95,8 +115,8 @@ export default function LoginPage() {
               {loading ? "Giriş Yapılıyor..." : "GİRİŞ YAP"}
             </button>
 
-            {error && <p style={{ color: "red"}}>{error}</p>}
-            {successMsg && <p style={{ color: "green"}}>{successMsg}</p>}
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            {successMsg && <p style={{ color: "green" }}>{successMsg}</p>}
 
             <a href="#" className={styles.forgotPassword}>
               PAROLAMI UNUTTUM
