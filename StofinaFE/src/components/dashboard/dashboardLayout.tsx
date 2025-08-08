@@ -10,39 +10,37 @@ const quicksand = Quicksand({ subsets: ["latin"], weight: ["400", "600", "700"] 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Ayarlar açık mı kapalı mı
-  const [isUserOpen, setIsUserOpen] = useState(false); // Kullanıcı dropdown açık mı kapalı mı
-  const settingsRef = useRef<HTMLDivElement>(null); // Ayarlar dropdown'ının referansı
-  const userRef = useRef<HTMLDivElement>(null); // Kullanıcı dropdown'ının referansı
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isUserOpen, setIsUserOpen] = useState(false);
+  const settingsRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
   const { t, i18n } = useTranslation();
 
   const path = usePathname();
 
-  // Menü öğelerini dinamik olarak oluştur
   const menuItems = [
-    { label: t('dashboard.menu.dashboard'), href: "#", icon: "/menu-icon/trade.png" },
+    { label: t('dashboard.menu.dashboard'), href: "/dashboard", icon: "/menu-icon/kontrol.png" },
     { label: t('dashboard.menu.trading'), href: "#", icon: "/menu-icon/trade.png" },
     { label: t('dashboard.menu.stocks'), href: "#", icon: "/menu-icon/stock.png" },
     { label: t('dashboard.menu.stockDefinition'), href: "/dashboard/stock-management", icon: "/menu-icon/add_stock.png" },
     { label: t('dashboard.menu.customerDefinition'), href: "/dashboard/bireysel", icon: "/menu-icon/add_customer.png" },
     { label: t('dashboard.menu.customerPortfolio'), href: "/dashboard/customer-portfolio", icon: "/menu-icon/basket.png" },
     { label: t('dashboard.menu.customerAccountManagement'), href: "/dashboard/customer-management", icon: "/menu-icon/wallet.png" },
-    { label: t('dashboard.menu.balanceAndStockManagement'), href: "/dashboard/stock-management", icon: "/menu-icon/balance.png" },
+    { label: t('dashboard.menu.balanceAndStockManagement'), href: "#", icon: "/menu-icon/balance.png" },
     { label: t('dashboard.menu.orderTracking'), href: "/dashboard/order-tracking", icon: "/menu-icon/order.png" },
     { label: t('dashboard.menu.reporting'), href: "/dashboard/report", icon: "/menu-icon/report.png" },
     { label: t('dashboard.menu.userManagement'), href: "/dashboard/user-management", icon: "/menu-icon/portfolio.png" },
-    { label: t('dashboard.menu.transfer'), href: "/dashboard/transfer", icon: "/menu-icon/trade.png" }
+    { label: t('dashboard.menu.transfer'), href: "/dashboard/transfer", icon: "/menu-icon/virman.png" }
   ];
 
   useEffect(() => {
-    setCurrentTime(new Date()); // ilk değer
+    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Dropdown dışına tıklandığında kapatma
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
@@ -65,7 +63,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   const handleLogout = () => {
-    // Çıkış işlemi burada yapılacak
     console.log('Çıkış yapılıyor...');
     setIsUserOpen(false);
   };
@@ -76,14 +73,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className={`${styles.container} ${quicksand.className}`}>
-      {/* ✅ ÜST HEADER */}
+      {/* ÜST HEADER */}
       <header className={styles.header} style={{ fontFamily: quicksand.style.fontFamily }}>
         <img src="/logo.png" alt="Logo" className={styles.logo} />
         <h1 className="text-xl font-semibold mr-20 mt-1">{t('dashboard.header.title')}</h1>
 
         {/* Kullanıcı Bilgisi */}
         <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', gap: 12 }}>
-          {/* Kullanıcı Dropdown */}
           <div className={styles.userDropdown} ref={userRef}>
             <button
               className={`${styles.userButton} ${isUserOpen ? styles.active : ''}`}
@@ -93,7 +89,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <img src="/account.png" alt="Account" className={styles.userIcon} />
               <span className="font-medium">{t('dashboard.header.userName')}</span>
             </button>
-            {/* Kullanıcı Dropdown İçeriği */}
             {isUserOpen && (
               <div className={styles.dropdownMenu}>
                 <button
@@ -107,7 +102,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}
           </div>
 
-          {/* Ayarlar Dropdown */}
           <div className={styles.settingsDropdown} ref={settingsRef}>
             <button
               className={`${styles.settingsButton} ${isSettingsOpen ? styles.active : ''}`}
@@ -117,7 +111,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <img src="/assets/icons/settings.png" alt={t('dashboard.header.settings')} className={styles.userIcon} />
               <span className="font-medium">{t('dashboard.header.settings')}</span>
             </button>
-            {/* Ayarlar Dropdown İçeriği*/}
             {isSettingsOpen && (
               <div className={styles.dropdownMenu}>
                 <div className={styles.dropdownHeader}>
@@ -156,7 +149,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        {/* 📆 Tarih & Saat */}
+        {/* Tarih & Saat */}
         <div className={styles.dateTimeBox}>
           <p className={styles.date}>
             {currentTime
@@ -174,9 +167,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      {/* HEADER ALTINDAKİ ANA ALAN */}
       <div className="flex flex-1 pt-20">
-        {/* SOL YAN MENÜ */}
         <aside className={styles.sidebar}>
           <div className={styles.searchContainer}>
             <input
@@ -188,10 +179,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               autoComplete="off"
             />
             {searchTerm && (
-              <nav className={styles.nav} style={{ marginTop: "27.5px" }}>
+              <nav className={styles.nav} style={{ marginTop: "12px" }}>
                 {filteredItems.length > 0 ? (
                   filteredItems.map((item) => {
-                    const isActive = path.endsWith(item.href) // örn: "/dashboard/order-tracking"
+                    const isActive = path.endsWith(item.href)
                     return (
                       <a key={item.label} href={item.href} className={`${path.endsWith(item.href) ? 'bg-[#813FB4]/10' : ''}`}>
                         <img src={item.icon} alt={item.label} className="w-6 h-6" />
@@ -219,8 +210,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </nav>
           )}
         </aside>
-
-        {/* ANA İÇERİK */}
         <main className={styles.main}>{children}</main>
       </div>
     </div>
