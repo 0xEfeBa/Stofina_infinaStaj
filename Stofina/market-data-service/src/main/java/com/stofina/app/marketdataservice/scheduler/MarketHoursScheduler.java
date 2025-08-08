@@ -1,9 +1,15 @@
 package com.stofina.app.marketdataservice.scheduler;
 
 import com.stofina.app.marketdataservice.constants.Constants;
+import com.stofina.app.marketdataservice.dto.response.StockResponse;
+import com.stofina.app.marketdataservice.entity.Stock;
+import com.stofina.app.marketdataservice.kafka.MarketDataProducer;
 import com.stofina.app.marketdataservice.service.IMarketHoursService;
 import com.stofina.app.marketdataservice.service.IPriceSimulationService;
 import com.stofina.app.marketdataservice.service.IWebSocketBroadcastService;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +33,9 @@ public class MarketHoursScheduler {
 
     @Autowired
     private IPriceSimulationService priceSimulationService;
+
+    @Autowired
+    private MarketDataProducer marketDataProducer;
 
     @Scheduled(cron = "0 0 9 * * MON-FRI", zone = "Europe/Istanbul")
     public void preMarketOpen() {
@@ -137,25 +146,24 @@ public class MarketHoursScheduler {
         }
     }
 
-    // FIYAT GÜNCELLEMESİ: Sadece market saatleri içinde (09:30-18:00 Pazartesi-Cuma)
-    @Scheduled(cron = "*/20 * 9-17 * * MON-FRI", zone = "Europe/Istanbul")
+    // FIYAT GÜNCELLEMESİ: TEST MODU - Her 20 saniyede çalışır (Market saati kontrolü KAPALI)
+    @Scheduled(cron = "*/20 * * * * *", zone = "Europe/Istanbul")
     public void updatePricesEvery20Seconds() {
-        if (marketHoursService.isMarketOpen()) {
-            logger.debug("Piyasa saatlerinde fiyat güncellemesi başladı");
+        logger.debug("Fiyat güncellemesi başladı (Market saati kontrolü inaktif)");
+        
+        try {
+            // 1. Algoritma ile fiyatları güncelle (Brownian Motion)
+            priceSimulationService.simulateAllPrices();
             
-            try {
-                // 1. Algoritma ile fiyatları güncelle (Brownian Motion)
-                priceSimulationService.simulateAllPrices();
-                
-                // 2. Güncellenmiş fiyatları WebSocket ile broadcast et
-                priceSimulationService.broadcastCurrentPrices();
-                
-                logger.debug("Fiyat güncellemesi ve broadcast tamamlandı");
-            } catch (Exception e) {
-                logger.error("Fiyat güncelleme hatası: {}", e.getMessage(), e);
-            }
-        } else {
-            logger.trace("Market kapalı - fiyat güncellemesi yapılmıyor");
+            // 2. Güncellenmiş fiyatları WebSocket ile broadcast et
+            priceSimulationService.broadcastCurrentPrices();
+            
+            // 3. KAFKA: Güncellenmiş fiyatları Order Service'e gönder
+            sendUpdatedPricesToKafka();
+            
+            logger.info("Fiyat güncellemesi, WebSocket broadcast ve Kafka publish tamamlandı");
+        } catch (Exception e) {
+            logger.error("Fiyat güncelleme hatası: {}", e.getMessage(), e);
         }
     }
     
@@ -164,5 +172,42 @@ public class MarketHoursScheduler {
     public void logMarketStatus() {
         String status = marketHoursService.getMarketStatus();
         logger.debug("Market durumu: {}", status);
+    }
+
+    private void sendUpdatedPricesToKafka() {
+        try {
+            var allStocks = priceSimulationService.getAllStocks();
+            logger.debug("Kafka'ya {} adet hisse fiyatı gönderiliyor", allStocks.size());
+            
+            for (Stock stock : allStocks.values()) {
+                StockResponse stockResponse = convertToStockResponse(stock);
+                marketDataProducer.sendStockUpdate(stockResponse);
+            }
+            
+            logger.info("Kafka'ya {} adet hisse fiyat güncellemesi gönderildi", allStocks.size());
+        } catch (Exception e) {
+            logger.error("Kafka fiyat gönderme hatası: {}", e.getMessage(), e);
+        }
+    }
+
+    private StockResponse convertToStockResponse(Stock stock) {
+        BigDecimal changeAmount = stock.getCurrentPrice().subtract(stock.getPreviousClose());
+        BigDecimal changePercent = BigDecimal.ZERO;
+        
+        if (stock.getPreviousClose().compareTo(BigDecimal.ZERO) > 0) {
+            changePercent = changeAmount.divide(stock.getPreviousClose(), 4, RoundingMode.HALF_UP)
+                                      .multiply(new BigDecimal("100"))
+                                      .setScale(2, RoundingMode.HALF_UP);
+        }
+        
+        return new StockResponse(
+            stock.getSymbol(),
+            stock.getCompanyName(),
+            stock.getCurrentPrice().doubleValue(),
+            stock.getDefaultPrice().doubleValue(),
+            changeAmount.doubleValue(),
+            changePercent.doubleValue(),
+            stock.getLastUpdated()
+        );
     }
 }

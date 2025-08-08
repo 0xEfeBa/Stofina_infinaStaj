@@ -16,11 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// CHECKPOINT 2.6: WebSocket Broadcasting Service
 @Service
-public class WebSocketBroadcastServiceImpl implements IWebSocketBroadcastService {
+public class WebSocketBroadcastService {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketBroadcastServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketBroadcastService.class);
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -108,31 +107,12 @@ public class WebSocketBroadcastServiceImpl implements IWebSocketBroadcastService
         messagingTemplate.convertAndSend(Constants.WebSocket.ERROR_TOPIC, errorMessage);
     }
 
-    // Interface metodlarını implement et
-    @Override
-    public void broadcastPriceUpdate(String symbol, PriceUpdateMessage message) {
-        messagingTemplate.convertAndSend(Constants.WebSocket.PRICE_TOPIC, message);
-        String symbolTopic = Constants.WebSocket.SYMBOL_TOPIC_PREFIX + symbol;
-        messagingTemplate.convertAndSend(symbolTopic, message);
-    }
-
-    @Override
-    public void broadcastToAll(Object message) {
-        messagingTemplate.convertAndSend(Constants.WebSocket.PRICE_TOPIC, message);
-    }
-
-    @Override
-    public void sendToUser(String userId, Object message) {
-        messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
-    }
-
-    @Override
-    public void broadcastToTopic(String topic, Object message) {
+    /**
+     * Send generic message to specific topic (for new WebSocketMessage format)
+     */
+    public void sendToTopic(String topic, Object message) {
         messagingTemplate.convertAndSend(topic, message);
-    }
-
-    @Override
-    public boolean isConnectionActive() {
-        return messagingTemplate != null;
+        logger.debug("Sent message to topic: {}", topic);
     }
 }
+

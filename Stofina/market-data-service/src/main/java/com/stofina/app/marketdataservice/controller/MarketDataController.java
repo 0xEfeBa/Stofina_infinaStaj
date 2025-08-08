@@ -23,7 +23,7 @@ import java.util.Map;
 
 // CHECKPOINT 2.9: MarketDataController - Price Endpoints (Developer 2 Contribution)
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/market")
 public class MarketDataController {
 
     private static final Logger logger = LoggerFactory.getLogger(MarketDataController.class);
@@ -130,6 +130,7 @@ public class MarketDataController {
         Map<String, Object> dailyStats = createDailyStatsResponse(symbol);
         return ResponseEntity.ok(dailyStats);
     }
+
     @GetMapping("/symbols/{symbol}")
     public ResponseEntity<Map<String, Object>> getStockBySymbol(@PathVariable String symbol) {
         Stock stock = priceSimulationService.getStockBySymbol(symbol.toUpperCase());
@@ -149,6 +150,17 @@ public class MarketDataController {
         response.put("lastUpdated", stock.getLastUpdated());
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, Object>> healthCheck() {
+        Map<String, Object> health = new HashMap<>();
+        health.put("status", "UP");
+        health.put("service", "Market Data Service");
+        health.put("timestamp", LocalDateTime.now());
+        health.put("marketOpen", marketHoursService.isMarketOpen());
+        health.put("stockCount", priceSimulationService.getAllStocks().size());
+        return ResponseEntity.ok(health);
     }
 
     // Helper methods
@@ -221,3 +233,4 @@ public class MarketDataController {
 
     // createErrorResponse kaldırıldı - GlobalExceptionHandler kullanılıyor
 }
+

@@ -1,10 +1,9 @@
 package com.stofina.app.marketdataservice.util;
 
-import com.stofina.market_data_service.constant.Constants;
+import com.stofina.app.marketdataservice.constants.Constants;
 
 public final class CacheKeyUtil {
 
-    private CacheKeyUtil(){
     private CacheKeyUtil() {
         throw new UnsupportedOperationException("Utility class");
     }
@@ -28,5 +27,5 @@ public final class CacheKeyUtil {
         return Constants.Cache.DAILY_STATS_KEY_PREFIX + symbol.toUpperCase();
     }
 
-    }
+
 }

@@ -1,6 +1,6 @@
 package com.stofina.app.marketdataservice.util;
 
-import com.stofina.market_data_service.constant.Constants;
+import com.stofina.app.marketdataservice.constants.Constants;
 
 import java.math.BigDecimal;
 import java.util.List;

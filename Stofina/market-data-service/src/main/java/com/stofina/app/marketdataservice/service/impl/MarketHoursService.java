@@ -7,9 +7,13 @@ import java.time.*;
 
 // CHECKPOINT 2.5: Market Hours Business Logic
 @Service
-public class MarketHoursServiceImpl{
+public class MarketHoursService {
 
     public boolean isMarketOpen() {
+        // TEST MODU: Market her zaman açık
+        return true;
+        
+        /* NORMAL MOD (YORUM OLARAK BIRAKILDI)
         ZoneId istanbulZone = ZoneId.of(Constants.MarketHours.TIMEZONE);
         LocalTime currentTime = LocalTime.now(istanbulZone);
         LocalDate currentDate = LocalDate.now(istanbulZone);
@@ -23,6 +27,7 @@ public class MarketHoursServiceImpl{
         LocalTime closeTime = LocalTime.of(Constants.MarketHours.MARKET_CLOSE_HOUR, Constants.MarketHours.MARKET_CLOSE_MINUTE);
 
         return !currentTime.isBefore(openTime) && currentTime.isBefore(closeTime);
+        */
     }
 
     public boolean isWeekend(DayOfWeek day) {
