@@ -1,0 +1,683 @@
+{
+    "common": {
+        "buttons": {
+            "save": "Kaydet",
+            "cancel": "İptal",
+            "close": "Kapat",
+            "edit": "Düzenle",
+            "delete": "Sil",
+            "add": "Ekle",
+            "search": "Ara",
+            "clear": "Temizle",
+            "submit": "Gönder",
+            "yes": "Evet",
+            "no": "Hayır",
+            "ok": "Tamam"
+        },
+        "messages": {
+            "success": "Başarılı",
+            "error": "Hata",
+            "warning": "Uyarı",
+            "info": "Bilgi",
+            "loading": "Yükleniyor...",
+            "noData": "Veri bulunamadı",
+            "confirmDelete": "Bu öğeyi silmek istediğinizden emin misiniz?",
+            "operationSuccess": "İşlem başarıyla tamamlandı",
+            "operationFailed": "İşlem başarısız oldu"
+        },
+        "validation": {
+            "required": "Bu alan zorunludur",
+            "email": "Geçerli bir e-posta adresi giriniz",
+            "minLength": "En az {{min}} karakter olmalıdır",
+            "maxLength": "En fazla {{max}} karakter olmalıdır",
+            "phone": "Geçerli bir telefon numarası giriniz"
+        },
+        "navigation": {
+            "dashboard": "Dashboard",
+            "customers": "Müşteriler",
+            "orders": "Siparişler",
+            "reports": "Raporlar",
+            "settings": "Ayarlar",
+            "logout": "Çıkış"
+        },
+        "back": "Geri"
+    },
+    "transfer": {
+        "title": "KIYMET VE PARA TRANSFERİ",
+        "transferSection": {
+            "title": "Transfer Türü",
+            "options": {
+                "accountsBetween": "HESAPLAR ARASI",
+                "customersBetween": "MÜŞTERİLER ARASI",
+                "institutionsBetween": "KURUMLAR ARASI",
+                "external": "HARİCİ"
+            }
+        },
+        "form": {
+            "transferType": {
+                "label": "Transfer Tipi",
+                "cash": "Nakit",
+                "stock": "Hisse Senedi"
+            },
+            "amount": {
+                "label": "Tutar",
+                "placeholder": "Tutar giriniz"
+            },
+            "stockCode": {
+                "label": "Hisse Kodu",
+                "placeholder": "Hisse kodu giriniz."
+            },
+            "quantity": {
+                "label": "Adet",
+                "placeholder": "Adet"
+            },
+            "transferDate": {
+                "label": "Gönderi Tarihi"
+            },
+            "senderAccount": {
+                "label": "Gönderici Hesap",
+                "placeholder": "Seçiniz"
+            },
+            "receiverAccount": {
+                "label": "Alıcı Hesap",
+                "placeholder": "Seçiniz"
+            }
+        },
+        "buttons": {
+            "startTransfer": "Transferi Başlat"
+        }
+    },
+    "customerPortfolio": {
+        "search": {
+            "label": "Emir Ara",
+            "placeholder": "Hisse koduna göre arama yapabilirsiniz."
+        },
+        "table": {
+            "headers": {
+                "symbol": "Hisse Kodu",
+                "quantity": "Güncel Adet",
+                "availableQuantity": "Satılabilir Adet",
+                "t2Quantity": "T+2 Takas Adedi",
+                "price": "Birim Fiyat",
+                "currentValue": "Güncel Değer",
+                "averageCost": "Ortalama Maliyet",
+                "profitLoss": "Olası Kar/Zarar",
+                "actions": "İşlem"
+            },
+            "actions": {
+                "buy": "Al",
+                "sell": "Sat",
+                "buyTitle": "Hisse Al",
+                "sellTitle": "Hisse Sat"
+            }
+        },
+        "summary": {
+            "status": {
+                "label": "Durum"
+            },
+            "totalAssets": {
+                "label": "Toplam Varlık"
+            },
+            "totalCash": {
+                "label": "Toplam Nakit Durumu"
+            },
+            "totalStockValue": {
+                "label": "Toplam Hisse Değeri"
+            },
+            "totalProfitLoss": {
+                "label": "Toplam Olası Kar / Zarar"
+            },
+            "availableCash": {
+                "label": "Kullanılabilir Nakit"
+            },
+            "t2PendingBalance": {
+                "label": "T+2 Bekleyen Bakiye"
+            },
+            "blockedAmount": {
+                "label": "Bloke Tutarı"
+            }
+        },
+        "notes": {
+            "title": "Önemli Not:",
+            "t2Balance": "• T+2 bekleyen bakiye, işleme alınan ancak henüz hesaba geçmemiş tutarları göstermektedir.",
+            "blockedAmount": "• Bloke tutar, kullanılamayan veya işlemde olan bakiye miktarını göstermektedir."
+        }
+    },
+    "userManagement": {
+        "title": "KULLANICI TANIMLAMA",
+        "buttons": {
+            "back": "Geri",
+            "clear": "Temizle",
+            "listUsers": "Kullanıcıları Listele",
+            "save": "Kaydet"
+        },
+        "form": {
+            "firstName": "Ad",
+            "lastName": "Soyad",
+            "username": "Kullanıcı Adı",
+            "email": "E-posta",
+            "phone": "Telefon Numarası",
+            "title": "Ünvan",
+            "authority": "Yetki",
+            "required": "*",
+            "titleSelect": "Ünvan Seçiniz",
+            "authoritySelect": "Yetki Seçiniz",
+            "titleOptions": {
+                "engineer": "Mühendis",
+                "expert": "Uzman",
+                "manager": "Yönetici"
+            },
+            "authorityOptions": {
+                "admin": "Admin",
+                "user": "Kullanıcı",
+                "manager": "Yönetici"
+            }
+        },
+        "userList": {
+            "title": "Kullanıcı Listesi",
+            "searchPlaceholder": "Ara...",
+            "headers": {
+                "id": "ID",
+                "firstName": "Ad",
+                "lastName": "Soyad",
+                "phone": "Telefon",
+                "email": "E-posta",
+                "username": "Kullanıcı Adı",
+                "title": "Ünvan",
+                "authority": "Yetki"
+            },
+            "noData": "Kullanıcı bulunamadı."
+        },
+        "messages": {
+            "formSubmitted": "Form başarıyla gönderildi!",
+            "validationErrors": {
+                "firstNameRequired": "Ad alanı zorunludur.",
+                "firstNameMaxLength": "Ad 30 karakterden uzun olamaz.",
+                "firstNameFormat": "Ad sadece harflerden oluşmalıdır.",
+                "lastNameRequired": "Soyad alanı zorunludur.",
+                "lastNameMaxLength": "Soyad 30 karakterden uzun olamaz.",
+                "lastNameFormat": "Soyad sadece harflerden oluşmalıdır.",
+                "phoneRequired": "Telefon alanı zorunludur.",
+                "phoneFormat": "Telefon 10 rakam olmalı ve 0 ile başlamamalı.",
+                "emailRequired": "E-posta alanı zorunludur.",
+                "emailFormat": "Geçerli bir e-posta giriniz.",
+                "usernameRequired": "Kullanıcı adı zorunludur.",
+                "usernameMinLength": "Kullanıcı adı en az 3 karakter olmalı.",
+                "titleRequired": "Ünvan seçimi zorunludur.",
+                "authorityRequired": "Yetki seçimi zorunludur."
+            }
+        }
+    },
+    "customer": {
+        "title": "Müşteri Yönetimi",
+        "individualCustomer": "Bireysel Müşteri",
+        "corporateCustomer": "Kurumsal Müşteri",
+        "addCustomer": "Yeni Müşteri Ekle",
+        "editCustomer": "Müşteri Düzenle",
+        "customerInfo": "Müşteri Bilgileri",
+        "fields": {
+            "name": "Ad",
+            "surname": "Soyad",
+            "phone": "Telefon",
+            "email": "E-posta",
+            "address": "Adres",
+            "tradeName": "Ticaret Ünvanı",
+            "taxNumber": "Vergi Numarası",
+            "authorizedPerson": "Yetkili Kişi",
+            "authorizedPhone": "Yetkili Telefon",
+            "authorizedEmail": "Yetkili E-posta",
+            "tckn": "T.C. Kimlik Numarası"
+        },
+        "messages": {
+            "addSuccess": "Müşteri kaydı başarıyla gerçekleşti!",
+            "corporateAddSuccess": "Kurumsal müşteri kaydı başarıyla gerçekleşti!",
+            "updateSuccess": "Müşteri bilgileri güncellendi",
+            "deleteSuccess": "Müşteri silindi"
+        },
+        "validation": {
+            "tcknRequired": "Lütfen T.C. Kimlik Numaranızı giriniz.",
+            "tcknFormat": "T.C. Kimlik Numaranız 11 rakamdan oluşmalıdır.",
+            "nameRequired": "Lütfen adınızı yazınız.",
+            "nameMaxLength": "Adınız 30 karakterden uzun olamaz.",
+            "nameFormat": "Adınızda sadece harfler olabilir.",
+            "surnameRequired": "Lütfen soyadınızı yazınız.",
+            "surnameMaxLength": "Soyadınız 30 karakterden uzun olamaz.",
+            "surnameFormat": "Soyadınızda sadece harfler olabilir.",
+            "phoneRequired": "Lütfen telefon numaranızı giriniz.",
+            "phoneFormat": "Telefon numaranız 10 rakamdan oluşmalı ve 0 ile başlamamalıdır.",
+            "addressRequired": "Lütfen adresinizi giriniz.",
+            "addressMaxLength": "Adresiniz 400 karakterden uzun olamaz.",
+            "suitabilityRequired": "Uygunluk testini onaylamanız gerekmektedir.",
+            "kvkkRequired": "KVKK onayını vermeniz gerekmektedir.",
+            "mkkRequired": "MKK onayını vermeniz gerekmektedir."
+        },
+        "individual": {
+            "title": "BİREYSEL MÜŞTERİ TANIMLAMA",
+            "tabs": {
+                "individual": "Bireysel",
+                "corporate": "Kurumsal"
+            },
+            "buttons": {
+                "back": "Geri",
+                "clear": "Temizle",
+                "listUsers": "Kullanıcıları Listele",
+                "save": "Kaydet"
+            },
+            "form": {
+                "tckn": "T.C. Kimlik No",
+                "firstName": "Ad",
+                "lastName": "Soyad",
+                "email": "E-posta",
+                "phone": "Telefon",
+                "address": "Adres",
+                "required": "*",
+                "suitabilityTest": "UYGUNLUK TESTİ",
+                "kvkkText": "Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında hazırlanan aydınlatma metni müşteri tarafından okunmuş ve onaylanmıştır.",
+                "mkkText": "MKK nezdinde kaydının yapılması ve bilgilerinin ilgili kurumlarla paylaşılmasına müşteri tarafından onay verilmiştir."
+            },
+            "userList": {
+                "title": "Kullanıcı Listesi",
+                "searchPlaceholder": "İsim, telefon veya e-posta ara...",
+                "headers": {
+                    "id": "ID",
+                    "firstName": "Ad",
+                    "lastName": "Soyad",
+                    "phone": "Telefon",
+                    "email": "E-posta",
+                    "address": "Adres"
+                },
+                "noData": "Kullanıcı bulunamadı."
+            },
+            "messages": {
+                "success": "Müşteri kaydı başarıyla gerçekleşti!"
+            }
+        },
+        "corporate": {
+            "title": "KURUMSAL MÜŞTERİ TANIMLAMA",
+            "tabs": {
+                "individual": "Bireysel",
+                "corporate": "Kurumsal"
+            },
+            "buttons": {
+                "back": "Geri",
+                "clear": "Temizle",
+                "listUsers": "Kullanıcıları Listele",
+                "save": "Kaydet"
+            },
+            "form": {
+                "tradeName": "Ticaret Unvanı",
+                "tradeRegistryNo": "Ticaret Sicil No",
+                "taxNumber": "Vergi No (VKN)",
+                "taxOffice": "Vergi Dairesi",
+                "legalAddress": "Yasal Adres",
+                "authorizedPerson": "Yetkili",
+                "authorizedPersonOptional": "Yetkili (Opsiyonel)",
+                "authorizedTckn": "Yetkili TCKN",
+                "authorizedTcknOptional": "Yetkili TCKN (Opsiyonel)",
+                "authorizedPhone": "Yetkili Telefon",
+                "authorizedPhoneOptional": "Yetkili Telefon (Opsiyonel)",
+                "authorizedEmail": "Yetkili E-posta",
+                "authorizedEmailOptional": "Yetkili E-posta (Opsiyonel)",
+                "required": "*",
+                "suitabilityTest": "UYGUNLUK TESTİ",
+                "mkkText": "MKK nezdinde kaydının yapılması ve bilgilerinin ilgili kurumlarla paylaşılmasına müşteri tarafından onay verilmiştir.",
+                "kvkkText": "Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında hazırlanan aydınlatma metnini okudum, anladım ve onaylıyorum."
+            },
+            "userList": {
+                "title": "Kurumsal Müşteri Listesi",
+                "searchPlaceholder": "Ticaret unvanı, yetkili veya VKN ara...",
+                "headers": {
+                    "id": "ID",
+                    "tradeName": "Ticaret Unvanı",
+                    "vkn": "VKN",
+                    "authorizedPerson": "Yetkili",
+                    "authorizedPhone": "Yetkili Telefon",
+                    "authorizedEmail": "Yetkili E-posta"
+                },
+                "noData": "Müşteri bulunamadı."
+            },
+            "messages": {
+                "success": "Kurumsal müşteri kaydı başarıyla gerçekleşti!"
+            },
+            "validation": {
+                "tradeNameRequired": "Ticaret unvanı boş bırakılamaz.",
+                "tradeNameMin": "Ticaret unvanı en az 3 karakter olmalıdır.",
+                "tradeNameMax": "Ticaret unvanı en fazla 100 karakter olabilir.",
+                "tradeRegistryRequired": "Ticaret sicil numarası boş bırakılamaz.",
+                "tradeRegistryFormat": "Ticaret sicil numarası 5–10 haneli olmalı ve 0 ile başlamamalıdır.",
+                "taxNumberRequired": "Vergi numarası boş bırakılamaz.",
+                "taxNumberFormat": "Vergi numarası 10 haneli olmalıdır.",
+                "taxOfficeRequired": "Vergi dairesi boş bırakılamaz.",
+                "taxOfficeMin": "Vergi dairesi adı en az 5 karakter olmalıdır.",
+                "taxOfficeMax": "Vergi dairesi adı en fazla 100 karakter olabilir.",
+                "legalAddressRequired": "Yasal adres boş bırakılamaz.",
+                "legalAddressMin": "Yasal adres en az 10 karakter olmalıdır.",
+                "legalAddressMax": "Yasal adres en fazla 300 karakter olabilir.",
+                "authorizedRequired": "Yetkili adı boş bırakılamaz.",
+                "authorizedFormat": "Yetkili adı yalnızca harf ve boşluk içerebilir (3–50 karakter).",
+                "authorizedTcknRequired": "Yetkili TCKN boş bırakılamaz.",
+                "authorizedTcknFormat": "Yetkili TCKN 11 haneli ve 0 ile başlamamalıdır.",
+                "authorizedPhoneRequired": "Yetkili telefon numarası boş bırakılamaz.",
+                "authorizedPhoneFormat": "Telefon numarası 5 ile başlamalı ve 10 haneli olmalıdır.",
+                "authorizedEmailRequired": "Yetkili e-posta boş bırakılamaz.",
+                "authorizedEmailFormat": "Geçerli bir e-posta adresi giriniz.",
+                "suitabilityRequired": "Uygunluk testini onaylamanız gerekmektedir.",
+                "mkkRequired": "MKK onayını vermeniz gerekmektedir.",
+                "kvkkRequired": "KVKK onayını vermeniz gerekmektedir."
+            }
+        },
+        "management": {
+            "description": "Seçtiğiniz müşteriye ait bütün hesaplar aşağıda listelenmektedir. Hesap ekleyebilir, kapatabilir ve düzenlemeleri yapabilirsiniz.",
+            "buttons": {
+                "back": "Geri",
+                "addNewAccount": "Yeni Hesap Ekle"
+            },
+            "table": {
+                "headers": {
+                    "accountNumber": "Hesap Numarası",
+                    "portfolioValue": "Portföy Değeri",
+                    "balance": "Bakiye",
+                    "lastTransactionDate": "Son işlem Tarihi",
+                    "status": "Statü",
+                    "portfolioDetail": "Portföy Detayı",
+                    "accountOperations": "Hesap İşlemleri"
+                },
+                "actions": {
+                    "portfolio": "Portföy",
+                    "edit": "Düzenle",
+                    "close": "Kapat",
+                    "editAccount": "Hesap Düzenle",
+                    "closeAccount": "Hesap Kapat"
+                },
+                "tooltips": {
+                    "accountsWithBalanceCannotBeClosed": "Bakiye bulunan hesaplar kapatılamaz."
+                }
+            },
+            "summary": {
+                "totalAccounts": "Toplam Hesap Sayısı",
+                "totalPortfolioValue": "Toplam Portföy Değeri",
+                "totalBalance": "Toplam Bakiye"
+            },
+            "modal": {
+                "closeAccountConfirmation": "müşterisine ait numaralı hesap kapatma işlemini onaylıyor musunuz?"
+            }
+        },
+        "modals": {
+            "newAccount": {
+                "title": "Yeni Hesap Ekle",
+                "form": {
+                    "customerNumber": "Müşteri Numarası",
+                    "fullName": "Ad Soyad",
+                    "tradeName": "Ticaret Unvanı",
+                    "vkn": "VKN",
+                    "accountOpeningDate": "Hesap Açılış Tarihi"
+                },
+                "approval": {
+                    "title": "Müşterimiz, imzalamış olduğu Sermaye Piyasası Araçları Alım Satıma Aracılık Çerçeve Sözleşmesi kapsamında;",
+                    "description": "hisse senedi yatırım hesabı açma, kapatma ve güncelleme, hesaplara kullanıcı tanımlama/kaldırma, müşteri bilgileri değişikliği, yasal yükümlülükler doğrultusunda yatırım hesabı bilgileri ve bakiyelerinin görüntülenmesi, takas yükümlülükleri kapsamında kullanılmasına onay verilmesi, aracı kurum nezdinde hesabın açılması, MKK nezdinde hesabın kaydedilmesi ve ilgili kurumlarla bilgi paylaşımı, KVKK kapsamında kişisel verilerinin işlenmesi ve aktarılması hususlarında ilgili sözleşmeyi imzalamış ve gerekli açık rızaları vermiştir.",
+                    "confirmation": "İşbu onay, ilgili sözleşmenin müşteri tarafından imzalandığını ve yukarıda belirtilen yetkilerin müşterinin bilgisi ve talebi doğrultusunda kullanıldığını teyit eder."
+                },
+                "buttons": {
+                    "cancel": "İptal",
+                    "next": "İleri"
+                },
+                "messages": {
+                    "accountOpeningConfirmation": "müşterisine ait hesap açma işlemini onaylıyor musunuz?"
+                }
+            },
+            "closeAccount": {
+                "title": "Hesap Kapatma Onayı",
+                "description": "Aşağıdaki bilgileri doğrulayarak hesap kapatma işlemini onaylayın.",
+                "form": {
+                    "customerName": "Müşteri Adı",
+                    "customerNumber": "Müşteri Numarası",
+                    "accountNumber": "Hesap Numarası"
+                },
+                "warning": {
+                    "title": "Uyarı:",
+                    "description": "Bu hesapta portföy değeri {portfolioValue} ve nakit bakiye {balance} bulunmaktadır. Hesap kapatmadan önce bu bakiyelerin temizlenmesi SPK ve BİST düzenlemeleri gereği zorunludur."
+                },
+                "regulations": {
+                    "title": "BİST/SPK/MKK Uyarısı:",
+                    "subtitle": "Hesap kapatma işlemi sonrasında:",
+                    "items": [
+                        "Müşterinin tüm açık pozisyonları kapatılmalıdır",
+                        "MKK nezdindeki menkul kıymetler transfer edilmelidir",
+                        "Hesap kapatma formu müşteri tarafından imzalanmalıdır",
+                        "Yasal bekleme süresi (30 gün) uygulanmalıdır"
+                    ]
+                },
+                "irreversible": "Bu işlem geri alınamaz.",
+                "buttons": {
+                    "cancel": "Vazgeç",
+                    "closeAccount": "Hesabı Kapat"
+                }
+            }
+        },
+        "search": {
+            "customerType": {
+                "individual": "Bireysel",
+                "corporate": "Kurumsal"
+            },
+            "placeholder": {
+                "enabled": "İsim veya hesap numarası girin.",
+                "disabled": "Önce müşteri tipi seçin..."
+            },
+            "dropdown": {
+                "customerName": "Müşteri Adı / Ticaret Unvanı:",
+                "accountNumber": "Hesap No:",
+                "selectedCustomer": "Müşteri Adı/Ticaret Unvanı: "
+            }
+        },
+        "auth": {
+            "login": {
+                "failed": {
+                    "title": "Giriş Başarısız",
+                    "message": "Lütfen bilgilerinizi kontrol ediniz."
+                },
+                "serverError": {
+                    "title": "Sunucu Hatası",
+                    "message": "Giriş yapılırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+                }
+            }
+        },
+        "constants": {
+            "customerType": {
+                "individual": "Bireysel",
+                "corporate": "Kurumsal"
+            }
+        }
+    },
+    "report": {
+        "status": {
+            "pending": "Bekleniyor",
+            "notReady": "Henüz Alınmadı",
+            "ready": "Hazır"
+        },
+        "type": {
+            "endOfDay": "GÜN SONU"
+        },
+        "statusMessage": "Gün içi emirler borsa emir defteriyle uyumluluğu kontrol edildi. Tarih kapanış saatinden sonraki gün için hazırlandı.",
+        "systemDate": {
+            "title": "Sistem Tarihi",
+            "subtitle": "Aktif İşlem Günü",
+            "systemDateLabel": "Sistem Tarihi",
+            "currentPeriod": "Mevcut İşlem Günü",
+            "currentPeriodSubtitle": "Aktif dönem",
+            "endOfDayButton": "Gün Sonu Al"
+        },
+        "statusCard": {
+            "title": "Rapor Durumu",
+            "ready": "Rapor Hazır",
+            "pending": "Rapor Bekleniyor",
+            "notReady": "Rapor Henüz Alınmadı",
+            "lastReport": "Son Rapor",
+            "lastUpdate": "Son Güncelleme",
+            "download": "İndir",
+            "reportPreparing": "Rapor Hazırlanıyor"
+        },
+        "endOfDayCard": {
+            "title": "GÜN SONU RAPORU",
+            "date": "TARİH",
+            "time": "SAAT",
+            "reportType": "RAPOR TÜRÜ",
+            "status": "DURUM",
+            "ok": "TAMAM",
+            "printReport": "Raporu Yazdır"
+        },
+        "sendResultDocument": {
+            "button": "İşlem Sonuç Belgesi Gönder"
+        }
+    },
+    "modal": {
+        "titles": {
+            "success": "Başarılı",
+            "error": "Hata",
+            "warning": "Uyarı",
+            "info": "Bilgi",
+            "confirm": "Onay"
+        },
+        "buttons": {
+            "confirm": "Evet",
+            "cancel": "Hayır",
+            "ok": "Tamam"
+        }
+    },
+    "orderTracking": {
+        "title": "Emir Takip Tablosu",
+        "search": {
+            "label": "Emir Ara",
+            "placeholder": "Emir No ya da Hisse Senedi Koduna Göre"
+        },
+        "filters": {
+            "orderType": {
+                "label": "İşlem Türü",
+                "all": "Tümü",
+                "limit": "Limit",
+                "market": "Piyasa",
+                "stop": "Stop"
+            },
+            "status": {
+                "label": "Emir Tipi",
+                "all": "Tümü",
+                "completed": "Gerçekleşti",
+                "partial": "Kısmi",
+                "pending": "Bekliyor",
+                "cancelled": "İptal"
+            }
+        },
+        "table": {
+            "headers": {
+                "orderNo": "Emir No",
+                "symbol": "Hisse Senedi",
+                "orderType": "İşlem Türü",
+                "orderStatus": "Emir Tipi",
+                "price": "Fiyat",
+                "quantity": "Adet",
+                "filledQuantity": "Gerçekleşen Adet",
+                "filledPrice": "Gerçekleşen Fiyat",
+                "status": "Emir Durum",
+                "date": "Tarih",
+                "action": "İşlem"
+            },
+            "actions": {
+                "cancel": "İptal Et",
+                "cancelDisabled": "İptal Et"
+            }
+        },
+        "modal": {
+            "cancelOrder": "hesap numaralı",
+            "customer": "müşterisine ait",
+            "orderNumber": "numaralı emir işlemini iptal etmeyi onaylıyor musunuz?"
+        }
+    },
+    "types": {
+        "account": {
+            "status": {
+                "active": "AKTİF",
+                "passive": "PASİF"
+            }
+        },
+        "order": {
+            "side": {
+                "buy": "ALIM",
+                "sell": "SATIM"
+            },
+            "type": {
+                "limit": "LİMİT",
+                "market": "PİYASA",
+                "stop": "STOP"
+            },
+            "status": {
+                "completed": "GERÇEKLEŞTİ",
+                "partial": "KISMİ",
+                "pending": "BEKLİYOR",
+                "cancelled": "İPTAL"
+            }
+        },
+        "portfolio": {
+            "fields": {
+                "symbol": "Sembol",
+                "quantity": "Miktar",
+                "availableQuantity": "Kullanılabilir Miktar",
+                "t2Quantity": "T+2 Miktar",
+                "price": "Fiyat",
+                "currentValue": "Güncel Değer",
+                "averageCost": "Ortalama Maliyet",
+                "profitLoss": "Kar/Zarar",
+                "profitLossPercentage": "Kar/Zarar Yüzdesi"
+            }
+        },
+        "customer": {
+            "type": {
+                "individual": "BİREYSEL",
+                "corporate": "KURUMSAL"
+            },
+            "fields": {
+                "firstName": "Ad",
+                "lastName": "Soyad",
+                "tradeName": "Ticaret Ünvanı",
+                "vkn": "VKN",
+                "email": "E-posta",
+                "birthDate": "Doğum Tarihi",
+                "birthPlace": "Doğum Yeri",
+                "accountNumber": "Hesap Numarası",
+                "tckn": "T.C. Kimlik Numarası"
+            }
+        }
+    },
+    "dashboard": {
+        "header": {
+            "title": "STOFINA Refleks",
+            "userName": "İrem Türen",
+            "settings": "Ayarlar",
+            "loading": "Yükleniyor..."
+        },
+        "menu": {
+            "dashboard": "Kontrol Paneli",
+            "trading": "Hisse Alım Satımı",
+            "stocks": "Hisse Senetleri",
+            "stockDefinition": "Hisse Senedi Tanımlama",
+            "customerDefinition": "Müşteri Tanımlama",
+            "customerPortfolio": "Müşteri Portföy",
+            "customerAccountManagement": "Müşteri Hesap Yönetimi",
+            "balanceAndStockManagement": "Bakiye ve Stok Yönetimi",
+            "orderTracking": "Emir Takip",
+            "reporting": "Raporlama",
+            "userManagement": "Kullanıcı Yönetimi",
+            "transfer": "Kıymet ve Para Transferi"
+        },
+        "sidebar": {
+            "search": {
+                "placeholder": "Ara...",
+                "noResults": "Sonuç bulunamadı"
+            },
+            "logout": "Çıkış"
+        },
+        "settings": {
+            "languageSelection": "Dil Seçimi",
+            "turkish": "Türkçe",
+            "english": "English"
+        }
+    }
+}
