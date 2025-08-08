@@ -75,7 +75,7 @@ export default function Page() {
       currentPrice: 0.0,
     };
 
-    fetch("http://localhost:8081/api/v1/market/stocks", {
+    fetch("http://localhost:9095/api/v1/market/stocks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
