@@ -1,0 +1,832 @@
+.container {
+  padding: 8px;
+  background-color: #f5f5f5;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.header {
+  background-color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.title {
+  color: #7B3FF2;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.customerInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.searchBox {
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.searchInput:focus {
+  border-color: #7B3FF2;
+}
+
+.customerDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.customerName,
+.accountNo {
+  font-size: 14px;
+  color: #333;
+}
+
+.balanceInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.tutarText,
+.tutarAmount {
+  font-size: 12px;
+  color: #ff6b6b;
+}
+
+/* Trading Interface */
+.tradingInterface {
+  background-color: white;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.interfaceDesc {
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 12px;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+
+.orderBookPanel {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.stockHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.stockTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stockSymbol {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.liveTag {
+  background-color: #4CAF50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.priceInfo {
+  text-align: right;
+}
+
+.currentPrice {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+.priceChange {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.priceChange.positive {
+  color: #4CAF50;
+}
+
+.priceChange.negative {
+  color: #ff6b6b;
+}
+
+
+.marketStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: #666;
+}
+
+.statValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Spread Indicator */
+.spreadIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 8px;
+  background-color: #e8e8e8;
+  border-radius: 8px;
+}
+
+.spreadArrows {
+  font-size: 18px;
+  color: #7B3FF2;
+}
+
+.spreadLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+
+.orderBook {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.orderBookHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: #f5f5f5;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.buyHeader,
+.sellHeader {
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.buyHeader {
+  color: #4CAF50;
+  border-right: 1px solid #e0e0e0;
+}
+
+.sellHeader {
+  color: #ff6b6b;
+}
+
+.orderBookContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 350px;
+}
+
+.buyOrders,
+.sellOrders {
+  padding: 10px;
+}
+
+.buyOrders {
+  border-right: 1px solid #e0e0e0;
+}
+
+.orderRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 6px 5px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.orderRow:hover {
+  background-color: #f8f9fa;
+}
+
+.buyOrders .orderRow {
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+.sellOrders .orderRow {
+  background-color: rgba(255, 107, 107, 0.05);
+}
+
+.orderPrice {
+  font-weight: 600;
+}
+
+.buyOrders .orderPrice {
+  color: #4CAF50;
+}
+
+.sellOrders .orderPrice {
+  color: #ff6b6b;
+}
+
+.orderQuantity,
+.orderTotal {
+  text-align: right;
+  color: #333;
+}
+
+.orderBookFooter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: #f5f5f5;
+  font-size: 12px;
+  color: #666;
+  padding: 8px 10px;
+}
+
+.footerLabels {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0 5px;
+}
+
+.footerLabels span:nth-child(2),
+.footerLabels span:nth-child(3) {
+  text-align: right;
+}
+
+/* Trading Form Panel */
+.tradingFormPanel {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 0;
+}
+
+.userAvatar {
+  position: absolute;
+  top: -30px;
+  right: 20px;
+}
+
+.avatarCircle {
+  width: 60px;
+  height: 60px;
+  background-color: #7B3FF2;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(123, 63, 242, 0.3);
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 10px;
+}
+
+.formTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.orderTypeIndicator {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7B3FF2;
+  background: #f0e8ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.tradingForm {
+  margin-top: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formGroup {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.formLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+/* Radio Group Styling */
+.radioGroup {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 6px;
+}
+
+.radioOption input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #7B3FF2;
+  cursor: pointer;
+}
+
+.radioText {
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Standard Input Styling */
+.standardInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.standardInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.standardInput:disabled {
+  background-color: #f9fafb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.stockSelect {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  color: #374151;
+  font-weight: 500;
+}
+
+.stockSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.priceDisplay {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Current Price Display */
+.currentPriceDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  margin: 8px 0;
+}
+
+.currentPriceLabel {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.currentPriceValue {
+  font-size: 13px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* OrderBook Info */
+.orderBookInfo {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+  margin: 8px 0;
+  padding: 6px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  text-align: center;
+}
+
+
+.priceInput {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.3s;
+  color: #000;
+  font-weight: 600;
+}
+
+.priceInput:focus {
+  border-color: #7B3FF2;
+}
+
+/* Quantity Input */
+.quantityInput {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quantityInput input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.3s;
+  color: #000;
+  font-weight: 600;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+.quantityInput input:focus {
+  border-color: #7B3FF2;
+  box-shadow: 0 0 0 2px rgba(123, 63, 242, 0.1);
+}
+
+.quantitySlider {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.quantitySlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #7B3FF2;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.quantitySlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #7B3FF2;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Total Amount */
+.totalAmount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: white;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.totalAmount span:first-child {
+  font-size: 13px;
+  color: #666;
+}
+
+.totalValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Scheduled Order */
+.scheduledOrder {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #000;
+  font-weight: 600;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #7B3FF2;
+  cursor: pointer;
+}
+
+/* Submit Button */
+.submitButton {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+}
+
+.buyButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.buyButton:hover:not(:disabled) {
+  background-color: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+}
+
+.sellButton {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.sellButton:hover:not(:disabled) {
+  background-color: #ff5252;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3);
+}
+
+.disabledButton {
+  background-color: #d1d5db !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.submitButton:disabled {
+  background-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(123, 63, 242, 0.1);
+  }
+  50% {
+    background-color: rgba(123, 63, 242, 0.3);
+  }
+  100% {
+    background-color: rgba(123, 63, 242, 0.1);
+  }
+}
+
+@keyframes buyPulse {
+  0% {
+    background-color: rgba(76, 175, 80, 0.05);
+  }
+  50% {
+    background-color: rgba(76, 175, 80, 0.2);
+  }
+  100% {
+    background-color: rgba(76, 175, 80, 0.05);
+  }
+}
+
+@keyframes sellPulse {
+  0% {
+    background-color: rgba(255, 107, 107, 0.05);
+  }
+  50% {
+    background-color: rgba(255, 107, 107, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 107, 107, 0.05);
+  }
+}
+
+.orderRow.updated {
+  animation: pulse 1s ease-in-out;
+}
+
+.buyOrders .orderRow.updated {
+  animation: buyPulse 1s ease-in-out;
+}
+
+.sellOrders .orderRow.updated {
+  animation: sellPulse 1s ease-in-out;
+}
+
+/* Empty order book state */
+.emptyOrderBook {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-style: italic;
+  grid-column: 1 / -1;
+}
+
+/* Loading states */
+.loadingPrice {
+  color: #999;
+  font-style: italic;
+}
+
+.connectionStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+/* Enhanced form styling for better UX */
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: #7B3FF2;
+  box-shadow: 0 0 0 2px rgba(123, 63, 242, 0.1);
+}
+
+/* Better error states */
+.formError {
+  border-color: #ff6b6b !important;
+  background-color: rgba(255, 107, 107, 0.05);
+}
+
+.errorMessage {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Success states */
+.formSuccess {
+  border-color: #4CAF50 !important;
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .orderBookPanel {
+    min-width: unset;
+  }
+
+  .tradingFormPanel {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .customerInfo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .marketStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .orderBookContent {
+    font-size: 12px;
+  }
+
+  .orderRow {
+    padding: 6px 3px;
+  }
+}

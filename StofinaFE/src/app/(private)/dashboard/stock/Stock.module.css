@@ -1,0 +1,291 @@
+/* Stock Page Styles */
+.container {
+    padding: 8px 16px;
+    background-color: #f5f5f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
+  
+  .title {
+    color: #7B3FF2;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+  
+  /* Search Section */
+  .searchSection {
+    background: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+  }
+  
+  .searchContainer {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .searchInput {
+    width: 100%;
+    max-width: 350px;
+    padding: 6px 12px;
+    border: 2px solid #B18CE8;
+    border-radius: 16px;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.3s ease;
+    background: white;
+  }
+  
+  .searchInput:focus {
+    border-color: #7B3FF2;
+    box-shadow: 0 0 0 3px rgba(123, 63, 242, 0.1);
+  }
+  
+  .searchInput::placeholder {
+    color: #999;
+    font-style: italic;
+  }
+  
+  
+  /* Table Container */
+  .tableContainer {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    max-height: fit-content;
+  }
+  
+  .stockTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    display: table;
+  }
+  
+  .stockTable thead {
+    display: table-header-group;
+  }
+  
+  .stockTable tbody {
+    display: table-row-group;
+  }
+  
+  .stockTable thead tr,
+  .stockTable tbody tr {
+    display: table-row;
+  }
+  
+  .tableHeader {
+    background: #7B3FF2;
+    color: white;
+  }
+  
+  .tableHeader th {
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+  
+  .tableRow {
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+  }
+  
+  .tableRow:hover {
+    background-color: #f8f9ff;
+  }
+  
+  .tableRow:last-child {
+    border-bottom: none;
+  }
+  
+  .tableRow td {
+    padding: 12px 8px;
+    vertical-align: middle;
+  }
+  
+  /* Stock Data Columns */
+  .stockCode {
+    font-weight: 600;
+    color: #7B3FF2;
+    font-size: 13px;
+  }
+  
+  .stockName {
+    color: #333;
+    font-weight: 500;
+    max-width: 180px;
+    font-size: 12px;
+  }
+  
+  .stockPrice {
+    font-weight: 600;
+    color: #333;
+    font-size: 13px;
+  }
+  
+  .stockChange {
+    font-weight: 600;
+    font-size: 12px;
+  }
+  
+  .stockChange.positive {
+    color: #4CAF50;
+  }
+  
+  .stockChange.negative {
+    color: #f44336;
+  }
+  
+  .stockChange.neutral {
+    color: #666;
+  }
+  
+  
+  .marketCap {
+    color: #666;
+    font-size: 13px;
+  }
+  
+  .highLow {
+    color: #666;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  
+  /* Action Buttons */
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .buyButton,
+  .sellButton {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 40px;
+  }
+  
+  .buyButton {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .buyButton:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+  }
+  
+  .sellButton {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .sellButton:hover {
+    background-color: #d32f2f;
+    transform: translateY(-1px);
+  }
+  
+  /* Loading and Error States */
+  .loading,
+  .error,
+  .noResults {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+  }
+  
+  .error {
+    color: #f44336;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .stockTable {
+      font-size: 13px;
+    }
+    
+    .tableHeader th,
+    .tableRow td {
+      padding: 12px 8px;
+    }
+    
+    .stockName {
+      max-width: 150px;
+    }
+  }
+  
+  @media (max-width: 968px) {
+    .container {
+      padding: 16px;
+    }
+    
+    .searchSection {
+      padding: 20px;
+    }
+    
+    .stockTable {
+      font-size: 12px;
+    }
+    
+    .tableHeader th,
+    .tableRow td {
+      padding: 10px 6px;
+    }
+    
+    .actions {
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .buyButton,
+    .sellButton {
+      padding: 4px 8px;
+      font-size: 11px;
+      min-width: 35px;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .title {
+      font-size: 24px;
+    }
+    
+    .searchInput {
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+    
+    /* Hide some columns on mobile */
+    .stockTable th:nth-child(5),
+    .stockTable td:nth-child(5) {
+      display: none;
+    }
+  }
