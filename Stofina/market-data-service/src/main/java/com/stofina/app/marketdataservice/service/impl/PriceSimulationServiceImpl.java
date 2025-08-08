@@ -261,8 +261,8 @@ public class PriceSimulationServiceImpl implements IPriceSimulationService {
             }
             
             // GERÇEK WebSocket broadcast - tüm client'lara gönder
-            com.stofina.app.market_data_service.dto.websocket.PriceUpdateMessage message = 
-                new com.stofina.app.market_data_service.dto.websocket.PriceUpdateMessage(
+            com.stofina.app.marketdataservice.dto.websocket.PriceUpdateMessage message = 
+                new com.stofina.app.marketdataservice.dto.websocket.PriceUpdateMessage(
                     stock.getSymbol(), 
                     currentPrice, 
                     changeAmount, 
@@ -299,10 +299,10 @@ public class PriceSimulationServiceImpl implements IPriceSimulationService {
     }
 
     @Override
-    public com.stofina.app.market_data_service.dto.response.PriceResponse getSimulatedPrice(String symbol) {
+    public com.stofina.app.marketdataservice.dto.response.PriceResponse getSimulatedPrice(String symbol) {
         Stock stock = stocksInMemory.get(symbol.toUpperCase());
         if (stock != null) {
-            return new com.stofina.app.market_data_service.dto.response.PriceResponse(
+            return new com.stofina.app.marketdataservice.dto.response.PriceResponse(
                 stock.getSymbol(), 
                 stock.getCurrentPrice().doubleValue(), 
                 System.currentTimeMillis()
@@ -312,10 +312,10 @@ public class PriceSimulationServiceImpl implements IPriceSimulationService {
     }
 
     @Override
-    public List<com.stofina.app.market_data_service.dto.response.PriceResponse> getAllSimulatedPrices() {
-        List<com.stofina.app.market_data_service.dto.response.PriceResponse> prices = new ArrayList<>();
+    public List<com.stofina.app.marketdataservice.dto.response.PriceResponse> getAllSimulatedPrices() {
+        List<com.stofina.app.marketdataservice.dto.response.PriceResponse> prices = new ArrayList<>();
         for (Stock stock : stocksInMemory.values()) {
-            prices.add(new com.stofina.app.market_data_service.dto.response.PriceResponse(
+            prices.add(new com.stofina.app.marketdataservice.dto.response.PriceResponse(
                 stock.getSymbol(), 
                 stock.getCurrentPrice().doubleValue(), 
                 System.currentTimeMillis()

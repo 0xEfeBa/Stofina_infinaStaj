@@ -1,7 +1,7 @@
 package com.stofina.app.marketdataservice.service.impl;
 
 import com.stofina.app.marketdataservice.common.ServiceResult;
-import com.stofina.app.marketdataservice.constant.Messages;
+import com.stofina.app.marketdataservice.constants.Messages;
 import com.stofina.app.marketdataservice.entity.Stock;
 import com.stofina.app.marketdataservice.repository.StockRepository;
 import com.stofina.app.marketdataservice.service.IStockService;
