@@ -396,12 +396,13 @@
                 "corporate": "Corporate"
             },
             "placeholder": {
-                "enabled": "Enter name or account number.",
+                "enabled": "Search customer by name or trade name.",
                 "disabled": "Please select customer type first..."
             },
             "dropdown": {
                 "customerName": "Customer Name / Trade Name:",
                 "accountNumber": "Account No:",
+                "customerId": "Customer Number:",
                 "selectedCustomer": "Customer Name/Trade Name: "
             }
         },
