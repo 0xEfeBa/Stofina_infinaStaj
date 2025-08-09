@@ -72,7 +72,7 @@ export default function Page() {
       exchange: data.borsa,
       currency: data.paraBirimi,
       isinCode: data.isinKodu,
-      status: "ACTIVE",
+      status: "INACTIVE",
       defaultPrice: 0,
       currentPrice: 0,
     };
