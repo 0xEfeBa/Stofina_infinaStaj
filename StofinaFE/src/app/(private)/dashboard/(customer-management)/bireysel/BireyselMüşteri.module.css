@@ -1,7 +1,7 @@
 .container {
   display: flex;
-  flex-direction: column; 
-  justify-content: flex-start; 
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   min-height: 100vh;
   margin-top: 25px;
@@ -23,7 +23,8 @@
   font-size: 20px;
   font-weight: 700;
   text-align: center;
-  color: #189345;;
+  color: #189345;
+  ;
   margin-bottom: 15px;
   margin-top: -12px;
 }
@@ -52,7 +53,8 @@
   font-weight: 600;
 }
 
-.input, .select {
+.input,
+.select {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
@@ -65,7 +67,8 @@
   height: 35px;
 }
 
-.input:focus, .select:focus {
+.input:focus,
+.select:focus {
   border-color: #813FB4;
   box-shadow: 0 0 0 2px rgba(129, 63, 180, 0.2);
 }
@@ -79,7 +82,7 @@
   font-weight: 600;
   transition: background-color 0.3s;
   margin: 10px auto 0 auto;
-  display: block; 
+  display: block;
 }
 
 .submitButton:hover {
@@ -88,10 +91,10 @@
 
 .topButtons {
   display: flex;
-  width: 600px;             
-  margin-bottom: 15px;       
-  gap: 12px;    
-  margin-left: -180px;             
+  width: 600px;
+  margin-bottom: 15px;
+  gap: 12px;
+  margin-left: -180px;
 }
 
 .secondaryButton {
@@ -157,7 +160,8 @@
   font-size: 14px;
 }
 
-.userTable th, .userTable td {
+.userTable th,
+.userTable td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -286,7 +290,7 @@
   overflow: hidden;
   width: 400px;
   height: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tabButton {
@@ -317,7 +321,7 @@
   padding: 12px 24px;
   border-radius: 10px;
   font-size: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 9999;
   animation: fadeIn 0.3s ease;
   color: white;
@@ -325,7 +329,7 @@
 }
 
 .popupSuccess {
-  background-color: #4BB543; 
+  background-color: #4BB543;
 }
 
 .popupError {
@@ -333,8 +337,13 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px);}
-  to { opacity: 1; transform: translateY(0);}
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
-

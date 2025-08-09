@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./BireyselMüşteri.module.css";
 import { useTranslation } from 'react-i18next';
@@ -8,22 +8,31 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { Lasso } from "lucide-react";
+import { useDispatchCustom } from "@/hooks/useDispatchCustom";
+import { useSelectorCustom } from "@/store";
+import { thunkCustomer } from "@/thunks/customerThunk";
+import { toast } from "sonner";
 
 export default function Page() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { individualCustomers } = useSelectorCustom(state => state.customer);
+
+  const dispatch = useDispatchCustom();
+
 
   const schema = yup.object({
     tckn: yup
       .string()
       .required(t('customer.validation.tcknRequired'))
       .matches(/^\d{11}$/, t('customer.validation.tcknFormat')),
-    ad: yup
+    firstName: yup
       .string()
       .required(t('customer.validation.nameRequired'))
       .max(30, t('customer.validation.nameMaxLength'))
       .matches(/^[a-zA-ZçğıöşüÇĞİÖŞÜ\s]+$/, t('customer.validation.nameFormat')),
-    soyad: yup
+    lastName: yup
       .string()
       .required(t('customer.validation.surnameRequired'))
       .max(30, t('customer.validation.surnameMaxLength'))
@@ -32,11 +41,11 @@ export default function Page() {
       .string()
       .required(t('customer.validation.email'))
       .email(t('customer.validation.email')),
-    telefon: yup
+    phone: yup
       .string()
       .required(t('customer.validation.phoneRequired'))
       .matches(/^[1-9]\d{9}$/, t('customer.validation.phoneFormat')),
-    adres: yup
+    legalAddress: yup
       .string()
       .required(t('customer.validation.addressRequired'))
       .max(400, t('customer.validation.addressMaxLength')),
@@ -47,16 +56,16 @@ export default function Page() {
 
   const [popup, setPopup] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const popupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fetchIndividualCustomers = async () => {
+    await dispatch(thunkCustomer.getIndividuals());
+  }
 
   const [showUsersTable, setShowUsersTable] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const users = [
-    { id: 1, ad: "Ali", soyad: "Veli", telefon: "1234567890", email: "ali@example.com", adres: "Abdurrahman Nafiz Gürman mah. Gülbayır sok. no 14" },
-    { id: 2, ad: "Ayşe", soyad: "Demir", telefon: "0987654321", email: "ayse@example.com", adres: "Ankara" },
-    { id: 3, ad: "Mehmet", soyad: "Yılmaz", telefon: "05443332211", email: "mehmet@example.com", adres: "İzmir" }
-  ];
-  const filteredUsers = users.filter(user =>
-    Object.values(user).some(value =>
+
+
+  const filteredUsers = individualCustomers?.filter(individualCustomers =>
+    Object.values(individualCustomers)?.some(value =>
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
@@ -76,9 +85,25 @@ export default function Page() {
     popupTimeoutRef.current = setTimeout(() => setPopup(null), 3000);
   };
 
-  const onSubmit = (data: any) => {
-    showPopup(t('customer.individual.messages.success'), "success");
-    reset();
+  const onSubmit = async (data: any) => {
+    var result = await dispatch(thunkCustomer.createIndividualCustomer({
+      tckn: data.tckn,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      email: data.email,
+      customer: {
+        legalAddress: data.legalAddress,
+      },
+    }));
+    if (result) {
+      toast.success(t('customer.individual.messages.success'));
+      reset();
+      fetchIndividualCustomers();
+    } else {
+      toast.error(t('customer.individual.messages.error'));
+    }
+
   };
 
   const onError = (errors: any) => {
@@ -86,19 +111,23 @@ export default function Page() {
     if (firstErrorField) {
       const message = errors[firstErrorField]?.message;
       if (message) {
-        showPopup(message, "error");
+        toast.error(message);
       }
     }
   };
 
   const handleClear = () => {
-    reset();
+    reset(); // formu temizle
   };
 
   const scrollToUserList = () => {
     const el = document.getElementById("userListSection");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    fetchIndividualCustomers();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -171,10 +200,11 @@ export default function Page() {
             <input
               type="text"
               maxLength={30}
-              {...register("ad")}
+              {...register("firstName")}
               className={styles.input}
             />
           </div>
+          {/* Soyad */}
           <div className={styles.formGroupRow}>
             <label className={styles.label}>
               {t('customer.individual.form.lastName')} <span className={styles.required}>{t('customer.individual.form.required')}</span>
@@ -182,7 +212,7 @@ export default function Page() {
             <input
               type="text"
               maxLength={30}
-              {...register("soyad")}
+              {...register("lastName")}
               className={styles.input}
             />
           </div>
@@ -200,6 +230,7 @@ export default function Page() {
               className={styles.input}
             />
           </div>
+          {/* Telefon */}
           <div className={styles.formGroupRow}>
             <label className={styles.label}>
               {t('customer.individual.form.phone')} <span className={styles.required}>{t('customer.individual.form.required')}</span>
@@ -207,7 +238,7 @@ export default function Page() {
             <input
               type="text"
               maxLength={10}
-              {...register("telefon")}
+              {...register("phone")}
               className={styles.input}
             />
           </div>
@@ -221,7 +252,7 @@ export default function Page() {
           <textarea
             rows={3}
             maxLength={400}
-            {...register("adres")}
+            {...register("legalAddress")}
             className={styles.textarea}
           />
         </div>
@@ -233,7 +264,7 @@ export default function Page() {
             {t('customer.individual.form.suitabilityTest')} <span className={styles.required}>{t('customer.individual.form.required')}</span>
           </label>
         </div>
-
+        {/* KVKK */}
         <div className={styles.checkboxGroup}>
           <input type="checkbox" id="kvkk" {...register("kvkk")} />
           <label htmlFor="kvkk">
@@ -295,15 +326,15 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
+              {filteredUsers && filteredUsers.length > 0 ? (
+                filteredUsers.map((user: any) => (
                   <tr key={user.id}>
                     <td>{user.id}</td>
-                    <td>{user.ad}</td>
-                    <td>{user.soyad}</td>
-                    <td>{user.telefon}</td>
+                    <td>{user.firstName}</td>
+                    <td>{user.lastName}</td>
+                    <td>{user.phone}</td>
                     <td>{user.email}</td>
-                    <td>{user.adres || "-"}</td>
+                    <td>{user.customer.legalAddress || "-"}</td>
                   </tr>
                 ))
               ) : (
