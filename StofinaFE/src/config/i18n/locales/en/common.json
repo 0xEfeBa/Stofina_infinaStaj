@@ -196,7 +196,7 @@
             "buttons": {
                 "back": "Back",
                 "clear": "Clear",
-                "listUsers": "List Users",
+                "listUsers": "List Customers",
                 "save": "Save"
             },
             "form": {
@@ -212,7 +212,7 @@
                 "mkkText": "Customer approval has been given for the registration to be made with MKK and the sharing of information with relevant institutions."
             },
             "userList": {
-                "title": "User List",
+                "title": "Individual Customer List",
                 "searchPlaceholder": "Search by name, phone or email...",
                 "headers": {
                     "id": "ID",
@@ -225,7 +225,8 @@
                 "noData": "No users found."
             },
             "messages": {
-                "success": "Customer registration completed successfully!"
+                "success": "Customer registration completed successfully!",
+                "error": "An error occurred during customer registration!"
             }
         },
         "corporate": {
@@ -237,7 +238,7 @@
             "buttons": {
                 "back": "Back",
                 "clear": "Clear",
-                "listUsers": "List Users",
+                "listUsers": "List Customers",
                 "save": "Save"
             },
             "form": {
@@ -273,7 +274,8 @@
                 "noData": "No customers found."
             },
             "messages": {
-                "success": "Corporate customer registration completed successfully!"
+                "success": "Corporate customer registration completed successfully!",
+                "error": "An error occurred during corporate customer registration!"
             },
             "validation": {
                 "tradeNameRequired": "Trade name cannot be left empty.",
@@ -313,6 +315,7 @@
                     "accountNumber": "Account Number",
                     "portfolioValue": "Portfolio Value",
                     "balance": "Balance",
+                    "reservedBalance": "Reserved Balance",
                     "lastTransactionDate": "Last Transaction Date",
                     "status": "Status",
                     "portfolioDetail": "Portfolio Detail",
@@ -335,7 +338,11 @@
                 "totalBalance": "Total Balance"
             },
             "modal": {
-                "closeAccountConfirmation": "customer's account number account closing process?"
+                "closeAccountConfirmation": "customer's account closing process?",
+                "closeAccountError": "An error occurred during account closing process!",
+                "closeAccountSuccess": "Account closed successfully!",
+                "openAccountConfirmation": "customer's account opening process?",
+                "openAccountSuccess": "Account opened successfully!"
             }
         },
         "modals": {
@@ -346,6 +353,7 @@
                     "fullName": "Full Name",
                     "tradeName": "Trade Name",
                     "vkn": "VKN",
+                    "initialBalance": "Initial Balance",
                     "accountOpeningDate": "Account Opening Date"
                 },
                 "approval": {
@@ -358,7 +366,8 @@
                     "next": "Next"
                 },
                 "messages": {
-                    "accountOpeningConfirmation": "customer's account opening process?"
+                    "accountOpeningConfirmation": "customer's account opening process?",
+                    "accountOpeningSuccess": "Account opening process completed successfully!"
                 }
             },
             "closeAccount": {
@@ -406,22 +415,54 @@
                 "selectedCustomer": "Customer Name/Trade Name: "
             }
         },
-        "auth": {
-            "login": {
-                "failed": {
-                    "title": "Login Failed",
-                    "message": "Please check your information."
-                },
-                "serverError": {
-                    "title": "Server Error",
-                    "message": "An error occurred during login. Please try again later."
-                }
-            }
-        },
         "constants": {
             "customerType": {
                 "individual": "Individual",
                 "corporate": "Corporate"
+            }
+        },
+        "getIndividuals": {
+            "error": {
+                "title": "Failed to Get Individual Customers",
+                "message": "An error occurred while getting the individual customer list. Please try again later."
+            }
+        },
+        "getCorporateCustomers": {
+            "error": {
+                "title": "Failed to Get Corporate Customers",
+                "message": "An error occurred while getting the corporate customer list. Please try again later."
+            }
+        },
+        "createIndividualCustomer": {
+            "error": {
+                "title": "Failed to Create Individual Customer",
+                "message": "An error occurred while creating the individual customer. Please check your information and try again."
+            },
+            "success": {
+                "title": "Individual Customer Created",
+                "message": "Individual customer created successfully."
+            }
+        },
+        "createCorporateCustomer": {
+            "error": {
+                "title": "Failed to Create Corporate Customer",
+                "message": "An error occurred while creating the corporate customer. Please check your information and try again."
+            },
+            "success": {
+                "title": "Corporate Customer Created",
+                "message": "Corporate customer created successfully."
+            }
+        }
+    },
+    "auth": {
+        "login": {
+            "failed": {
+                "title": "Login Failed",
+                "message": "Please check your information."
+            },
+            "serverError": {
+                "title": "Server Error",
+                "message": "An error occurred during login. Please try again later."
             }
         }
     },
