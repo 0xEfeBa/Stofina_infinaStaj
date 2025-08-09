@@ -7,14 +7,19 @@ import { AppThunk } from "@/store";
 import { SliceGlobalModal } from "@/slice/common/sliceGlobalModal";
 import { SliceUser } from "@/slice/UserSlice";
 import i18n from "@/config/i18n";
-import { IndividualCustomer } from "@/types/customer";
+import {
+  IndividualCustomer,
+  CorporateCustomer,
+  ReqCorporateCustomerCreate,
+  ReqIndividualCustomerCreate,
+} from "@/types/customer";
 import { SliceCustomer } from "@/slice/CustomerSlice";
 
 export const getIndividuals =
   (): AppThunk<Promise<IndividualCustomer | null>> => async (dispatch) => {
     try {
       const response = await axiosInstance.get(
-        `${apiConfig.baseUrl}${apiConfig.customer.individual}`
+        `${apiConfig.baseUrlCustomer}${apiConfig.customer.individual}`
       );
       const data = response.data;
 
@@ -25,8 +30,8 @@ export const getIndividuals =
         dispatch(
           SliceGlobalModal.actions.openModal({
             modalType: "error",
-            title: i18n.t("auth.login.failed.title"),
-            message: data.message || i18n.t("auth.login.failed.message"),
+            title: i18n.t("customer.getIndividuals.error.title"),
+            message: i18n.t("customer.getIndividuals.error.message"),
           })
         );
         return null;
@@ -35,8 +40,8 @@ export const getIndividuals =
       dispatch(
         SliceGlobalModal.actions.openModal({
           modalType: "error",
-          title: i18n.t("auth.login.serverError.title"),
-          message: i18n.t("auth.login.serverError.message"),
+          title: i18n.t("customer.getIndividuals.error.title"),
+          message: i18n.t("customer.getIndividuals.error.message"),
         })
       );
       return null;
@@ -47,7 +52,7 @@ export const getCorporateCustomers =
   (): AppThunk<Promise<IndividualCustomer | null>> => async (dispatch) => {
     try {
       const response = await axiosInstance.get(
-        `${apiConfig.baseUrl}${apiConfig.customer.corporate}`
+        `${apiConfig.baseUrlCustomer}${apiConfig.customer.corporate}`
       );
       const data = response.data;
 
@@ -58,8 +63,8 @@ export const getCorporateCustomers =
         dispatch(
           SliceGlobalModal.actions.openModal({
             modalType: "error",
-            title: i18n.t("auth.login.failed.title"),
-            message: data.message || i18n.t("auth.login.failed.message"),
+            title: i18n.t("customer.getCorporateCustomers.error.title"),
+            message: i18n.t("customer.getCorporateCustomers.error.message"),
           })
         );
         return null;
@@ -68,15 +73,88 @@ export const getCorporateCustomers =
       dispatch(
         SliceGlobalModal.actions.openModal({
           modalType: "error",
-          title: i18n.t("auth.login.serverError.title"),
-          message: i18n.t("auth.login.serverError.message"),
+          title: i18n.t("customer.getCorporateCustomers.error.title"),
+          message: i18n.t("customer.getCorporateCustomers.error.message"),
         })
       );
       return null;
     }
   };
 
+export const createIndividualCustomer =
+  (req: ReqIndividualCustomerCreate): AppThunk<Promise<boolean>> => 
+  async (dispatch) => {
+    try {
+      const response = await axiosInstance.post(
+        `${apiConfig.baseUrlCustomer}${apiConfig.customer.individual}`,
+        req
+      );
+      const data = response.data;
+
+      if (response.status === 200 || response.status === 201) {
+        return true;
+      } else {
+        dispatch(
+          SliceGlobalModal.actions.openModal({
+            modalType: "error",
+            title: i18n.t("customer.createIndividualCustomer.error.title"),
+            message: i18n.t("customer.createIndividualCustomer.error.message"),
+          })
+        );
+        return false;
+      }
+    } catch (error) {
+      dispatch(
+        SliceGlobalModal.actions.openModal({
+          modalType: "error",
+          title: i18n.t("customer.createIndividualCustomer.error.title"),
+          message: i18n.t("customer.createIndividualCustomer.error.message"),
+        })
+      );
+      return false;
+    }
+  };
+
+export const createCorporateCustomer =
+  (
+    req: ReqCorporateCustomerCreate): AppThunk<Promise<boolean >> =>
+  async (dispatch) => {
+    try {
+      const response = await axiosInstance.post(
+        `${apiConfig.baseUrlCustomer}${apiConfig.customer.corporate}`,
+        req
+      );
+      const data = response.data;
+
+      if (response.status === 200 || response.status === 201) {
+        return true;
+      } else {
+        dispatch(
+          SliceGlobalModal.actions.openModal({
+            modalType: "error",
+            title: i18n.t("customer.createCorporateCustomer.error.title"),
+            message:
+              data.message ||
+              i18n.t("customer.createCorporateCustomer.error.message"),
+          })
+        );
+        return false;
+      }
+    } catch (error) {
+      dispatch(
+        SliceGlobalModal.actions.openModal({
+          modalType: "error",
+          title: i18n.t("customer.createCorporateCustomer.error.title"),
+          message: i18n.t("customer.createCorporateCustomer.error.message"),
+        })
+      );
+      return false;
+    }
+  };
+
 export const thunkCustomer = {
   getIndividuals,
   getCorporateCustomers,
+  createIndividualCustomer,
+  createCorporateCustomer,
 };

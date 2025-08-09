@@ -13,6 +13,7 @@ import { useDispatchCustom } from "@/hooks/useDispatchCustom";
 import { useSelectorCustom } from "@/store";
 import { thunkCustomer } from "@/thunks/customerThunk";
 import { toast } from "sonner";
+import { IndividualCustomer } from "@/types/customer";
 
 export default function Page() {
   const router = useRouter();
@@ -327,7 +328,7 @@ export default function Page() {
             </thead>
             <tbody>
               {filteredUsers && filteredUsers.length > 0 ? (
-                filteredUsers.map((user: any) => (
+                filteredUsers.map((user: IndividualCustomer) => (
                   <tr key={user.id}>
                     <td>{user.id}</td>
                     <td>{user.firstName}</td>
