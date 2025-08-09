@@ -56,8 +56,7 @@
   margin-left: 4px;
 }
 
-.input,
-.select {
+.input, .select {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
@@ -69,8 +68,7 @@
   padding-right: 10px;
 }
 
-.input:focus,
-.select:focus {
+.input:focus, .select:focus {
   border-color: #813fb4;
   box-shadow: 0 0 0 2px rgba(129, 63, 180, 0.2);
 }
@@ -143,6 +141,12 @@
   color: #15803d;
 }
 
+.userListActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .searchInput {
   padding: 8px 12px;
   border-radius: 6px;
@@ -157,14 +161,85 @@
   outline: none;
 }
 
+.refreshButton {
+  background: linear-gradient(135deg, #15803d, #22c55e);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(21, 128, 61, 0.2);
+  min-width: 90px;
+  justify-content: center;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #166534, #16a34a);
+  box-shadow: 0 4px 8px rgba(21, 128, 61, 0.3);
+  transform: translateY(-1px);
+}
+
+.refreshButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(21, 128, 61, 0.2);
+}
+
+.refreshButton:disabled {
+  background: linear-gradient(135deg, #9ca3af, #d1d5db);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.refreshButton::before {
+  font-size: 12px;
+  animation: rotate 1s linear infinite;
+  animation-play-state: paused;
+}
+
+.refreshButton:disabled::before {
+  animation-play-state: running;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.loadingContainer p {
+  color: #15803d;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
 .userTable {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
 
-.userTable th,
-.userTable td {
+.userTable th, .userTable td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -217,7 +292,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
-
+  
   to {
     opacity: 1;
     transform: translateY(0);
