@@ -460,12 +460,13 @@
                 "corporate": "Kurumsal"
             },
             "placeholder": {
-                "enabled": "İsim veya hesap numarası girin.",
+                "enabled": "Müşteri adı veya ticaret unvanı girin.",
                 "disabled": "Önce müşteri tipi seçin..."
             },
             "dropdown": {
                 "customerName": "Müşteri Adı / Ticaret Unvanı:",
                 "accountNumber": "Hesap No:",
+                "customerId": "Müşteri Numarası:",
                 "selectedCustomer": "Müşteri Adı/Ticaret Unvanı: "
             }
         },

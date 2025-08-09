@@ -1,26 +1,30 @@
 "use client"
 import { useDispatchCustom } from '@/hooks/useDispatchCustom';
 import { SliceCustomer } from '@/slice/CustomerSlice';
-import { Customer } from '@/types/customer';
+import { CorporateCustomer, IndividualCustomer } from '@/types/customer';
 import React from 'react'
 import { useState, useEffect } from "react";
 import Image from 'next/image';
 import { customerType } from '@/constants/customerType';
 import { mockCustomers } from '@/types/customer';
 import { useTranslation } from 'react-i18next';
+import { thunkCustomer } from '@/thunks/customerThunk';
+import { useSelectorCustom } from '@/store';
 //TODO: Type klasöründe tanımlanacak
 
 
 const AutoCompleteCustomerSearch = () => {
-    const dispatch = useDispatchCustom();
+    const dispatch = useDispatchCustom(); // redux dispatch hook
     const { t } = useTranslation();
+    const { individualCustomers, corporateCustomers } = useSelectorCustom((state) => state.customer);
+
 
     // Customer type selection state
     const [selectedType, setSelectedType] = useState<string>(customerType.BIREYSEL);
     const [query, setQuery] = useState('');
-    const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+    const [filteredCustomers, setFilteredCustomers] = useState<IndividualCustomer[] | CorporateCustomer[]>([]);
 
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false); // dropdown menü gösterimi
 
 
     useEffect(() => { // arama yaparken 
@@ -30,28 +34,55 @@ const AutoCompleteCustomerSearch = () => {
             setShowDropdown(false);
             return;
         }
-        const filteredCustomersByType = mockCustomers.filter((c) => c.customerType === selectedType);
-        const filtered = filteredCustomersByType.filter((c) => // arama yaparken müşteri filtreleme
-            c?.firstName?.toLowerCase().includes(query.toLowerCase()) ||
-            c?.tradeName?.toLowerCase().includes(query.toLowerCase()) ||
-            c?.accountNumber?.includes(query)
 
-        );
+        if (selectedType === customerType.BIREYSEL) {
+            // Bireysel müşteriler için filtreleme
+            const filtered = (individualCustomers || []).filter((c: IndividualCustomer) =>
+                c?.firstName?.toLowerCase().includes(query.toLowerCase()) ||
+                c?.lastName?.toLowerCase().includes(query.toLowerCase()) ||
+                c?.tckn?.includes(query)
+            );
+            setFilteredCustomers(filtered);
+        } else if (selectedType === customerType.KURUMSAL) {
+            // Kurumsal müşteriler için filtreleme
+            const filtered = (corporateCustomers || []).filter((c: CorporateCustomer) =>
+                c?.tradeName?.toLowerCase().includes(query.toLowerCase()) ||
+                c?.taxNumber?.includes(query)
+            );
+            setFilteredCustomers(filtered);
+        }
 
-        setFilteredCustomers(filtered);
         setShowDropdown(true);
-    }, [query, selectedType]);
+    }, [query, selectedType, individualCustomers, corporateCustomers]); // query değiştiğinde veya selectedType değiştiğinde veya individualCustomers veya corporateCustomers değiştiğinde çalışır
 
-    const handleCustomerSelect = (customer: Customer) => { // müşteri seçildiğinde
-        dispatch(SliceCustomer.actions.setSelectedCustomer(customer));
-        setQuery(t('customer.search.dropdown.selectedCustomer') + customer.firstName);
+
+    // render edildiğinde müşteri listesini getir 
+    useEffect(() => {
+        dispatch(thunkCustomer.getIndividuals());
+        dispatch(thunkCustomer.getCorporateCustomers());
+    }, []);
+
+
+
+    const handleCustomerSelect = (customer: IndividualCustomer | CorporateCustomer) => { // müşteri seçildiğinde
+        if (selectedType === customerType.BIREYSEL) {
+            dispatch(SliceCustomer.actions.setSelectedIndividualCustomer(customer as IndividualCustomer));
+            setQuery(t('customer.search.dropdown.selectedCustomer') + (customer as IndividualCustomer).firstName);
+        } else if (selectedType === customerType.KURUMSAL) {
+            dispatch(SliceCustomer.actions.setSelectedCorporateCustomer(customer as CorporateCustomer));
+            setQuery(t('customer.search.dropdown.selectedCustomer') + (customer as CorporateCustomer).tradeName);
+        }
         setShowDropdown(false);
         setFilteredCustomers([]);
     };
 
     const handleClearInput = () => { // arama kutusunu temizlediğinde
         setQuery('');
-        dispatch(SliceCustomer.actions.setSelectedCustomer(null));
+        if (selectedType === customerType.BIREYSEL) {
+            dispatch(SliceCustomer.actions.setSelectedIndividualCustomer(null));
+        } else if (selectedType === customerType.KURUMSAL) {
+            dispatch(SliceCustomer.actions.setSelectedCorporateCustomer(null));
+        }
         setShowDropdown(false);
         setFilteredCustomers([]);
     };
@@ -109,7 +140,8 @@ const AutoCompleteCustomerSearch = () => {
                             disabled={!customerType}
                             onChange={(e) => {
                                 setQuery(e.target.value);
-                                dispatch(SliceCustomer.actions.setSelectedCustomer(null))
+                                dispatch(SliceCustomer.actions.setSelectedIndividualCustomer(null));
+                                dispatch(SliceCustomer.actions.setSelectedCorporateCustomer(null));
                             }}
                             className={`w-full pl-10 pr-10 py-1.5 rounded-md border transition-all duration-200 text-sm ${customerType
                                 ? 'border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#813FB4] bg-white text-gray-900'
@@ -133,20 +165,32 @@ const AutoCompleteCustomerSearch = () => {
                         <ul className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                             {filteredCustomers.map((customer, index) => (
                                 <li
-                                    key={customer.id}
+                                    key={index}
                                     className={`px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm ${index % 2 === 0 ? 'bg-[#813FB4]/10' : 'bg-white'}`}
                                     onClick={() => handleCustomerSelect(customer)}
                                 >
                                     <div className="grid grid-cols-4 ">
                                         <div className="flex col-span-2 gap-2">
                                             <span className="font-semibold text-gray-900 text-sm">{t('customer.search.dropdown.customerName')}</span>
-                                            <span className="text-gray-700 truncate">{customer.firstName}</span>
+                                            <span className="text-gray-700 truncate">
+                                                {selectedType === customerType.BIREYSEL 
+                                                    ? `${(customer as IndividualCustomer).firstName} ${(customer as IndividualCustomer).lastName } `
+                                                    : (customer as CorporateCustomer).tradeName 
+                                                }
+                                            </span>
                                         </div>
 
                                         <div className="flex gap-2 col-span-2">
-                                            <span className="font-semibold text-gray-900 text-sm">{t('customer.search.dropdown.accountNumber')}</span>
-                                            <span className="text-gray-700">{customer.accountNumber}</span>
-                                        </div>
+                                            <span className="font-semibold text-gray-900 text-sm">
+                                                {t('customer.search.dropdown.customerId')}
+                                            </span>
+                                            <span className="text-gray-700">
+                                                {selectedType === customerType.BIREYSEL 
+                                                    ? (customer as IndividualCustomer).tckn
+                                                    : (customer as CorporateCustomer).taxNumber
+                                                }
+                                            </span>
+                                        </div> 
                                     </div>
                                 </li>
                             ))}
