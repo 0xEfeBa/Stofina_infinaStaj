@@ -26,7 +26,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: t('dashboard.menu.customerDefinition'), href: "/dashboard/bireysel", icon: "/menu-icon/add_customer.png" },
     { label: t('dashboard.menu.customerPortfolio'), href: "/dashboard/customer-portfolio", icon: "/menu-icon/basket.png" },
     { label: t('dashboard.menu.customerAccountManagement'), href: "/dashboard/customer-management", icon: "/menu-icon/wallet.png" },
-    { label: t('dashboard.menu.balanceAndStockManagement'), href: "#", icon: "/menu-icon/balance.png" },
     { label: t('dashboard.menu.orderTracking'), href: "/dashboard/order-tracking", icon: "/menu-icon/order.png" },
     { label: t('dashboard.menu.reporting'), href: "/dashboard/report", icon: "/menu-icon/report.png" },
     { label: t('dashboard.menu.userManagement'), href: "/dashboard/user-management", icon: "/menu-icon/portfolio.png" },
@@ -62,10 +61,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setIsSettingsOpen(false);
   };
 
-  const handleLogout = () => {
-    console.log('Çıkış yapılıyor...');
-    setIsUserOpen(false);
+  const handleLogout = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+      if (!accessToken || !user?.id) {
+        console.warn("Token veya kullanıcı bilgisi bulunamadı");
+      } else {
+        const res = await fetch(`http://localhost:9002/api/v1/auth/logout/${user.id}`, {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!res.ok) {
+          console.error("Logout başarısız:", await res.text());
+        }
+      }
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+
+    } catch (err) {
+      console.error("Logout sırasında hata:", err);
+    } finally {
+      setIsUserOpen(false);
+    }
   };
+
 
   const filteredItems = menuItems.filter((item) =>
     item.label.toLowerCase().startsWith(searchTerm.toLowerCase())

@@ -62,6 +62,8 @@ export default function Page() {
   };
 
   const onSubmit = (data: any) => {
+    const token = localStorage.getItem("accessToken");
+    
     const requestBody = {
       symbol: data.kodu,
       stockName: data.adi,
@@ -71,14 +73,16 @@ export default function Page() {
       currency: data.paraBirimi,
       isinCode: data.isinKodu,
       status: "INACTIVE",
-      defaultPrice: 0.0,
-      currentPrice: 0.0,
+      defaultPrice: 0,
+      currentPrice: 0,
     };
 
-    fetch("http://localhost:8081/api/v1/market/stocks", {
+    fetch("http://localhost:9005/api/v1/market/stocks", {
       method: "POST",
       headers: {
+        "accept": "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(requestBody),
     })
@@ -166,9 +170,9 @@ export default function Page() {
             <label className={styles.label}>Pay Piyasa Pazarı*</label>
             <select {...register("payPazari")} className={styles.select}>
               <option value="">Seçiniz</option>
-              <option value="yildiz">Yıldız Pazarı</option>
-              <option value="ana">Ana Pazar</option>
-              <option value="gelisen">Gelişen İşletmeler Pazarı</option>
+              <option value="Ana Piyasa">Ana Piyasa</option>
+              <option value="Yıldız Pazarı">Yıldız Pazarı</option>
+              <option value="Gelişen İşletmeler Pazarı">Gelişen İşletmeler Pazarı</option>
             </select>
           </div>
 
@@ -176,9 +180,9 @@ export default function Page() {
             <label className={styles.label}>Borsa*</label>
             <select {...register("borsa")} className={styles.select}>
               <option value="">Seçiniz</option>
-              <option value="bist100">BIST 100</option>
-              <option value="bist50">BIST 50</option>
-              <option value="bist30">BIST 30</option>
+              <option value="BIST100">BIST100</option>
+              <option value="BIST50">BIST50</option>
+              <option value="BIST30">BIST30</option>
             </select>
           </div>
         </div>

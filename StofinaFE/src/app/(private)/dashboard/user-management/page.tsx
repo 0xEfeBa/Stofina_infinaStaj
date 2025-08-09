@@ -14,17 +14,13 @@ export default function Page() {
 
   const [showUsersTable, setShowUsersTable] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   const tableRef = useRef<HTMLDivElement | null>(null);
 
   const [popup, setPopup] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const popupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const users = [
-    { id: 1, ad: "Ali", soyad: "Veli", telefon: "1234567890", email: "ali@example.com", kullaniciAdi: "ali123", unvan: "Mühendis", yetki: "Admin" },
-    { id: 2, ad: "Ayşe", soyad: "Demir", telefon: "0987654321", email: "ayse@example.com", kullaniciAdi: "ayseD", unvan: "Uzman", yetki: "Kullanıcı" },
-    { id: 3, ad: "Mehmet", soyad: "Yılmaz", telefon: "05443332211", email: "mehmet@example.com", kullaniciAdi: "mehmetY", unvan: "Yönetici", yetki: "Manager" }
-  ];
 
   const filteredUsers = users.filter(user =>
     Object.values(user).some(value =>
@@ -51,10 +47,6 @@ export default function Page() {
       .string()
       .required(t("userManagement.messages.validationErrors.emailRequired"))
       .email(t("userManagement.messages.validationErrors.emailFormat")),
-    kullaniciAdi: yup
-      .string()
-      .required(t("userManagement.messages.validationErrors.usernameRequired"))
-      .min(3, t("userManagement.messages.validationErrors.usernameMinLength")),
     unvan: yup.string().required(t("userManagement.messages.validationErrors.titleRequired")),
     yetki: yup.string().required(t("userManagement.messages.validationErrors.authorityRequired")),
   }).required();
@@ -74,9 +66,109 @@ export default function Page() {
     popupTimeoutRef.current = setTimeout(() => setPopup(null), 3000);
   };
 
-  const onSubmit = (data: any) => {
-    showPopup(t("userManagement.messages.formSubmitted"), "success");
-    reset();
+  const fetchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        showPopup("Token bulunamadı", "error");
+        return;
+      }
+
+      const response = await fetch("http://localhost:9002/api/v1/users", {
+        method: "GET",
+        headers: {
+          "accept": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          showPopup("Token süresi dolmuş", "error");
+          router.push("/login");
+          return;
+        }
+        throw new Error(`Kullanıcılar getirilemedi: ${response.status}`);
+      }
+
+      const userData = await response.json();
+      console.log("Fetched users:", userData);
+      
+      const formattedUsers = userData.map((user: any) => ({
+        id: user.id,
+        ad: user.firstName,
+        soyad: user.lastName,
+        telefon: user.phoneNumber,
+        email: user.email,
+        unvan: user.title,
+        yetki: user.roleTypes?.[0] || "USER"
+      }));
+      
+      setUsers(formattedUsers);
+    } catch (error) {
+      console.error("Fetch users error:", error);
+      showPopup("Kullanıcılar yüklenirken hata oluştu", "error");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        showPopup(t("userManagement.messages.authRequired"), "error");
+        return;
+      }
+
+      const roleMapping: { [key: string]: string } = {
+        admin: "CUSTOMER_SUPER_ADMIN",
+        user: "CUSTOMER_TRADER", 
+        manager: "CUSTOMER_DEVELOPER"
+      };
+
+      const mappedRole = roleMapping[data.yetki.toLowerCase()] || "CUSTOMER_TRADER";
+
+      const response = await fetch("http://localhost:9002/api/v1/users/create-user", {
+        method: "POST",
+        headers: {
+          "accept": "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, 
+        },
+        body: JSON.stringify({
+          firstName: data.ad,
+          lastName: data.soyad,
+          title: data.unvan,
+          phoneNumber: data.telefon,
+          email: data.email,
+          roleTypes: [mappedRole],
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("API Error:", errorData);
+        
+        if (response.status === 401) {
+          showPopup(t("userManagement.messages.tokenExpired"), "error");
+          router.push("/login");
+          return;
+        }
+        
+        throw new Error(`Kullanıcı oluşturma başarısız: ${response.status}`);
+      }
+      
+      showPopup(t("userManagement.messages.formSubmitted"), "success");
+      reset();
+      if (showUsersTable) {
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error("Create user error:", error);
+      showPopup(t("userManagement.messages.createUserError"), "error");
+    }
   };
 
   const onError = (errors: any) => {
@@ -112,6 +204,7 @@ export default function Page() {
           className={styles.secondaryButton}
           onClick={() => {
             setShowUsersTable(true);
+            fetchUsers();
             setTimeout(() => {
               tableRef.current?.scrollIntoView({ behavior: "smooth" });
             }, 100);
@@ -152,19 +245,6 @@ export default function Page() {
             />
           </div>
         </div>
-
-        {/* Kullanıcı Adı */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>
-            {t("userManagement.form.username")} <span className={styles.required}>{t("userManagement.form.required")}</span>
-          </label>
-          <input
-            type="text"
-            {...register("kullaniciAdi")}
-            className={styles.input}
-          />
-        </div>
-
         {/* E-posta ve Telefon */}
         <div className={styles.row}>
           <div className={styles.formGroupRow}>
@@ -232,49 +312,65 @@ export default function Page() {
         <div ref={tableRef} className={styles.userListContainer}>
           <div className={styles.userListHeader}>
             <h3 className={styles.userListTitle}>{t("userManagement.userList.title")}</h3>
-            <input
-              type="text"
-              placeholder={t("userManagement.userList.searchPlaceholder")}
-              className={styles.searchInput}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className={styles.userListActions}>
+              <input
+                type="text"
+                placeholder={t("userManagement.userList.searchPlaceholder")}
+                className={styles.searchInput}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.refreshButton}
+                onClick={fetchUsers}
+                disabled={loadingUsers}
+              >
+                {loadingUsers ? "Yükleniyor..." : "Yenile"}
+              </button>
+            </div>
           </div>
 
-          <table className={styles.userTable}>
-            <thead>
-              <tr>
-                <th>{t("userManagement.userList.headers.id")}</th>
-                <th>{t("userManagement.userList.headers.firstName")}</th>
-                <th>{t("userManagement.userList.headers.lastName")}</th>
-                <th>{t("userManagement.userList.headers.phone")}</th>
-                <th>{t("userManagement.userList.headers.email")}</th>
-                <th>{t("userManagement.userList.headers.username")}</th>
-                <th>{t("userManagement.userList.headers.title")}</th>
-                <th>{t("userManagement.userList.headers.authority")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.ad}</td>
-                    <td>{user.soyad}</td>
-                    <td>{user.telefon}</td>
-                    <td>{user.email}</td>
-                    <td>{user.kullaniciAdi}</td>
-                    <td>{user.unvan}</td>
-                    <td>{user.yetki}</td>
-                  </tr>
-                ))
-              ) : (
+          {loadingUsers ? (
+            <div className={styles.loadingContainer}>
+              <p>Kullanıcılar yükleniyor...</p>
+            </div>
+          ) : (
+            <table className={styles.userTable}>
+              <thead>
                 <tr>
-                  <td colSpan={8} className={styles.noData}>{t("userManagement.userList.noData")}</td>
+                  <th>{t("userManagement.userList.headers.id")}</th>
+                  <th>{t("userManagement.userList.headers.firstName")}</th>
+                  <th>{t("userManagement.userList.headers.lastName")}</th>
+                  <th>{t("userManagement.userList.headers.phone")}</th>
+                  <th>{t("userManagement.userList.headers.email")}</th>
+                  <th>{t("userManagement.userList.headers.title")}</th>
+                  <th>{t("userManagement.userList.headers.authority")}</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.ad}</td>
+                      <td>{user.soyad}</td>
+                      <td>{user.telefon}</td>
+                      <td>{user.email}</td>
+                      <td>{user.unvan}</td>
+                      <td>{user.yetki}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className={styles.noData}>
+                      {users.length === 0 ? "Kullanıcı bulunamadı" : t("userManagement.userList.noData")}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>
