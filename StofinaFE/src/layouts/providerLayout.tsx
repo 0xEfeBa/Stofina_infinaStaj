@@ -6,6 +6,7 @@ import { store } from "@/store";
 import GlobalModal from "@/components/common/GlobalModal";
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/config/i18n';
+import { Toaster } from "sonner";
 
 type ProviderLayoutProps = {
     children: ReactNode;
@@ -17,6 +18,7 @@ export default function ProviderLayout({ children }: ProviderLayoutProps) {
             <Provider store={store}>
                 {children}
                 <GlobalModal />
+                <Toaster />
             </Provider>
         </I18nextProvider>
     );

@@ -1,26 +1,27 @@
 import React from 'react'
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Button, FormControlLabel, Checkbox, Grid, Box, Typography } from '@mui/material';
 import { useState } from 'react';
-import { Customer } from '@/types/customer';
 import { customerType } from '@/constants/customerType';
 import { SliceGlobalModal } from '@/slice/common/sliceGlobalModal';
-import { setSelectedCustomer } from '@/slice/CustomerSlice';
 import { useDispatchCustom } from '@/hooks/useDispatchCustom';
 import { useTranslation } from 'react-i18next';
+import { CorporateCustomer, IndividualCustomer } from '@/types/customer';
+import { thunkAccount } from '@/thunks/accountThunk';
+import { toast } from 'sonner';
 
 interface Props {
     open: boolean;
     onClose: () => void;
-    onSubmit: (formData: any) => void;
-    customer: Customer
+    customer: IndividualCustomer | CorporateCustomer
+    onSubmit: () => void
 }
 
-export default function NewCustomerModal({ open, onClose, onSubmit, customer }: Props) {
+export default function NewAccModal({ open, onClose, customer, onSubmit }: Props) {
     const dispatch = useDispatchCustom();
     const { t } = useTranslation();
     const [formData, setFormData] = useState({
-        customerId: customer.id,
-        initialBalance: '',
+        customerId: customer.customer.id,
+        initialBalance: 0,
         openingDate: new Date(),
         isApproved: false,
     });
@@ -30,16 +31,30 @@ export default function NewCustomerModal({ open, onClose, onSubmit, customer }: 
     };
 
 
-    const handleSubmit = () => {
+
+    const handleSubmit = async () => {
+        const customerName = 'firstName' in customer
+            ? `${customer.firstName} ${customer.lastName}`
+            : customer.tradeName;
+
         dispatch(SliceGlobalModal.actions.openModal({
             modalType: "info",
-            message: `${customer?.firstName + " " + customer?.lastName} ${t('customer.modals.newAccount.messages.accountOpeningConfirmation')}`,
-            multipleButtons: true,  
-            modalAction: () => {
-                onSubmit(formData);
+            message: `${customerName} ${t('customer.modals.newAccount.messages.accountOpeningConfirmation')}`,
+            multipleButtons: true,
+            modalAction: async () => {
+                await handleCreateAccount();
             }
         }))
     };
+
+    const handleCreateAccount = async () => {
+        const response = await dispatch(thunkAccount.createAccount(formData.customerId, formData.initialBalance, formData.openingDate));
+        if (response) {
+            onSubmit();
+            toast.success(t('customer.modals.newAccount.messages.accountOpeningSuccess'));
+            onClose();
+        }
+    }
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -50,11 +65,11 @@ export default function NewCustomerModal({ open, onClose, onSubmit, customer }: 
                         size="small"
                         label={t('customer.modals.newAccount.form.customerNumber')}
                         fullWidth
-                        value={customer.id || ""}
+                        value={customer.customer.id || ""}
                         disabled
                     />
 
-                    {customer.customerType === customerType.BIREYSEL ? <TextField
+                    {'firstName' in customer ? <TextField
                         size="small"
                         label={t('customer.modals.newAccount.form.fullName')}
                         fullWidth
@@ -72,10 +87,23 @@ export default function NewCustomerModal({ open, onClose, onSubmit, customer }: 
                             <TextField
                                 label={t('customer.modals.newAccount.form.vkn')}
                                 fullWidth
-                                value={customer.vkn}
+                                value={customer.taxNumber}
                                 disabled
                             />
                         </>)}
+                    <TextField
+                        size="small"
+                        label={t('customer.modals.newAccount.form.initialBalance')}
+                        type="number"
+                        fullWidth
+                        value={formData.initialBalance}
+                        onChange={e => handleChange('initialBalance', e.target.value)}
+                        onKeyDown={(e) => {
+                            if (['-', '+', 'e', '/'].includes(e.key)) {
+                                e.preventDefault();
+                            }
+                        }}
+                    />
                     <TextField
                         size="small"
                         label={t('customer.modals.newAccount.form.accountOpeningDate')}

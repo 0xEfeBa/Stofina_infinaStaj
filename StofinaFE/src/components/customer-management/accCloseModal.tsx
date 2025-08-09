@@ -1,5 +1,5 @@
 import { Account } from '@/types/account';
-import { Customer } from '@/types/customer';
+import { CorporateCustomer, IndividualCustomer } from '@/types/customer';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Button, FormControlLabel, Checkbox, Grid, Box, Typography, Divider, Alert } from '@mui/material';
 import { AlertTriangle } from 'lucide-react';
 import React from 'react'
@@ -9,7 +9,7 @@ interface Props {
     open: boolean;
     onClose: () => void;
     onSubmit: (formData: any) => void;
-    customer: Customer
+    customer: IndividualCustomer | CorporateCustomer
     account: Account
 }
 
@@ -40,7 +40,13 @@ const AccCloseModal = ({ open, onClose, onSubmit, customer, account }: Props) =>
                             size="small"
                             label={t('customer.modals.closeAccount.form.customerName')}
                             fullWidth
-                            value={customer.tradeName || `${customer.firstName} ${customer.lastName}`}
+                            value={
+                                'firstName' in customer && 'lastName' in customer
+                                    ? `${customer.firstName} ${customer.lastName}`
+                                    : 'tradeName' in customer
+                                        ? customer.tradeName
+                                        : ''
+                            }
                             disabled
                             variant="outlined"
                         />
@@ -50,7 +56,7 @@ const AccCloseModal = ({ open, onClose, onSubmit, customer, account }: Props) =>
                             size="small"
                             label={t('customer.modals.closeAccount.form.customerNumber')}
                             fullWidth
-                            value={customer.id}
+                            value={'id' in customer ? customer.id : customer.customer.id}
                             disabled
                             variant="outlined"
                         />
@@ -60,7 +66,7 @@ const AccCloseModal = ({ open, onClose, onSubmit, customer, account }: Props) =>
                             size="small"
                             label={t('customer.modals.closeAccount.form.accountNumber')}
                             fullWidth
-                            value={account.accountNo}
+                            value={account.accountNumber}
                             disabled
                             variant="outlined"
                         />
@@ -84,8 +90,8 @@ const AccCloseModal = ({ open, onClose, onSubmit, customer, account }: Props) =>
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#92400e' }}>
                         {t('customer.modals.closeAccount.warning.description', {
-                            portfolioValue: formatCurrency(account.portfolioValue || 0),
-                            balance: formatCurrency(account.balance || 0)
+                            portfolioValue: formatCurrency(account.totalBalance || 0),
+                            balance: formatCurrency(account.availableBalance || 0)
                         })}
                     </Typography>
                 </Alert>
@@ -115,7 +121,6 @@ const AccCloseModal = ({ open, onClose, onSubmit, customer, account }: Props) =>
                 <Divider sx={{ my: 2 }} />
 
                 <Typography variant="body2" color="error" align="center">
-                    {t('customer.modals.closeAccount.irreversible')}
                 </Typography>
             </DialogContent>
             <DialogActions sx={{ px: 3, py: 2 }}>

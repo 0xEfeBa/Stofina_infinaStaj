@@ -260,7 +260,7 @@
             "buttons": {
                 "back": "Geri",
                 "clear": "Temizle",
-                "listUsers": "Kullanıcıları Listele",
+                "listUsers": "Müşterileri Listele",
                 "save": "Kaydet"
             },
             "form": {
@@ -276,7 +276,7 @@
                 "mkkText": "MKK nezdinde kaydının yapılması ve bilgilerinin ilgili kurumlarla paylaşılmasına müşteri tarafından onay verilmiştir."
             },
             "userList": {
-                "title": "Kullanıcı Listesi",
+                "title": "Bireysel Müşteri Listesi",
                 "searchPlaceholder": "İsim, telefon veya e-posta ara...",
                 "headers": {
                     "id": "ID",
@@ -289,7 +289,8 @@
                 "noData": "Kullanıcı bulunamadı."
             },
             "messages": {
-                "success": "Müşteri kaydı başarıyla gerçekleşti!"
+                "success": "Müşteri kaydı başarıyla gerçekleşti!",
+                "error": "Müşteri kaydı sırasında bir hata oluştu!"
             }
         },
         "corporate": {
@@ -301,7 +302,7 @@
             "buttons": {
                 "back": "Geri",
                 "clear": "Temizle",
-                "listUsers": "Kullanıcıları Listele",
+                "listUsers": "Müşterileri Listele",
                 "save": "Kaydet"
             },
             "form": {
@@ -337,7 +338,8 @@
                 "noData": "Müşteri bulunamadı."
             },
             "messages": {
-                "success": "Kurumsal müşteri kaydı başarıyla gerçekleşti!"
+                "success": "Kurumsal müşteri kaydı başarıyla gerçekleşti!",
+                "error": "Kurumsal müşteri kaydı sırasında bir hata oluştu!"
             },
             "validation": {
                 "tradeNameRequired": "Ticaret unvanı boş bırakılamaz.",
@@ -377,6 +379,7 @@
                     "accountNumber": "Hesap Numarası",
                     "portfolioValue": "Portföy Değeri",
                     "balance": "Bakiye",
+                    "reservedBalance": "Rezerve Bakiye",
                     "lastTransactionDate": "Son işlem Tarihi",
                     "status": "Statü",
                     "portfolioDetail": "Portföy Detayı",
@@ -387,7 +390,8 @@
                     "edit": "Düzenle",
                     "close": "Kapat",
                     "editAccount": "Hesap Düzenle",
-                    "closeAccount": "Hesap Kapat"
+                    "closeAccount": "Hesap Kapat",
+                    "openAccount": "Hesap Aç"
                 },
                 "tooltips": {
                     "accountsWithBalanceCannotBeClosed": "Bakiye bulunan hesaplar kapatılamaz."
@@ -399,7 +403,11 @@
                 "totalBalance": "Toplam Bakiye"
             },
             "modal": {
-                "closeAccountConfirmation": "müşterisine ait numaralı hesap kapatma işlemini onaylıyor musunuz?"
+                "closeAccountConfirmation": "müşterisine ait hesap kapatma işlemini onaylıyor musunuz?",
+                "closeAccountError": "Hesap kapatma işlemi sırasında bir hata oluştu!",
+                "closeAccountSuccess": "Hesap başarıyla kapatıldı!",
+                "openAccountConfirmation": "müşterisine ait hesap açma işlemini onaylıyor musunuz?",
+                "openAccountSuccess": "Hesap başarıyla açıldı!"
             }
         },
         "modals": {
@@ -410,6 +418,7 @@
                     "fullName": "Ad Soyad",
                     "tradeName": "Ticaret Unvanı",
                     "vkn": "VKN",
+                    "initialBalance": "Başlangıç Bakiyesi",
                     "accountOpeningDate": "Hesap Açılış Tarihi"
                 },
                 "approval": {
@@ -422,7 +431,8 @@
                     "next": "İleri"
                 },
                 "messages": {
-                    "accountOpeningConfirmation": "müşterisine ait hesap açma işlemini onaylıyor musunuz?"
+                    "accountOpeningConfirmation": "müşterisine ait hesap açma işlemini onaylıyor musunuz?",
+                    "accountOpeningSuccess": "Hesap başarıyla açıldı!"
                 }
             },
             "closeAccount": {
@@ -470,22 +480,82 @@
                 "selectedCustomer": "Müşteri Adı/Ticaret Unvanı: "
             }
         },
-        "auth": {
-            "login": {
-                "failed": {
-                    "title": "Giriş Başarısız",
-                    "message": "Lütfen bilgilerinizi kontrol ediniz."
-                },
-                "serverError": {
-                    "title": "Sunucu Hatası",
-                    "message": "Giriş yapılırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
-                }
-            }
-        },
         "constants": {
             "customerType": {
                 "individual": "Bireysel",
                 "corporate": "Kurumsal"
+            }
+        },
+        "getIndividuals": {
+            "error": {
+                "title": "Bireysel Müşteriler Alınamadı",
+                "message": "Bireysel müşteri listesi alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            }
+        },
+        "getCorporateCustomers": {
+            "error": {
+                "title": "Kurumsal Müşteriler Alınamadı",
+                "message": "Kurumsal müşteri listesi alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            }
+        },
+        "createIndividualCustomer": {
+            "error": {
+                "title": "Bireysel Müşteri Oluşturulamadı",
+                "message": "Bireysel müşteri oluşturulurken bir hata oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyiniz."
+            },
+            "success": {
+                "title": "Bireysel Müşteri Oluşturuldu",
+                "message": "Bireysel müşteri başarıyla oluşturuldu."
+            }
+        },
+        "createCorporateCustomer": {
+            "error": {
+                "title": "Kurumsal Müşteri Oluşturulamadı",
+                "message": "Kurumsal müşteri oluşturulurken bir hata oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyiniz."
+            },
+            "success": {
+                "title": "Kurumsal Müşteri Oluşturuldu",
+                "message": "Kurumsal müşteri başarıyla oluşturuldu."
+            }
+        }
+    },
+    "account": {
+        "getAccountsByCustomerId": {
+            "error": {
+                "title": "Hesaplar Alınamadı",
+                "message": "Müşteri hesapları alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            }
+        },
+        "createAccount": {
+            "error": {
+                "title": "Hesap Oluşturulamadı",
+                "message": "Hesap oluşturulurken bir hata oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyiniz."
+            },
+            "success": {
+                "title": "Hesap Oluşturuldu",
+                "message": "Hesap başarıyla oluşturuldu."
+            }
+        },
+        "changeAccountStatus": {
+            "error": {
+                "title": "Hesap Durumu Değiştirilemedi",
+                "message": "Hesap durumu değiştirilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            },
+            "success": {
+                "title": "Hesap Durumu Değiştirildi",
+                "message": "Hesap durumu başarıyla değiştirildi."
+            }
+        }
+    },
+    "auth": {
+        "login": {
+            "failed": {
+                "title": "Giriş Başarısız",
+                "message": "Lütfen bilgilerinizi kontrol ediniz."
+            },
+            "serverError": {
+                "title": "Sunucu Hatası",
+                "message": "Giriş yapılırken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
             }
         }
     },
