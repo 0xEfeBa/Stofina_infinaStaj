@@ -28,4 +28,29 @@ export interface CorporateCustomer {
   customer: CustomerDetail;
 }
 
+export interface ReqIndividualCustomerCreate {
+  tckn: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  customer: {
+    legalAddress: string;
+  };
+}
+
+export interface ReqCorporateCustomerCreate {
+  tradeName: string;
+  tradeRegistryNumber: string;
+  taxNumber: string;
+  taxOffice: string;
+  representativeName: string;
+  representativeTckn: string;
+  representativePhone: string;
+  representativeEmail: string;
+  customer: {
+    legalAddress: string;
+  };
+}
+
 export const mockCustomers: IndividualCustomer[] = [];

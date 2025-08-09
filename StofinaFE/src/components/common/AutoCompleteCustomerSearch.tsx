@@ -27,6 +27,7 @@ const AutoCompleteCustomerSearch = () => {
     const [showDropdown, setShowDropdown] = useState(false); // dropdown menü gösterimi
 
 
+
     useEffect(() => { // arama yaparken 
 
         if (query.length < 2) {
@@ -37,7 +38,7 @@ const AutoCompleteCustomerSearch = () => {
 
         if (selectedType === customerType.BIREYSEL) {
             // Bireysel müşteriler için filtreleme
-            const filtered = (individualCustomers || []).filter((c: IndividualCustomer) =>
+            const filtered = (individualCustomers || [])?.filter((c: IndividualCustomer) =>
                 c?.firstName?.toLowerCase().includes(query.toLowerCase()) ||
                 c?.lastName?.toLowerCase().includes(query.toLowerCase()) ||
                 c?.tckn?.includes(query)
@@ -45,7 +46,7 @@ const AutoCompleteCustomerSearch = () => {
             setFilteredCustomers(filtered);
         } else if (selectedType === customerType.KURUMSAL) {
             // Kurumsal müşteriler için filtreleme
-            const filtered = (corporateCustomers || []).filter((c: CorporateCustomer) =>
+            const filtered = (corporateCustomers || [])?.filter((c: CorporateCustomer) =>
                 c?.tradeName?.toLowerCase().includes(query.toLowerCase()) ||
                 c?.taxNumber?.includes(query)
             );
@@ -95,7 +96,11 @@ const AutoCompleteCustomerSearch = () => {
                     <div className="relative inline-flex bg-gray-100 rounded-lg p-1 w-full max-w-md ">
                         <button
                             type="button"
-                            onClick={() => setSelectedType(customerType.BIREYSEL)}
+                            onClick={() => {
+                                setSelectedType(customerType.BIREYSEL)
+                                dispatch(SliceCustomer.actions.setSelectedIndividualCustomer(null));
+                                dispatch(SliceCustomer.actions.setSelectedCorporateCustomer(null));
+                            }}
                             className={`flex-1 cursor-pointer px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 flex items-center justify-center gap-2 ${selectedType === customerType.BIREYSEL
                                 ? 'bg-white text-[#813FB4] shadow-sm border border-gray-200'
                                 : 'text-gray-600 hover:text-gray-800'
@@ -111,7 +116,11 @@ const AutoCompleteCustomerSearch = () => {
 
                         <button
                             type="button"
-                            onClick={() => setSelectedType(customerType.KURUMSAL)}
+                            onClick={() => {
+                                setSelectedType(customerType.KURUMSAL)
+                                dispatch(SliceCustomer.actions.setSelectedIndividualCustomer(null));
+                                dispatch(SliceCustomer.actions.setSelectedCorporateCustomer(null));
+                            }}
                             className={`flex-1 cursor-pointer px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 flex items-center justify-center gap-2 ${selectedType === customerType.KURUMSAL
                                 ? 'bg-white font-bold text-[#813FB4] shadow-sm border border-gray-200'
                                 : 'text-gray-600 hover:text-gray-800'
@@ -173,9 +182,9 @@ const AutoCompleteCustomerSearch = () => {
                                         <div className="flex col-span-2 gap-2">
                                             <span className="font-semibold text-gray-900 text-sm">{t('customer.search.dropdown.customerName')}</span>
                                             <span className="text-gray-700 truncate">
-                                                {selectedType === customerType.BIREYSEL 
-                                                    ? `${(customer as IndividualCustomer).firstName} ${(customer as IndividualCustomer).lastName } `
-                                                    : (customer as CorporateCustomer).tradeName 
+                                                {selectedType === customerType.BIREYSEL
+                                                    ? `${(customer as IndividualCustomer).firstName} ${(customer as IndividualCustomer).lastName} `
+                                                    : (customer as CorporateCustomer).tradeName
                                                 }
                                             </span>
                                         </div>
@@ -185,12 +194,12 @@ const AutoCompleteCustomerSearch = () => {
                                                 {t('customer.search.dropdown.customerId')}
                                             </span>
                                             <span className="text-gray-700">
-                                                {selectedType === customerType.BIREYSEL 
+                                                {selectedType === customerType.BIREYSEL
                                                     ? (customer as IndividualCustomer).tckn
                                                     : (customer as CorporateCustomer).taxNumber
                                                 }
                                             </span>
-                                        </div> 
+                                        </div>
                                     </div>
                                 </li>
                             ))}
