@@ -12,7 +12,29 @@
             "submit": "Gönder",
             "yes": "Evet",
             "no": "Hayır",
-            "ok": "Tamam"
+            "ok": "Tamam",
+            "next": "İleri",
+            "previous": "Geri",
+            "confirm": "Onayla",
+            "reject": "Reddet",
+            "approve": "Onayla",
+            "download": "İndir",
+            "upload": "Yükle",
+            "print": "Yazdır",
+            "export": "Dışa Aktar",
+            "import": "İçe Aktar",
+            "refresh": "Yenile",
+            "filter": "Filtrele",
+            "sort": "Sırala",
+            "view": "Görüntüle",
+            "details": "Detaylar",
+            "back": "Geri",
+            "forward": "İleri",
+            "home": "Ana Sayfa",
+            "menu": "Menü",
+            "settings": "Ayarlar",
+            "profile": "Profil",
+            "logout": "Çıkış"
         },
         "messages": {
             "success": "Başarılı",
@@ -23,14 +45,38 @@
             "noData": "Veri bulunamadı",
             "confirmDelete": "Bu öğeyi silmek istediğinizden emin misiniz?",
             "operationSuccess": "İşlem başarıyla tamamlandı",
-            "operationFailed": "İşlem başarısız oldu"
+            "operationFailed": "İşlem başarısız oldu",
+            "dataSaved": "Veriler başarıyla kaydedildi",
+            "dataUpdated": "Veriler başarıyla güncellendi",
+            "dataDeleted": "Veriler başarıyla silindi",
+            "connectionError": "Bağlantı hatası oluştu",
+            "serverError": "Sunucu hatası oluştu",
+            "networkError": "Ağ hatası oluştu",
+            "timeoutError": "Zaman aşımı hatası",
+            "unauthorized": "Yetkisiz erişim",
+            "forbidden": "Erişim reddedildi",
+            "notFound": "Sayfa bulunamadı",
+            "validationError": "Doğrulama hatası",
+            "requiredField": "Bu alan zorunludur",
+            "invalidFormat": "Geçersiz format",
+            "invalidValue": "Geçersiz değer"
         },
         "validation": {
             "required": "Bu alan zorunludur",
             "email": "Geçerli bir e-posta adresi giriniz",
             "minLength": "En az {{min}} karakter olmalıdır",
             "maxLength": "En fazla {{max}} karakter olmalıdır",
-            "phone": "Geçerli bir telefon numarası giriniz"
+            "phone": "Geçerli bir telefon numarası giriniz",
+            "numeric": "Sadece sayısal değer giriniz",
+            "alpha": "Sadece harf giriniz",
+            "alphanumeric": "Sadece harf ve sayı giriniz",
+            "url": "Geçerli bir URL giriniz",
+            "date": "Geçerli bir tarih giriniz",
+            "time": "Geçerli bir saat giriniz",
+            "password": "Şifre en az 8 karakter olmalıdır",
+            "passwordMatch": "Şifreler eşleşmiyor",
+            "tckn": "T.C. Kimlik Numarası 11 haneli olmalıdır",
+            "vkn": "Vergi Kimlik Numarası 10 haneli olmalıdır"
         },
         "navigation": {
             "dashboard": "Dashboard",
@@ -38,9 +84,87 @@
             "orders": "Siparişler",
             "reports": "Raporlar",
             "settings": "Ayarlar",
-            "logout": "Çıkış"
+            "logout": "Çıkış",
+            "home": "Ana Sayfa",
+            "profile": "Profil",
+            "help": "Yardım",
+            "about": "Hakkında",
+            "contact": "İletişim"
+        },
+        "status": {
+            "active": "Aktif",
+            "passive": "Pasif",
+            "pending": "Bekliyor",
+            "completed": "Tamamlandı",
+            "cancelled": "İptal",
+            "error": "Hata",
+            "success": "Başarılı",
+            "warning": "Uyarı",
+            "info": "Bilgi"
+        },
+        "time": {
+            "today": "Bugün",
+            "yesterday": "Dün",
+            "tomorrow": "Yarın",
+            "thisWeek": "Bu Hafta",
+            "lastWeek": "Geçen Hafta",
+            "thisMonth": "Bu Ay",
+            "lastMonth": "Geçen Ay",
+            "thisYear": "Bu Yıl",
+            "lastYear": "Geçen Yıl"
         },
         "back": "Geri"
+    },
+    "main": {
+        "greeting": {
+            "goodMorning": "Günaydın",
+            "goodAfternoon": "İyi Günler",
+            "goodEvening": "İyi Akşamlar"
+        },
+        "welcome": "Stofina Trading Platformuna Hoş Geldiniz",
+        "loading": "Yükleniyor...",
+        "quickActions": {
+            "title": "Hızlı İşlemler",
+            "description": "Sık kullandığınız işlemlere hızlıca erişin",
+            "scrollToQuickActions": "Hızlı İşlemler bölümüne git",
+            "actions": {
+                "trading": {
+                    "title": "Alım-Satım",
+                    "description": "Hızlı işlem yapın",
+                    "badge": "Popüler"
+                },
+                "orderTracking": {
+                    "title": "Emir Takip",
+                    "description": "Emir takibi yapın"
+                },
+                "customerManagement": {
+                    "title": "Müşteri Yönetimi",
+                    "description": "Müşteri işlemlerini yönetin"
+                },
+                "reports": {
+                    "title": "Raporlar",
+                    "description": "Günlük raporlar"
+                }
+            }
+        },
+        "stats": {
+            "title": "Platform İstatistikleri",
+            "activeCustomers": {
+                "label": "Aktif Müşteri",
+                "value": "1,234",
+                "change": "+12%"
+            },
+            "dailyTransactions": {
+                "label": "Günlük İşlem",
+                "value": "567",
+                "change": "+8%"
+            },
+            "activePortfolios": {
+                "label": "Aktif Portföy",
+                "value": "89",
+                "change": "+5%"
+            }
+        }
     },
     "transfer": {
         "title": "KIYMET VE PARA TRANSFERİ",
@@ -567,6 +691,10 @@
                 "title": "Hesap Durumu Değiştirildi",
                 "message": "Hesap durumu başarıyla değiştirildi."
             }
+        },
+        "openAccount": {
+            "title": "Hesap Aç",
+            "success": "Hesap başarıyla açıldı!"
         }
     },
     "auth": {
