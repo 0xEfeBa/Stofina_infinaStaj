@@ -97,12 +97,14 @@
     }
 },
     "customerPortfolio": {
+        "title": "Customer Portfolio",
         "search": {
             "label": "Search Orders",
             "placeholder": "Search by stock symbol."
         },
         "table": {
             "headers": {
+                "id": "ID",
                 "symbol": "Stock Symbol",
                 "quantity": "Current Quantity",
                 "availableQuantity": "Available Quantity",
@@ -121,12 +123,13 @@
             }
         },
         "summary": {
+            "title": "Portfolio Summary",
             "status": {
                 "label": "Status",
                 "active": "Active"
             },
             "totalAssets": {
-                "label": "Total Assets"
+                "label": "Total Balance"
             },
             "totalCash": {
                 "label": "Total Cash Position"
@@ -429,6 +432,15 @@
                 "individual": "Individual",
                 "corporate": "Corporate"
             }
+        },
+        "customerInfo": {
+            "title": "Customer Information",
+            "individual": "Individual Customer",
+            "corporate": "Corporate Customer",
+            "customerId": "Customer ID",
+            "taxNumber": "Tax Number",
+            "loading": "Loading customer information...",
+            "selectAccount": "Please select an account for transactions."
         },
         "getIndividuals": {
             "error": {
