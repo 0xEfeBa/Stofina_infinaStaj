@@ -1,28 +1,48 @@
 server:
-  port: 8080
-
+  port: 9005
 spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: market-data-service
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
   jpa:
+    show-sql: false
     defer-datasource-initialization: true
-    show-sql: true
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
 
-  redis:
-    host: localhost
-    port: 6379
-    timeout: 2000ms
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    properties:
+      spring.json.add.type.headers: false
+
+
+market:
+  update-interval-ms: 10000
+  max-change-percent: 0.02
+  daily-limit-percent: 0.10
+
+cache:
+  price-ttl-seconds: 5
+  session-ttl-seconds: 3600
+  stats-ttl-seconds: 86400
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+

@@ -1,5 +1,9 @@
 package com.stofina.app.marketdataservice.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+// CHECKPOINT 2.10: Price Calculation Utility
 public final class PriceCalculationUtil {
 
     private static final BigDecimal HUNDRED = new BigDecimal("100");

@@ -1,15 +1,16 @@
-package com.stofina.app.orderservice.config;
+package com.stofina.app.marketdataservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.stofina.app.commondata.security.handler.RestAccessDeniedHandler;
 import com.stofina.app.commondata.security.handler.RestAuthenticationEntryPoint;
 import com.stofina.app.commondata.security.jwt.JwtService;
-import com.stofina.app.orderservice.security.JwtAuthFilter;
+import com.stofina.app.marketdataservice.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpMethod;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -62,26 +63,15 @@ public class SecurityConfiguration {
                                 "/actuator/**",
                                 "/swagger-ui/**"
                         ).permitAll()
-//                        .requestMatchers(HttpMethod.GET,
-//                                "/api/v1/orders/**",
-//                                "/api/v1/market-data/**",
-//                                "/api/v1/order-book/**",
-//                                "/api/stop-loss/**"
-//                        ).hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 //
-//                        .requestMatchers(HttpMethod.POST,
-//                                "/api/v1/orders/**",
-//                                "/api/stop-loss/**"
-//                        ).hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 //
-//                        .requestMatchers(HttpMethod.PATCH,
-//                                "/api/v1/orders/**"
-//                        ).hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+//                        .requestMatchers(HttpMethod.PATCH,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 //
-//                        .requestMatchers(HttpMethod.DELETE,
-//                                "/api/v1/orders/**",
-//                                "/api/stop-loss/**"
-//                        ).hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+//                        .requestMatchers(HttpMethod.DELETE,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+//
+//                        .requestMatchers(HttpMethod.PUT, "/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
                                 .anyRequest().permitAll()
 
                 )

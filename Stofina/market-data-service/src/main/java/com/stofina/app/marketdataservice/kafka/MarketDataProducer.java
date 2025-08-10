@@ -1,7 +1,7 @@
-package com.stofina.market_data_service.kafka;
+package com.stofina.app.marketdataservice.kafka;
 
-import com.stofina.market_data_service.dto.response.StockResponse;
-import org.springframework.kafka.core.KafkaTemplate;
+ import com.stofina.app.marketdataservice.dto.response.StockResponse;
+ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
