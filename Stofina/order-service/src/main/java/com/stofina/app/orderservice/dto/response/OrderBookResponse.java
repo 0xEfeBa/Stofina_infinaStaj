@@ -1,6 +1,7 @@
 package com.stofina.app.orderservice.dto.response;
 
 import com.stofina.app.orderservice.model.OrderLevel;
+import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -26,7 +27,7 @@ public class OrderBookResponse {
     private String status;
     
     public static OrderBookResponse fromSnapshot(
-            com.stofina.app.orderservice.model.SimpleOrderBookSnapshot snapshot) {
+            SimpleOrderBookSnapshot snapshot) {
         
         if (snapshot == null) {
             return createEmptyResponse("UNKNOWN");
