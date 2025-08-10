@@ -1,0 +1,35 @@
+server:
+  port: 9004
+spring:
+  application:
+    name: mail-service
+  security:
+    user:
+      name: disabled
+      password: disabled
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: cdilsiz33.13@gmail.com
+    password: nfiq zdmx cpyo jais
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true

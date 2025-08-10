@@ -1,0 +1,12 @@
+app:
+  frontend-url: "http://localhost:3030"
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
