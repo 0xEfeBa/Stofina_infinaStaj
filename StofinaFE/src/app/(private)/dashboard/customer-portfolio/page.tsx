@@ -19,7 +19,7 @@ const Page = () => {
                 <AutoCompleteCustomerSearch />
             </div>
             <div>
-                <CustomerPortfolio />
+                <CustomerPortfolio stocks={[]} balance={null} />
             </div>
         </div>
     )
