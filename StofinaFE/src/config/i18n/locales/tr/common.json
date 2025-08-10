@@ -71,9 +71,6 @@
                 "label": "Adet",
                 "placeholder": "Adet"
             },
-            "transferDate": {
-                "label": "Gönderi Tarihi"
-            },
             "senderAccount": {
                 "label": "Gönderici Hesap",
                 "placeholder": "Seçiniz"
@@ -81,6 +78,18 @@
             "receiverAccount": {
                 "label": "Alıcı Hesap",
                 "placeholder": "Seçiniz"
+            },
+            "senderCustomer": {
+                "label": "Gönderici Müşteri",
+                "placeholder": "Müşteri seçiniz"
+            },
+            "receiverCustomer": {
+                "label": "Alıcı Müşteri",
+                "placeholder": "Müşteri seçiniz"
+            },
+            "description": {
+                "label": "Açıklama",
+                "placeholder": "Transfer için açıklama giriniz."
             }
         },
         "buttons": {
