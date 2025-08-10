@@ -56,7 +56,7 @@ const AccCloseModal = ({ open, onClose, onSubmit, customer, account }: Props) =>
                             size="small"
                             label={t('customer.modals.closeAccount.form.customerNumber')}
                             fullWidth
-                            value={'id' in customer ? customer.id : customer.customer.id}
+                            value={customer.customer.id}
                             disabled
                             variant="outlined"
                         />

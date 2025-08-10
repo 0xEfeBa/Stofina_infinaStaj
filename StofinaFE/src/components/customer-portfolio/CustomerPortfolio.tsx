@@ -17,6 +17,7 @@ export default function CustomerPortfolio({ stocks, balance }: CustomerPortfolio
     const { t } = useTranslation("common");
     const dispatch = useDispatchCustom();
     const [search, setSearch] = useState('');
+    const { selectedIndividualCustomer, selectedCorporateCustomer } = useSelectorCustom((state) => state.customer);
     const router = useRouter();
 
     console.log(stocks);
@@ -33,8 +34,10 @@ export default function CustomerPortfolio({ stocks, balance }: CustomerPortfolio
                     .includes(search.toLowerCase())
             )
 
-    }, [search, stocks]);
-
+    }, [search]);
+    if (!selectedIndividualCustomer && !selectedCorporateCustomer) {
+        return <></>
+    }
 
     const handleBuyOrder = () => {
         router.push(`/dashboard/trading`);
