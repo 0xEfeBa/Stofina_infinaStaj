@@ -1,6 +1,6 @@
 package com.stofina.app.marketdataservice.config;
 
-import com.stofina.app.marketdataservice.constants.Constants;
+import com.stofina.app.marketdataservice.constant.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;

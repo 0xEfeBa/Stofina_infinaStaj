@@ -1,4 +1,4 @@
-package com.stofina.market_data_service.dto.websocket;
+package com.stofina.app.marketdataservice.dto.websocket;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

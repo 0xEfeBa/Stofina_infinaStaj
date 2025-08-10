@@ -1,4 +1,4 @@
-package com.stofina.app.marketdataservice.service;
+package com.stofina.app.marketdataservice.service.impl;
 
 import com.stofina.app.marketdataservice.dto.response.PriceResponse;
 import org.springframework.validation.annotation.Validated;

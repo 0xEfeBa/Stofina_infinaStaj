@@ -1,34 +1,27 @@
 package com.stofina.app.marketdataservice.controller;
 
 import com.stofina.app.marketdataservice.dto.request.MarketDataSubscription;
-
-import com.stofina.app.marketdataservice.dto.websocket.PriceUpdateMessage;
-
 import com.stofina.app.marketdataservice.dto.websocket.WebSocketMessage;
-import com.stofina.app.marketdataservice.service.IWebSocketBroadcastService;
-import com.stofina.app.marketdataservice.service.IPriceSimulationService;
+import com.stofina.app.marketdataservice.service.WebSocketBroadcastService;
+import com.stofina.app.marketdataservice.service.PriceSimulationService;
 import com.stofina.app.marketdataservice.entity.Stock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-
 import org.springframework.stereotype.Controller;
 
 import java.math.BigDecimal;
-
 import java.util.*;
-
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MarketWebSocketController {
 
-    private final IWebSocketBroadcastService broadcastService;
-    private final IPriceSimulationService priceSimulationService;
+    private final WebSocketBroadcastService broadcastService;
+    private final PriceSimulationService priceSimulationService;
 
     @MessageMapping("/subscribe")
     public void handleSubscribe(@Payload WebSocketMessage<MarketDataSubscription> message, SimpMessageHeaderAccessor headerAccessor) {
@@ -47,8 +40,7 @@ public class MarketWebSocketController {
                     BigDecimal previousClose = stock.getPreviousClose();
                     BigDecimal change = currentPrice.subtract(previousClose);
                     
-                    PriceUpdateMessage priceMessage = new PriceUpdateMessage(symbol, currentPrice.doubleValue(), change.doubleValue(), 0.0, System.currentTimeMillis());
-                    broadcastService.broadcastPriceUpdate(symbol, priceMessage);
+                    broadcastService.broadcastPriceUpdate(symbol, currentPrice, change, BigDecimal.ZERO);
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.stofina.app.marketdataservice.constants;
+package com.stofina.app.marketdataservice.constant;
 
 public class Messages {
 

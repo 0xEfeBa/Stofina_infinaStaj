@@ -1,4 +1,4 @@
-package com.stofina.app.marketdataservice.exceptions;
+package com.stofina.app.marketdataservice.exception;
 
 public class InvalidSymbolException extends RuntimeException {
     public InvalidSymbolException(String message) {

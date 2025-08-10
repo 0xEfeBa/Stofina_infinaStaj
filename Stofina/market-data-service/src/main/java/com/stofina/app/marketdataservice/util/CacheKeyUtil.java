@@ -1,6 +1,6 @@
 package com.stofina.app.marketdataservice.util;
 
-import com.stofina.app.marketdataservice.constants.Constants;
+import com.stofina. app.marketdataservice.constant.Constants;
 
 public final class CacheKeyUtil {
 

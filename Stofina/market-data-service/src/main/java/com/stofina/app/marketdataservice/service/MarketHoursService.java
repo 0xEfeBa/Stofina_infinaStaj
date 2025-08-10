@@ -1,6 +1,6 @@
-package com.stofina.app.marketdataservice.service.impl;
+package com.stofina.app.marketdataservice.service;
 
-import com.stofina.app.marketdataservice.constants.Constants;
+import com.stofina.app.marketdataservice.constant.Constants;
 import org.springframework.stereotype.Service;
 
 import java.time.*;

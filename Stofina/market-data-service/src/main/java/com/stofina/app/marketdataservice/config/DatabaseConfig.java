@@ -11,7 +11,7 @@ import java.util.TimeZone;
 @Configuration
 public class DatabaseConfig {
 
- //TODO: Database bilgileri geldikten sonra bu sınıfı güncell
+    //TODO: Database bilgileri geldikten sonra bu sınıfı güncelle
 
     @PostConstruct
     public void init() {

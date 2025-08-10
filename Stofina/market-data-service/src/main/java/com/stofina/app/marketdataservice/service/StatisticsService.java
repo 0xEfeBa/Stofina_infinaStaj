@@ -1,7 +1,7 @@
-package com.stofina.app.marketdataservice.service.impl;
+package com.stofina.app.marketdataservice.service;
 
 import com.stofina.app.marketdataservice.dto.response.PriceResponse;
-import com.stofina.app.marketdataservice.service.IStatisticsService;
+import com.stofina.app.marketdataservice.service.impl.IStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

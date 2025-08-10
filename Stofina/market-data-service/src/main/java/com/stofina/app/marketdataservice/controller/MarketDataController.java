@@ -1,43 +1,49 @@
 package com.stofina.app.marketdataservice.controller;
 
 
-import com.stofina.app.marketdataservice.constants.Constants;
+import com.stofina.app.marketdataservice.constant.Constants;
+import com.stofina.app.marketdataservice.dto.request.StockRequest;
+import com.stofina.app.marketdataservice.dto.response.StockResponse;
 import com.stofina.app.marketdataservice.entity.Stock;
-import com.stofina.app.marketdataservice.exceptions.InvalidSymbolException;
-import com.stofina.app.marketdataservice.exceptions.StockNotFoundException;
-import com.stofina.app.marketdataservice.service.IMarketHoursService;
-import com.stofina.app.marketdataservice.service.IPriceSimulationService;
+import com.stofina.app.marketdataservice.enums.StockStatus;
+import com.stofina.app.marketdataservice.exception.InvalidSymbolException;
+import com.stofina.app.marketdataservice.exception.StockNotFoundException;
+import com.stofina.app.marketdataservice.mapper.StockMapper;
+import com.stofina.app.marketdataservice.service.MarketHoursService;
+import com.stofina.app.marketdataservice.service.PriceSimulationService;
+import com.stofina.app.marketdataservice.service.impl.IStockService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // CHECKPOINT 2.9: MarketDataController - Price Endpoints (Developer 2 Contribution)
 @RestController
 @RequestMapping("/api/v1/market")
+@Slf4j
 public class MarketDataController {
 
     private static final Logger logger = LoggerFactory.getLogger(MarketDataController.class);
 
     @Autowired
-    private IPriceSimulationService priceSimulationService;
+    private PriceSimulationService priceSimulationService;
 
     @Autowired
-    private IMarketHoursService marketHoursService;
+    private MarketHoursService marketHoursService;
 
     @Autowired
     private ReactiveRedisTemplate<String, Object> redisTemplate;
 
-    // StockRepository kaldırıldı - artık PriceSimulationService'ten veri çekiliyor
+    @Autowired
+    private IStockService stockService;
 
     @GetMapping("/symbols")
     public ResponseEntity<List<Map<String, Object>>> getAllSymbols() {
@@ -231,6 +237,38 @@ public class MarketDataController {
         return stats;
     }
 
-    // createErrorResponse kaldırıldı - GlobalExceptionHandler kullanılıyor
+    @PostMapping("/stocks")
+    public ResponseEntity<?> addNewStock(@RequestBody StockRequest request) {
+        Stock existingStock = priceSimulationService.getStockBySymbol(request.getSymbol());
+        if (Objects.nonNull(existingStock)) {
+            log.warn("Stock already exists with symbol: {}", request.getSymbol());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Stock with symbol " + request.getSymbol() + " already exists.");
+        }
+
+        Stock stock = StockMapper.toEntity(request);
+
+        if (stock.getDefaultPrice() == null) {
+            stock.setDefaultPrice(BigDecimal.ZERO);
+        }
+        if (stock.getCurrentPrice() == null) {
+            stock.setCurrentPrice(BigDecimal.ZERO);
+        }
+        stock.setStatus(StockStatus.INACTIVE);
+
+        stockService.save(stock);
+
+        log.info("🦄 New stock successfully added: {} - {} (Status: {}, Price: {})",
+                stock.getSymbol(),
+                stock.getCompanyName(),
+                stock.getStatus(),
+                stock.getCurrentPrice());
+
+        StockResponse response = StockMapper.toResponse(stock);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
+
 }
 

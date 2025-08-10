@@ -1,4 +1,4 @@
-package com.stofina.app.marketdataservice.service;
+package com.stofina.app.marketdataservice.service.impl;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

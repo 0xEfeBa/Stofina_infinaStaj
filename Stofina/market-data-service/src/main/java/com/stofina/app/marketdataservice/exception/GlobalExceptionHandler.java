@@ -1,9 +1,9 @@
-package com.stofina.app.marketdataservice.exceptions;
+package com.stofina.app.marketdataservice.exception;
 
 
-import com.stofina.app.marketdataservice.constants.Constants;
+
+import com.stofina.app.marketdataservice.constant.Constants;
 import com.stofina.app.marketdataservice.dto.response.ErrorResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

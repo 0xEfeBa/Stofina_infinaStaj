@@ -1,4 +1,4 @@
-package com.stofina.app.marketdataservice.exceptions;
+package com.stofina.app.marketdataservice.exception;
 
 
 public class StockNotFoundException extends RuntimeException {
@@ -10,3 +10,5 @@ public class StockNotFoundException extends RuntimeException {
         super(String.format("Stock '%s': %s", symbol, message));
     }
 }
+
+

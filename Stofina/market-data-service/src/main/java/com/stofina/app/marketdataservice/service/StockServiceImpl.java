@@ -1,10 +1,10 @@
-package com.stofina.app.marketdataservice.service.impl;
+package com.stofina.app.marketdataservice.service;
 
 import com.stofina.app.marketdataservice.common.ServiceResult;
-import com.stofina.app.marketdataservice.constants.Messages;
+import com.stofina.app.marketdataservice.constant.Messages;
 import com.stofina.app.marketdataservice.entity.Stock;
 import com.stofina.app.marketdataservice.repository.StockRepository;
-import com.stofina.app.marketdataservice.service.IStockService;
+import com.stofina.app.marketdataservice.service.impl.IStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,5 +95,10 @@ public class StockServiceImpl implements IStockService {
             log.warn("Symbol '{}' is not valid.", symbol);
             return ServiceResult.success(false, Messages.INVALID_SYMBOL); // NOT failure!
         }
+    }
+
+    @Override
+    public void save(Stock stock) {
+        stockRepository.save(stock);
     }
 }

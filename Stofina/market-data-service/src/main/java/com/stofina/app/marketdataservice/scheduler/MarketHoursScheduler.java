@@ -1,22 +1,19 @@
 package com.stofina.app.marketdataservice.scheduler;
 
-import com.stofina.app.marketdataservice.constants.Constants;
 import com.stofina.app.marketdataservice.dto.response.StockResponse;
 import com.stofina.app.marketdataservice.entity.Stock;
 import com.stofina.app.marketdataservice.kafka.MarketDataProducer;
-import com.stofina.app.marketdataservice.service.IMarketHoursService;
-import com.stofina.app.marketdataservice.service.IPriceSimulationService;
-import com.stofina.app.marketdataservice.service.IWebSocketBroadcastService;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
+import com.stofina.app.marketdataservice.service.MarketHoursService;
+import com.stofina.app.marketdataservice.service.PriceSimulationService;
+import com.stofina.app.marketdataservice.service.WebSocketBroadcastService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 // CHECKPOINT 2.8: Market Hours Scheduler
@@ -26,13 +23,13 @@ public class MarketHoursScheduler {
     private static final Logger logger = LoggerFactory.getLogger(MarketHoursScheduler.class);
 
     @Autowired
-    private IWebSocketBroadcastService broadcastService;
+    private WebSocketBroadcastService broadcastService;
 
     @Autowired
-    private IMarketHoursService marketHoursService;
+    private MarketHoursService marketHoursService;
 
     @Autowired
-    private IPriceSimulationService priceSimulationService;
+    private PriceSimulationService priceSimulationService;
 
     @Autowired
     private MarketDataProducer marketDataProducer;
@@ -201,13 +198,19 @@ public class MarketHoursScheduler {
         }
         
         return new StockResponse(
-            stock.getSymbol(),
-            stock.getCompanyName(),
-            stock.getCurrentPrice().doubleValue(),
-            stock.getDefaultPrice().doubleValue(),
-            changeAmount.doubleValue(),
-            changePercent.doubleValue(),
-            stock.getLastUpdated()
+                stock.getSymbol(),
+                stock.getStockName(),
+                stock.getCompanyName(),
+                stock.getEquityMarket(),
+                stock.getExchange(),
+                stock.getCurrency(),
+                stock.getIsinCode(),
+                stock.getCurrentPrice(),
+                stock.getDefaultPrice(),
+                changeAmount,
+                changePercent,
+                stock.getStatus(),
+                stock.getLastUpdated()
         );
     }
 }

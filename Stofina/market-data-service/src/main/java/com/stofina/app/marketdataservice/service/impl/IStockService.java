@@ -1,4 +1,4 @@
-package com.stofina.app.marketdataservice.service;
+package com.stofina.app.marketdataservice.service.impl;
 
 import com.stofina.app.marketdataservice.common.ServiceResult;
 import com.stofina.app.marketdataservice.entity.Stock;
@@ -17,5 +17,8 @@ public interface IStockService {
     ServiceResult<List<Stock>> resetAllPricesToDefault();
 
     ServiceResult<Boolean>  isValidSymbol(String symbol);
+
+    void save(Stock stock);
+
 
 }

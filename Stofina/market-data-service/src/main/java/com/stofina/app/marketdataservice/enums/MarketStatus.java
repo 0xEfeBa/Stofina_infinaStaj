@@ -1,6 +1,5 @@
 package com.stofina.app.marketdataservice.enums;
 
-
 public enum MarketStatus {
     OPEN,
     CLOSED,

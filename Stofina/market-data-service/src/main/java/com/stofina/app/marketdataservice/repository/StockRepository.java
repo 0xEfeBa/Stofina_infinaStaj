@@ -15,9 +15,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     List<Stock> findAllByOrderBySymbolAsc();
 
-    
     List<Stock> findBySymbolIn(List<String> symbols);
-
    
     List<Stock> findByCurrentPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
     

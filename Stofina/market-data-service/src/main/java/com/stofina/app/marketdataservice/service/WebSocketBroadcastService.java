@@ -1,9 +1,7 @@
-package com.stofina.app.marketdataservice.service.impl;
+package com.stofina.app.marketdataservice.service;
 
-import com.stofina.app.marketdataservice.constants.Constants;
+import com.stofina.app.marketdataservice.constant.Constants;
 import com.stofina.app.marketdataservice.dto.websocket.PriceUpdateMessage;
-import com.stofina.app.marketdataservice.service.IWebSocketBroadcastService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// CHECKPOINT 2.6: WebSocket Broadcasting Service
 @Service
 public class WebSocketBroadcastService {
 
