@@ -1,180 +1,407 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslation } from 'next-i18next';
+import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "next-i18next";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import styles from "./KıymetTransferi.module.css";
 import SimpleCustomerSearch from "@/components/common/SimpleCustomerSearch";
-import TransferSection from '@/components/common/TransferSection';
-
-const mockAccounts = ["Hesap 1", "Hesap 2", "Hesap 3"];
-
-const todayISODate = () => {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-};
+import TransferTipSelector from "@/components/common/TransferTipSelector";
+import { UnifiedCustomer } from "@/types/customer";
 
 export default function TransferPage() {
-  const { t } = useTranslation("common");
-  const [transferType, setTransferType] = useState<"NAKIT" | "HISSE">("NAKIT");
-  const [transferCategory, setTransferCategory] = useState("HESAPLAR_ARASI");
-  const [senderAccount, setSenderAccount] = useState("");
-  const [receiverAccounts, setReceiverAccounts] = useState<string[]>([]);
-  const [receiverAccountSelected, setReceiverAccountSelected] = useState<string>("");
+	const { t } = useTranslation("common");
 
-  const [amount, setAmount] = useState<number | "">("");
-  const [quantity, setQuantity] = useState<number | "">("");
-  const [stockCode, setStockCode] = useState("");
-  const [transferDate, setTransferDate] = useState<string>(todayISODate());
+	const [transferCategory, setTransferCategory] = useState("HESAPLAR_ARASI");
+	const [selectedCustomer, setSelectedCustomer] = useState<UnifiedCustomer | null>(null);
+	const [receiverCustomer, setReceiverCustomer] = useState<UnifiedCustomer | null>(null);
 
-  const handleSenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = e.target.value;
-    setSenderAccount(selected);
-    setReceiverAccounts(mockAccounts.filter((acc) => acc !== selected));
-    // seçili alıcıyı temizle (gönderici değişince)
-    setReceiverAccountSelected("");
-  };
+	const [transferType, setTransferType] = useState<"NAKIT" | "HISSE">("NAKIT");
+	const [accounts, setAccounts] = useState<any[]>([]);
+	const [receiverAccounts, setReceiverAccounts] = useState<any[]>([]);
 
-  const handleSubmit = () => {
-    // örnek: göndereceğiniz payload burada hazırlanır
-    const payload: any = {
-      transferType,
-      transferCategory,
-      transferDate,
-      senderAccount,
-      receiverAccount: receiverAccountSelected || undefined,
-    };
+	const popupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const [popup, setPopup] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
-    if (transferType === "NAKIT") {
-      payload.amount = amount;
-    } else {
-      payload.stockCode = stockCode;
-      payload.quantity = quantity;
-      payload.amount = amount;
-    }
+	const schema = yup.object({
+		senderAccount: yup.string().required("Lütfen gönderici hesabını seçiniz."),
+		receiverAccount: yup.string().required("Lütfen alıcı hesabını seçiniz."),
+		amount: yup
+			.number()
+			.transform((value, originalValue) => {
+				// Boş string veya null/undefined değerlerini undefined'a çevir
+				return originalValue === "" || originalValue == null ? undefined : value;
+			})
+			.when("transferType", {
+				is: "NAKIT",
+				then: (schema) =>
+					schema
+						.required("Lütfen tutarı giriniz.")
+						.positive("Tutar pozitif bir değer olmalıdır.")
+						.min(0.01, "Tutar en az 0.01 TL olmalıdır.")
+						.test("balance-check", "Yetersiz bakiye! Lütfen bakiyenizi kontrol edin.", function (value) {
+							const { senderAccount } = this.parent;
+							if (!senderAccount || !Array.isArray(accounts) || accounts.length === 0) return true;
+							const selectedAccount = accounts.find((acc) => acc.accountNumber === senderAccount);
+							if (!selectedAccount) return true;
+							return value <= selectedAccount.availableBalance;
+						}),
+				otherwise: (schema) => schema.nullable(),
+			}),
+		quantity: yup
+			.number()
+			.transform((value, originalValue) => {
+				// Boş string veya null/undefined değerlerini undefined'a çevir
+				return originalValue === "" || originalValue == null ? undefined : value;
+			})
+			.when("transferType", {
+				is: "HISSE",
+				then: (schema) =>
+					schema
+						.required("Lütfen miktarı giriniz.")
+						.positive("Miktar pozitif bir değer olmalıdır.")
+						.integer("Miktar tam sayı olmalıdır.")
+						.min(1, "Miktar en az 1 olmalıdır."),
+				otherwise: (schema) => schema.nullable(),
+			}),
+		stockCode: yup
+			.string()
+			.when("transferType", {
+				is: "HISSE",
+				then: (schema) =>
+					schema
+						.required("Lütfen hisse kodunu giriniz.")
+						.min(3, "Hisse kodu en az 3 karakter olmalıdır.")
+						.max(10, "Hisse kodu en fazla 10 karakter olmalıdır."),
+				otherwise: (schema) => schema.nullable(),
+			}),
+		description: yup.string().nullable(),
+		transferType: yup.string().required(),
+	});
 
-    console.log("Transfer payload:", payload);
-    // burada API çağrısı/dispatch yapılır
-  };
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		reset,
+		watch,
+		setValue,
+		trigger,
+	} = useForm({
+		resolver: yupResolver(schema),
+		defaultValues: {
+			senderAccount: "",
+			receiverAccount: "",
+			amount: undefined,
+			quantity: undefined,
+			stockCode: "",
+			description: "",
+			transferType: "NAKIT",
+		},
+	});
 
-  return (
+	const watchedSenderAccount = watch("senderAccount");
 
-    <div className={styles.container}>
-      {/* Sayfa Başlığı */}
-      <h2 className={styles.pageTitle}>{t('transfer.title')}</h2>
+	const showPopup = (message: string, type: "success" | "error") => {
+		setPopup({ message, type });
+		if (popupTimeoutRef.current) clearTimeout(popupTimeoutRef.current);
 
-      {/* Müşteri Arama Alanı */}
-      <div className={styles.customerSearchWrapper}>
-        <SimpleCustomerSearch />
-      </div>
+		// Success popup'ı için daha uzun süre göster
+		const timeout = type === "success" ? 4000 : 3000;
+		popupTimeoutRef.current = setTimeout(() => setPopup(null), timeout);
+	};
 
-      <div className={styles.content}>
-        <div className={styles.formSection}>
-          {/* Transfer Türü */}
-          <TransferSection />
+	useEffect(() => {
+		if (!selectedCustomer) {
+			setAccounts([]);
+			if (transferCategory === "HESAPLAR_ARASI") setReceiverAccounts([]);
+			reset();
+			return;
+		}
 
-          {/* Transfer Tipi */}
-          <div className={styles.formGroup}>
-            <label>{t('transfer.form.transferType.label')}</label>
-            <select
-              value={transferType}
-              onChange={(e) => setTransferType(e.target.value as "NAKIT" | "HISSE")}
-            >
-              <option value="NAKIT">{t('transfer.form.transferType.cash')}</option>
-              <option value="HISSE">{t('transfer.form.transferType.stock')}</option>
-            </select>
-          </div>
+		fetch(`http://localhost:9001/api/v1/accounts/customer/${selectedCustomer.customer.id}`)
+			.then((res) => res.json())
+			.then((data) => {
+				// API'den gelen verinin array olduğundan emin oluyoruz
+				const accountsArray = Array.isArray(data) ? data : [];
+				setAccounts(accountsArray);
 
-          {/* Dinamik Alanlar */}
-          {transferType === "NAKIT" ? (
-            <div className={styles.formGroup}>
-              <label>{t('transfer.form.amount.label')}</label>
-              <input
-                type="number"
-                placeholder={t('transfer.form.amount.placeholder')}
-                value={amount === "" ? "" : amount}
-                onChange={(e) => setAmount(e.target.value === "" ? "" : Number(e.target.value))}
-              />
-            </div>
-          ) : (
-            <>
-              <div className={styles.formGroup}>
-                <label>{t('transfer.form.stockCode.label')}</label>
-                <input
-                  type="text"
-                  placeholder={t('transfer.form.stockCode.placeholder')}
-                  value={stockCode}
-                  onChange={(e) => setStockCode(e.target.value)}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>{t('transfer.form.quantity.label')}</label>
-                <input
-                  type="number"
-                  placeholder={t('transfer.form.quantity.placeholder')}
-                  value={quantity === "" ? "" : quantity}
-                  onChange={(e) => setQuantity(e.target.value === "" ? "" : Number(e.target.value))}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>{t('transfer.form.amount.label')}</label>
-                <input
-                  type="number"
-                  placeholder={t('transfer.form.amount.placeholder')}
-                  value={amount === "" ? "" : amount}
-                  onChange={(e) => setAmount(e.target.value === "" ? "" : Number(e.target.value))}
-                />
-              </div>
-            </>
-          )}
-        </div>
+				if (transferCategory === "HESAPLAR_ARASI") {
+					const filtered = accountsArray.filter((acc: any) => acc.accountNumber !== watchedSenderAccount);
+					setReceiverAccounts(filtered);
+				}
+				reset({
+					senderAccount:
+						watchedSenderAccount && accountsArray.find((acc: any) => acc.accountNumber === watchedSenderAccount)
+							? watchedSenderAccount
+							: accountsArray.length > 0
+								? accountsArray[0].accountNumber
+								: "",
+					receiverAccount: "",
+					amount: undefined,
+					quantity: undefined,
+					stockCode: "",
+					description: "",
+					transferType: transferType,
+				});
+			})
+			.catch((error) => {
+				console.error("Accounts fetch error:", error);
+				setAccounts([]); // Hata durumunda boş array set ediyoruz
+				showPopup("Gönderici hesaplar yüklenirken hata oluştu.", "error");
+			});
+	}, [selectedCustomer, reset, transferCategory, watchedSenderAccount, transferType]);
 
-        <div className={styles.accountSection}>
-          {/* Gönderi Tarihi */}
-          <div className={styles.formGroup}>
-            <label>{t('transfer.form.transferDate.label')}</label>
-            <input
-              type="date"
-              value={transferDate}
-              onChange={(e) => setTransferDate(e.target.value)}
-            />
-          </div>
+	useEffect(() => {
+		if (transferCategory === "MÜŞTERİLER_ARASI" && receiverCustomer) {
+			fetch(`http://localhost:9001/api/v1/accounts/customer/${receiverCustomer.customer.id}`)
+				.then((res) => res.json())
+				.then((data) => {
+					// API'den gelen verinin array olduğundan emin oluyoruz
+					const accountsArray = Array.isArray(data) ? data : [];
+					setReceiverAccounts(accountsArray);
+				})
+				.catch((error) => {
+					console.error("Receiver accounts fetch error:", error);
+					setReceiverAccounts([]); // Hata durumunda boş array set ediyoruz
+					showPopup("Alıcı hesaplar yüklenirken hata oluştu.", "error");
+				});
+		}
+	}, [receiverCustomer, transferCategory]);
 
-          {/* Gönderici Hesap */}
-          <div className={styles.formGroup}>
-            <label>{t('transfer.form.senderAccount.label')}</label>
-            <select value={senderAccount} onChange={handleSenderChange}>
-              <option value="">{t('transfer.form.senderAccount.placeholder')}</option>
-              {mockAccounts.map((acc, idx) => (
-                <option key={idx} value={acc}>
-                  {acc}
-                </option>
-              ))}
-            </select>
-          </div>
+	useEffect(() => {
+		setValue("transferType", transferType);
+		trigger();
+	}, [transferType, setValue, trigger]);
 
-          {/* Alıcı Hesap*/}
-          <div className={styles.formGroup}>
-            <label>{t('transfer.form.receiverAccount.label')}</label>
-            <select
-              value={receiverAccountSelected}
-              onChange={(e) => setReceiverAccountSelected(e.target.value)}
-              disabled={receiverAccounts.length === 0}
-            >
-              <option value="">{t('transfer.form.receiverAccount.placeholder')}</option>
-              {receiverAccounts.map((acc, idx) => (
-                <option key={idx} value={acc}>
-                  {acc}
-                </option>
-              ))}
-            </select>
-          </div>
+	// onSubmit fonksiyonunun success kısmını güncelleyin
 
-          <button className={styles.submitButton} onClick={handleSubmit}>{t('transfer.buttons.startTransfer')}</button>
-        </div>
-      </div>
-    </div>
-  );
+	const onSubmit = async (data: any) => {
+		try {
+			if (data.transferType === "NAKIT") {
+				const queryParams = new URLSearchParams({
+					fromAccountNumber: data.senderAccount,
+					toAccountNumber: data.receiverAccount,
+					amount: data.amount.toString(),
+					description: data.description || "",
+				}).toString();
+
+				const response = await fetch(`http://localhost:9001/api/v1/accounts/transfer-money?${queryParams}`, {
+					method: "POST",
+					headers: { Accept: "*/*" },
+					body: "",
+				});
+
+				if (!response.ok) {
+					const text = await response.text();
+					throw new Error(`Transfer işlemi başarısız: ${response.status} - ${text}`);
+				}
+
+				await response.text();
+				showPopup("Transfer işlemi başarıyla tamamlandı!", "success");
+
+				setTimeout(() => {
+					window.location.reload();
+				}, 2000);
+
+			} else {
+				showPopup("Hisse transferi henüz desteklenmiyor.", "error");
+			}
+		} catch (error: any) {
+			console.error("Transfer error:", error);
+			showPopup(`Transfer başarısız: ${error.message}`, "error");
+		}
+	};
+
+	const onError = (errors: any) => {
+		const firstErrorField = Object.keys(errors)[0];
+		if (firstErrorField) {
+			const message = errors[firstErrorField]?.message;
+			if (message) {
+				showPopup(message, "error");
+			}
+		}
+	};
+
+	return (
+		<div className={styles.container}>
+			<h2 className={styles.pageTitle}>{t("transfer.title")}</h2>
+
+			{/* Transfer tipi seçici */}
+			<TransferTipSelector
+				selectedTip={transferCategory}
+				onChange={(tip) => {
+					setTransferCategory(tip);
+					setSelectedCustomer(null);
+					setReceiverCustomer(null);
+					setAccounts([]);
+					setReceiverAccounts([]);
+					reset();
+				}}
+				availableTips={["HESAPLAR_ARASI", "MÜŞTERİLER_ARASI"]}
+			/>
+
+			{/* Müşteri seçim alanları */}
+			{transferCategory === "MÜŞTERİLER_ARASI" ? (
+				<div className="flex gap-6 mb-6">
+					<div className="flex-1">
+						<h4 className="mb-2 font-semibold text-gray-500 ">{t("transfer.form.senderCustomer.label")}</h4>
+						<SimpleCustomerSearch onSelect={(c) => setSelectedCustomer(c)} />
+					</div>
+					<div className="flex-1">
+						<h4 className="mb-2 font-semibold  text-gray-500">{t("transfer.form.receiverCustomer.label")}</h4>
+						<SimpleCustomerSearch onSelect={(c) => setReceiverCustomer(c)} />
+					</div>
+				</div>
+			) : (
+				<div className={styles.customerSearchWrapper}>
+					<SimpleCustomerSearch onSelect={(customer) => setSelectedCustomer(customer)} />
+				</div>
+			)}
+
+			<div className={styles.content}>
+				<form className={styles.formSection} onSubmit={handleSubmit(onSubmit, onError)} noValidate>
+					{/* Transfer Tipi */}
+					<div className={styles.formGroup}>
+						<label>{t("transfer.form.transferType.label")}</label>
+						<select
+							{...register("transferType")}
+							value={transferType}
+							onChange={(e) => {
+								setTransferType(e.target.value as "NAKIT" | "HISSE");
+								setValue("transferType", e.target.value);
+							}}
+						>
+							<option value="NAKIT">{t("transfer.form.transferType.cash")}</option>
+							<option value="HISSE" disabled>
+								{t("transfer.form.transferType.stock")}
+							</option>
+						</select>
+					</div>
+
+					{/* Hesap seçimleri */}
+					<div className="flex gap-6">
+						<div className={styles.formGroup}>
+							<label>
+								{t("transfer.form.senderAccount.label")} <span className={styles.required}>*</span>
+							</label>
+							<select {...register("senderAccount")} className={styles.customSelect}>
+								<option value="">{t("transfer.form.senderAccount.placeholder")}</option>
+								{Array.isArray(accounts) && accounts.map((acc) => (
+									<option key={acc.id} value={acc.accountNumber}>
+										{`Hesap: ${acc.accountNumber} → Bakiye: ${acc.availableBalance} ₺`}
+									</option>
+								))}
+							</select>
+						</div>
+
+						<div className={styles.formGroup}>
+							<label>
+								{t("transfer.form.receiverAccount.label")} <span className={styles.required}>*</span>
+							</label>
+							<select {...register("receiverAccount")} className={styles.customSelect}>
+								<option value="">{t("transfer.form.receiverAccount.placeholder")}</option>
+								{Array.isArray(receiverAccounts) && receiverAccounts.map((acc) => (
+									<option key={acc.id} value={acc.accountNumber}>
+										{`Hesap: ${acc.accountNumber} → Bakiye: ${acc.availableBalance} ₺`}
+									</option>
+								))}
+							</select>
+						</div>
+					</div>
+
+					{/* Dinamik Alanlar */}
+					{transferType === "NAKIT" ? (
+						<div className={styles.formGroup}>
+							<label>
+								{t("transfer.form.amount.label")} <span className={styles.required}>*</span>
+							</label>
+							<input
+								{...register("amount")}
+								type="number"
+								placeholder={t("transfer.form.amount.placeholder")}
+								step="0.01"
+								min="0"
+							/>
+						</div>
+					) : (
+						<>
+							<div className={styles.formGroup}>
+								<label>
+									{t("transfer.form.stockCode.label")} <span className={styles.required}>*</span>
+								</label>
+								<input
+									{...register("stockCode")}
+									type="text"
+									placeholder={t("transfer.form.stockCode.placeholder")}
+								/>
+							</div>
+							<div className={styles.formGroup}>
+								<label>
+									{t("transfer.form.quantity.label")} <span className={styles.required}>*</span>
+								</label>
+								<input
+									{...register("quantity")}
+									type="number"
+									placeholder={t("transfer.form.quantity.placeholder")}
+									min="1"
+								/>
+							</div>
+							<div className={styles.formGroup}>
+								<label>
+									{t("transfer.form.amount.label")} <span className={styles.required}>*</span>
+								</label>
+								<input
+									{...register("amount")}
+									type="number"
+									placeholder={t("transfer.form.amount.placeholder")}
+									step="0.01"
+									min="0"
+								/>
+							</div>
+						</>
+					)}
+
+					{/* Açıklama */}
+					<div className={styles.formGroup}>
+						<label>{t("transfer.form.description.label")}</label>
+						<textarea
+							{...register("description")}
+							placeholder={t("transfer.form.description.placeholder")}
+							rows={3}
+							className={styles.textArea}
+						/>
+					</div>
+
+					<button type="submit" className={styles.submitButton}>
+						{t("transfer.buttons.startTransfer")}
+					</button>
+				</form>
+			</div>
+
+			{/* Popup sistem - Error için sağ üstte, Success için ortada */}
+			{popup && popup.type === "error" && (
+				<div className={styles.popupError} role="alert" aria-live="assertive">
+					{popup.message}
+				</div>
+			)}
+
+			{popup && popup.type === "success" && (
+				<div className={styles.popupSuccessOverlay}>
+					<div className={styles.popupSuccess} role="alert" aria-live="polite">
+						<div className={styles.successIcon}>✅</div>
+						<h3 className={styles.successTitle}>Başarılı!</h3>
+						<p className={styles.successMessage}>{popup.message}</p>
+						<button
+							className={styles.successButton}
+							onClick={() => setPopup(null)}
+						>
+							Tamam
+						</button>
+					</div>
+				</div>
+			)}
+		</div>
+	);
 }

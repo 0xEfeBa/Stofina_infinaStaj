@@ -17,6 +17,7 @@ export interface IndividualCustomer {
 }
 
 export interface CorporateCustomer {
+  id: number;
   tradeName: string;
   tradeRegistryNumber: string;
   taxNumber: string;
@@ -52,5 +53,7 @@ export interface ReqCorporateCustomerCreate {
     legalAddress: string;
   };
 }
+
+export type UnifiedCustomer = IndividualCustomer | CorporateCustomer;
 
 export const mockCustomers: IndividualCustomer[] = [];
