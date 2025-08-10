@@ -54,7 +54,6 @@ public class SecurityConfiguration {
                         ).permitAll()
 
                         .anyRequest().hasRole("CUSTOMER_SUPER_ADMIN")
-                        .anyRequest().permitAll()
                 )
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
