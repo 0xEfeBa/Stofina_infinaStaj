@@ -30,7 +30,6 @@ export default function TransferPage() {
 		amount: yup
 			.number()
 			.transform((value, originalValue) => {
-				// Boş string veya null/undefined değerlerini undefined'a çevir
 				return originalValue === "" || originalValue == null ? undefined : value;
 			})
 			.when("transferType", {
@@ -52,7 +51,6 @@ export default function TransferPage() {
 		quantity: yup
 			.number()
 			.transform((value, originalValue) => {
-				// Boş string veya null/undefined değerlerini undefined'a çevir
 				return originalValue === "" || originalValue == null ? undefined : value;
 			})
 			.when("transferType", {
@@ -107,7 +105,6 @@ export default function TransferPage() {
 		setPopup({ message, type });
 		if (popupTimeoutRef.current) clearTimeout(popupTimeoutRef.current);
 
-		// Success popup'ı için daha uzun süre göster
 		const timeout = type === "success" ? 4000 : 3000;
 		popupTimeoutRef.current = setTimeout(() => setPopup(null), timeout);
 	};
@@ -120,10 +117,14 @@ export default function TransferPage() {
 			return;
 		}
 
-		fetch(`http://localhost:9001/api/v1/accounts/customer/${selectedCustomer.customer.id}`)
+		fetch(`http://localhost:9001/api/v1/accounts/customer/${selectedCustomer.customer.id}`, {
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+				accept: "application/json",
+			},
+		})
 			.then((res) => res.json())
 			.then((data) => {
-				// API'den gelen verinin array olduğundan emin oluyoruz
 				const accountsArray = Array.isArray(data) ? data : [];
 				setAccounts(accountsArray);
 
@@ -148,23 +149,27 @@ export default function TransferPage() {
 			})
 			.catch((error) => {
 				console.error("Accounts fetch error:", error);
-				setAccounts([]); // Hata durumunda boş array set ediyoruz
+				setAccounts([]); 
 				showPopup("Gönderici hesaplar yüklenirken hata oluştu.", "error");
 			});
 	}, [selectedCustomer, reset, transferCategory, watchedSenderAccount, transferType]);
 
 	useEffect(() => {
 		if (transferCategory === "MÜŞTERİLER_ARASI" && receiverCustomer) {
-			fetch(`http://localhost:9001/api/v1/accounts/customer/${receiverCustomer.customer.id}`)
+			fetch(`http://localhost:9001/api/v1/accounts/customer/${receiverCustomer.customer.id}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+					accept: "application/json",
+				},
+			})
 				.then((res) => res.json())
 				.then((data) => {
-					// API'den gelen verinin array olduğundan emin oluyoruz
 					const accountsArray = Array.isArray(data) ? data : [];
 					setReceiverAccounts(accountsArray);
 				})
 				.catch((error) => {
 					console.error("Receiver accounts fetch error:", error);
-					setReceiverAccounts([]); // Hata durumunda boş array set ediyoruz
+					setReceiverAccounts([]); 
 					showPopup("Alıcı hesaplar yüklenirken hata oluştu.", "error");
 				});
 		}
@@ -175,10 +180,11 @@ export default function TransferPage() {
 		trigger();
 	}, [transferType, setValue, trigger]);
 
-	// onSubmit fonksiyonunun success kısmını güncelleyin
 
 	const onSubmit = async (data: any) => {
 		try {
+			const token = localStorage.getItem("accessToken");
+
 			if (data.transferType === "NAKIT") {
 				const queryParams = new URLSearchParams({
 					fromAccountNumber: data.senderAccount,
@@ -189,7 +195,10 @@ export default function TransferPage() {
 
 				const response = await fetch(`http://localhost:9001/api/v1/accounts/transfer-money?${queryParams}`, {
 					method: "POST",
-					headers: { Accept: "*/*" },
+					headers: {
+						accept: "*/*",
+						Authorization: `Bearer ${token}`,  // Bearer token ekle
+					},
 					body: "",
 				});
 

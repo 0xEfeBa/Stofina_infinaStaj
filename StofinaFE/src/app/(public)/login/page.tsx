@@ -1,13 +1,18 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Quicksand } from "next/font/google";
 import styles from "./LoginPage.module.css";
+import { authService } from "@/services/authService";
+import { useAuth } from "@/contexts/AuthContext";
 
 const quicksand = Quicksand({ subsets: ["latin"], weight: ["400", "600", "700"] });
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuth();
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,15 +51,12 @@ export default function LoginPage() {
 
       const data = await res.json();
 
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.userDto));
+      authService.saveTokens(data.accessToken, data.refreshToken);
+      authService.saveUser(data.userDto);
+      setUser(data.userDto);
 
       setSuccessMsg("Giriş başarılı, yönlendiriliyorsunuz...");
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 2000);
-
+      setTimeout(() => router.push("/dashboard"), 2000);
     } catch (err: any) {
       setError(err.message || "Giriş sırasında hata oluştu");
     } finally {

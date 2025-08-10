@@ -1,26 +1,40 @@
 import axios from "axios";
 import { axiosDefaultConfig } from "./axiosConfig";
 import { getAdminToken } from "./cookieUtils";
+import { authService } from "@/services/authService";
+import { checkTokenValidity } from "@/utils/authUtils";
+import Router from "next/router";
 
 const axiosInstance = axios.create(axiosDefaultConfig);
 
-// Request Interceptor
 axiosInstance.interceptors.request.use(
-    (config) => {
+    async (config) => {
         const token = getAdminToken();
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
+        }
+        const valid = await checkTokenValidity();
+        if (!valid) {
+            authService.clearAuthData();
+            if (typeof window !== "undefined") {
+                window.location.href = "/login";
+            }
+            return Promise.reject(new Error("Token expired"));
         }
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// Response Interceptor (isteğe bağlı hata yönetimi)
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Burada logout işlemleri ya da loglama yapılabilir
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            authService.clearAuthData();
+            if (typeof window !== "undefined") {
+                window.location.href = "/login";
+            }
+        }
         return Promise.reject(error);
     }
 );

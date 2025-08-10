@@ -118,7 +118,7 @@ export default function Page() {
   };
 
   const handleClear = () => {
-    reset(); // formu temizle
+    reset(); 
   };
 
   const scrollToUserList = () => {
