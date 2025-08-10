@@ -1,0 +1,36 @@
+server:
+  port: 9001
+spring:
+  application:
+    name: portfolio-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    generate-ddl: true
+    properties:
+      hibernate:
+        default_schema: dbo
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
