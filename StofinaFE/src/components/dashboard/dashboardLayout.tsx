@@ -4,6 +4,9 @@ import styles from "./DashboardLayout.module.css";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from 'react-i18next';
+import { authService } from "@/services/authService";
+import { useAuth } from "@/contexts/AuthContext";
+import { checkTokenValidity } from "@/utils/authUtils"; 
 
 const quicksand = Quicksand({ subsets: ["latin"], weight: ["400", "600", "700"] });
 
@@ -15,7 +18,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const settingsRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
   const { t, i18n } = useTranslation();
-
+  const [userName, setUserName] = useState("");
+  const { logout, setUser } = useAuth();
+  
+  const router = useRouter();
   const path = usePathname();
 
   const menuItems = [
@@ -41,6 +47,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, []);
 
   useEffect(() => {
+    const verify = async () => {
+      const valid = await checkTokenValidity();
+      if (!valid) {
+        router.push("/login");
+      }
+    };
+    verify();
+  }, [router]);
+
+  useEffect(() => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      try {
+        const user = JSON.parse(userString);
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        setUserName(fullName || user.username || t('dashboard.header.userName'));
+      } catch (error) {
+        console.error("User bilgisi parse edilemedi:", error);
+        setUserName(t('dashboard.header.userName'));
+      }
+    } else {
+      setUserName(t('dashboard.header.userName'));
+    }
+  }, [t]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
         setIsSettingsOpen(false);
@@ -62,9 +94,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   const handleLogout = async () => {
+    const user = authService.getUser();
     try {
-      const accessToken = localStorage.getItem("accessToken");
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const accessToken = authService.getAccessToken();
 
       if (!accessToken || !user?.id) {
         console.warn("Token veya kullanıcı bilgisi bulunamadı");
@@ -81,19 +113,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           console.error("Logout başarısız:", await res.text());
         }
       }
-
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-
     } catch (err) {
       console.error("Logout sırasında hata:", err);
     } finally {
-      setIsUserOpen(false);
+      authService.clearAuthData();
+      setUser(null);
+      router.push("/login");
     }
   };
 
@@ -118,7 +143,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               aria-label="User"
             >
               <img src="/account.png" alt="Account" className={styles.userIcon} />
-              <span className="font-medium">{t('dashboard.header.userName')}</span>
+              <span className="font-medium">{userName || t('dashboard.header.userName')}</span>
             </button>
             {isUserOpen && (
               <div className={styles.dropdownMenu}>

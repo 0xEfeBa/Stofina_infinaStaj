@@ -1,5 +1,3 @@
-// CLEAN CODE: Custom hook for scheduled order business logic
-// Single Responsibility: Handle all scheduled order state and actions
 
 import { useState, useCallback, useMemo } from 'react';
 import { 
@@ -17,7 +15,6 @@ import {
   getNextValidMarketTime 
 } from '../utils/scheduledOrderUtils';
 
-// Initial form state
 const createInitialFormState = (): ScheduledOrderForm => ({
   accountId: 1, // TODO: Get from user context
   tenantId: 1,  // TODO: Get from user context
@@ -52,12 +49,10 @@ interface UseScheduledOrderReturn {
 }
 
 export const useScheduledOrder = (): UseScheduledOrderReturn => {
-  // State management
   const [formData, setFormData] = useState<ScheduledOrderForm>(createInitialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // PURE FUNCTION: Validation is computed from current form state
   const validation = useMemo((): ScheduledOrderValidation => {
     return validateScheduledOrderForm(
       formData.isScheduled,
@@ -67,12 +62,10 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
     );
   }, [formData.isScheduled, formData.scheduledTime, formData.symbol, formData.quantity]);
   
-  // PURE FUNCTION: Can submit when valid and not submitting
   const canSubmit = useMemo((): boolean => {
     return validation.isValid && !isSubmitting && formData.symbol !== '' && formData.quantity > 0;
   }, [validation.isValid, isSubmitting, formData.symbol, formData.quantity]);
   
-  // CLEAN CODE: Single field update function
   const updateFormData = useCallback(<K extends keyof ScheduledOrderForm>(
     field: K, 
     value: ScheduledOrderForm[K]
@@ -81,10 +74,9 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
       ...prev,
       [field]: value
     }));
-    setError(null); // Clear error on form change
+    setError(null); 
   }, []);
   
-  // CLEAN CODE: Multiple fields update function
   const updateMultipleFields = useCallback((updates: Partial<ScheduledOrderForm>): void => {
     setFormData(prev => ({
       ...prev,
@@ -93,7 +85,6 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
     setError(null);
   }, []);
   
-  // CLEAN CODE: Scheduled time specific setter with smart defaults
   const setScheduledTime = useCallback((date: Date | undefined): void => {
     setFormData(prev => ({
       ...prev,
@@ -102,7 +93,6 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
     setError(null);
   }, []);
   
-  // CLEAN CODE: Toggle scheduled with smart default time
   const toggleScheduled = useCallback((): void => {
     setFormData(prev => ({
       ...prev,
@@ -114,13 +104,11 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
     setError(null);
   }, []);
   
-  // CLEAN CODE: Reset form to initial state
   const resetForm = useCallback((): void => {
     setFormData(createInitialFormState());
     setError(null);
   }, []);
   
-  // CLEAN CODE: Submit order with proper error handling
   const submitOrder = useCallback(async (): Promise<ScheduledOrderResponse | null> => {
     if (!canSubmit) {
       setError('Form geçerli değil, lütfen kontrol edin');
@@ -131,7 +119,6 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
     setError(null);
     
     try {
-      // Transform form data to API request format
       const apiRequest: CreateScheduledOrderRequest = {
         accountId: formData.accountId,
         tenantId: formData.tenantId,
@@ -150,11 +137,12 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
           : undefined
       };
       
-      // Make API call
+      const token = localStorage.getItem("accessToken");
       const response = await fetch('http://localhost:8082/api/v1/orders', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(apiRequest)
       });

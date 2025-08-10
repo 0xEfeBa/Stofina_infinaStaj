@@ -18,8 +18,15 @@ import { SliceCustomer } from "@/slice/CustomerSlice";
 export const getIndividuals =
   (): AppThunk<Promise<IndividualCustomer | null>> => async (dispatch) => {
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axiosInstance.get(
-        `${apiConfig.baseUrlCustomer}${apiConfig.customer.individual}`
+        `${apiConfig.baseUrlCustomer}${apiConfig.customer.individual}`,
+        {
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const data = response.data;
 
@@ -51,8 +58,15 @@ export const getIndividuals =
 export const getCorporateCustomers =
   (): AppThunk<Promise<IndividualCustomer | null>> => async (dispatch) => {
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axiosInstance.get(
-        `${apiConfig.baseUrlCustomer}${apiConfig.customer.corporate}`
+        `${apiConfig.baseUrlCustomer}${apiConfig.customer.corporate}`,
+        {
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const data = response.data;
 
@@ -85,9 +99,16 @@ export const createIndividualCustomer =
   (req: ReqIndividualCustomerCreate): AppThunk<Promise<boolean>> => 
   async (dispatch) => {
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axiosInstance.post(
         `${apiConfig.baseUrlCustomer}${apiConfig.customer.individual}`,
-        req
+        req,
+        {
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const data = response.data;
 
@@ -120,9 +141,16 @@ export const createCorporateCustomer =
     req: ReqCorporateCustomerCreate): AppThunk<Promise<boolean >> =>
   async (dispatch) => {
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axiosInstance.post(
         `${apiConfig.baseUrlCustomer}${apiConfig.customer.corporate}`,
-        req
+        req,
+        {
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const data = response.data;
 

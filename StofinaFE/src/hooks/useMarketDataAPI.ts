@@ -17,10 +17,6 @@ interface UseMarketDataAPIReturn {
   refetch: () => Promise<void>;
 }
 
-/**
- * Hook for fetching market data from REST API
- * Used for initial data loading and fallback when WebSocket is not available
- */
 export const useMarketDataAPI = (): UseMarketDataAPIReturn => {
   const [symbols, setSymbols] = useState<StockInfo[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -31,7 +27,13 @@ export const useMarketDataAPI = (): UseMarketDataAPIReturn => {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch('http://localhost:8081/api/v1/market/symbols');
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch('http://localhost:8081/api/v1/market/symbols', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          accept: "application/json",
+        },
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -48,7 +50,6 @@ export const useMarketDataAPI = (): UseMarketDataAPIReturn => {
     }
   }, []);
 
-  // Fetch symbols on mount
   useEffect(() => {
     fetchSymbols();
   }, [fetchSymbols]);

@@ -23,16 +23,22 @@ const SimpleCustomerSearch: React.FC<SimpleCustomerSearchProps> = ({
   );
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // API'den bireysel ve kurumsal müşterileri çek
   useEffect(() => {
     async function fetchCustomers() {
       try {
+        const token = localStorage.getItem("accessToken");
         const [indRes, corpRes] = await Promise.all([
           fetch("http://localhost:9003/api/v1/individual", {
-            headers: { accept: "*/*" },
+            headers: {
+              accept: "*/*",
+              Authorization: `Bearer ${token}`,  // Bearer token ekle
+            },
           }),
           fetch("http://localhost:9003/api/v1/corporate", {
-            headers: { accept: "*/*" },
+            headers: {
+              accept: "*/*",
+              Authorization: `Bearer ${token}`,  // Bearer token ekle
+            },
           }),
         ]);
 
@@ -47,7 +53,6 @@ const SimpleCustomerSearch: React.FC<SimpleCustomerSearchProps> = ({
     fetchCustomers();
   }, []);
 
-  // Arama yap ve filtrele
   useEffect(() => {
     if (query.length < 2) {
       setFilteredCustomers([]);
@@ -57,9 +62,7 @@ const SimpleCustomerSearch: React.FC<SimpleCustomerSearchProps> = ({
 
     const q = query.toLowerCase();
     const filtered = allCustomers.filter((c) => {
-      // Bireysel mi kontrol et
       if ("firstName" in c) {
-        // Bireysel müşteri filtreleme
         return (
           c.firstName.toLowerCase().includes(q) ||
           c.lastName.toLowerCase().includes(q) ||
@@ -67,7 +70,6 @@ const SimpleCustomerSearch: React.FC<SimpleCustomerSearchProps> = ({
           c.phone.includes(q)
         );
       } else {
-        // Kurumsal müşteri filtreleme
         return (
           c.tradeName.toLowerCase().includes(q) ||
           c.representativeName.toLowerCase().includes(q) ||
