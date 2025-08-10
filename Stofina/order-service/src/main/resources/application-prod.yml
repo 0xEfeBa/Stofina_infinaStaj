@@ -1,0 +1,37 @@
+spring:
+
+  datasource:
+    url: jdbc:sqlserver://${PROD_DB_HOST};databaseName=Troya;encrypt=true;trustServerCertificate=true
+    username: ${PROD_DB_USER}
+    password: ${PROD_DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      timeout: 60000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+
+market-data:
+  base-url: ${MARKET_DATA_BASE_URL}
+  endpoints:
+    price: /symbols/{symbol}/price
+    symbols: /symbols
+  connection:
+    timeout: 5000
+    max-connections: 20
+  retry:
+    max-attempts: 3
+    delay: 1000
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}

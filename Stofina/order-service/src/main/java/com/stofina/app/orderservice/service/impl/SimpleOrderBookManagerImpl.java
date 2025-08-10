@@ -4,6 +4,7 @@ import com.stofina.app.orderservice.entity.Order;
 import com.stofina.app.orderservice.entity.Trade;
 import com.stofina.app.orderservice.enums.OrderSide;
 import com.stofina.app.orderservice.enums.OrderStatus;
+import com.stofina.app.orderservice.model.OrderLevel;
 import com.stofina.app.orderservice.model.SimpleOrderBook;
 import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
 import com.stofina.app.orderservice.repository.OrderRepository;
@@ -292,7 +293,7 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
         );
     }
     
-    private int calculateTotalQuantity(java.util.List<com.stofina.app.orderservice.model.OrderLevel> levels) {
+    private int calculateTotalQuantity(List<OrderLevel> levels) {
         return levels != null ? 
             levels.stream().mapToInt(level -> level.getQuantity().intValue()).sum() : 0;
     }
