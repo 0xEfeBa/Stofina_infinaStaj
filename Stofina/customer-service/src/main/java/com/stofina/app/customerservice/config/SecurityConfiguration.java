@@ -60,12 +60,11 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**","/actuator/**",
                                         "/swagger-ui/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/api/v1/individual/**", "/api/v1/corporate/**")
-//                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/individual/**", "/api/v1/corporate/**")
-//                        .hasRole("CUSTOMER_SUPER_ADMIN")
-//                        .anyRequest().authenticated()
-                                .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/individual/**", "/api/v1/corporate/**")
+                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/individual/**", "/api/v1/corporate/**")
+                        .hasRole("CUSTOMER_SUPER_ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
