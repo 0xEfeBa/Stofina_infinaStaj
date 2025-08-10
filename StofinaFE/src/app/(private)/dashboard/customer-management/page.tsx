@@ -183,7 +183,7 @@ const CustomerManagement = () => {
                                 <td className="px-4 py-1">{account.status}</td>
                                 <td className="px-4 py-1">
                                     <button
-                                        onClick={() => router.push('/dashboard/customer-portfolio/' + account.accountNumber)}
+                                        onClick={() => router.push('/dashboard/customer-portfolio/' + account.id)}
                                         disabled={account.status === AccountStatus.PASSIVE}
                                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 flex items-center gap-1.5 min-w-fit ${account.status === AccountStatus.PASSIVE
                                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'

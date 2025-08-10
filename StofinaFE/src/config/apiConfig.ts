@@ -23,4 +23,11 @@ export const apiConfig = {
     index: "/accounts",
     customer: "/accounts/customer/",  
   },
+  stock: {
+ 
+    index: "/stocks"
+  },
+  balance: {
+    index: "/balances/account"
+  }
 };

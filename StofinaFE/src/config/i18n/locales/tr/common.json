@@ -97,12 +97,14 @@
         }
     },
     "customerPortfolio": {
+        "title": "Müşteri Portföyü",
         "search": {
             "label": "Emir Ara",
             "placeholder": "Hisse koduna göre arama yapabilirsiniz."
         },
         "table": {
             "headers": {
+                "id": "ID",
                 "symbol": "Hisse Kodu",
                 "quantity": "Güncel Adet",
                 "availableQuantity": "Satılabilir Adet",
@@ -121,8 +123,10 @@
             }
         },
         "summary": {
+            "title": "Portföy Özeti",
             "status": {
-                "label": "Durum"
+                "label": "Durum",
+                "active": "Aktif"
             },
             "totalAssets": {
                 "label": "Toplam Varlık"
@@ -494,6 +498,15 @@
                 "individual": "Bireysel",
                 "corporate": "Kurumsal"
             }
+        },
+        "customerInfo": {
+            "title": "Müşteri Bilgileri",
+            "individual": "Bireysel Müşteri",
+            "corporate": "Kurumsal Müşteri",
+            "customerId": "Müşteri ID",
+            "taxNumber": "Vergi No",
+            "loading": "Müşteri bilgileri yükleniyor...",
+            "selectAccount": "İşlem yapılacak hesap seçimi yapınız."
         },
         "getIndividuals": {
             "error": {
