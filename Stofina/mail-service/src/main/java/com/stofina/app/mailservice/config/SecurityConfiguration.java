@@ -61,12 +61,12 @@ public class SecurityConfiguration {
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/actuator/**",
+                                "/api/v1/mails/create-password/",
                                 "/swagger-ui/**"
                         ).permitAll()
-//                                .requestMatchers(HttpMethod.POST, API_PREFIX + API_VERSION_V1 + API_MAIL + "/**")
-//                        .hasRole("CUSTOMER_SUPER_ADMIN")
-                                .anyRequest().permitAll()
-                )
+                        .requestMatchers(HttpMethod.POST, API_PREFIX + API_VERSION_V1 + API_MAIL + "/**")
+                        .hasRole("CUSTOMER_SUPER_ADMIN")
+                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

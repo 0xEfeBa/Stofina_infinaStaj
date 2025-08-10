@@ -63,17 +63,16 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**",
                                 "/actuator/**"
                                 ).permitAll()
-//
-//                        .requestMatchers(HttpMethod.GET, "/api/v1/stocks/**", "/api/v1/accounts/**","/api/v1/balances/**" )
-//                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
-//
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/portfolios/**")
-//                        .hasRole("CUSTOMER_SUPER_ADMIN")
-//
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/transactions/**")
-//                        .hasRole("CUSTOMER_SUPER_ADMIN")
-                                .anyRequest().permitAll()
-                 )
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/stocks/**", "/api/v1/accounts/**","/api/v1/balances/**" )
+                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/portfolios/**")
+                        .hasRole("CUSTOMER_SUPER_ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/transactions/**")
+                        .hasRole("CUSTOMER_SUPER_ADMIN")
+                  )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

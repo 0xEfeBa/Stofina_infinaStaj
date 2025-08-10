@@ -47,12 +47,13 @@ public class SecurityConfiguration {
                                 "/api/v1/users/create-password",
                                 "/api/v1/users/forgot-password",
                                 "/api/v1/users/reset-password",
+                                "/api/v1/users/create-user",
                                 "/swagger-ui/**",
                                 "/actuator/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        //.anyRequest().hasRole("CUSTOMER_SUPER_ADMIN")
+                        .anyRequest().hasRole("CUSTOMER_SUPER_ADMIN")
                         .anyRequest().permitAll()
                 )
                 .authenticationProvider(daoAuthenticationProvider())
