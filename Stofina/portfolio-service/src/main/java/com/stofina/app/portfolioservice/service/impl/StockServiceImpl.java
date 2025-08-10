@@ -1,6 +1,6 @@
 package com.stofina.app.portfolioservice.service.impl;
 
-import com.stofina.app.customerservice.exception.NotEnoughBalanceException;
+import com.stofina.app.portfolioservice.exception.NotEnoughBalanceException;
 import com.stofina.app.portfolioservice.dto.StockDto;
 import com.stofina.app.portfolioservice.enums.*;
 import com.stofina.app.portfolioservice.exception.*;
