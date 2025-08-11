@@ -305,9 +305,8 @@
                 "manager": "Yönetici"
             },
             "authorityOptions": {
-                "admin": "Admin",
-                "user": "Kullanıcı",
-                "manager": "Yönetici"
+                "trader": "Trader",
+                "admin": "Admin"
             }
         },
         "userList": {

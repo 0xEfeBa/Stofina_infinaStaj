@@ -25,18 +25,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const path = usePathname();
 
   const menuItems = [
-    { label: t('dashboard.menu.dashboard'), href: "/dashboard", icon: "/menu-icon/kontrol.png" },
-    { label: t('dashboard.menu.trading'), href: "/dashboard/trading", icon: "/menu-icon/trade.png" },
-    { label: t('dashboard.menu.stocks'), href: "/dashboard/stock", icon: "/menu-icon/stock.png" },
-    { label: t('dashboard.menu.stockDefinition'), href: "/dashboard/stock-management", icon: "/menu-icon/add_stock.png" },
-    { label: t('dashboard.menu.customerDefinition'), href: "/dashboard/bireysel", icon: "/menu-icon/add_customer.png" },
-    { label: t('dashboard.menu.customerPortfolio'), href: "/dashboard/customer-portfolio", icon: "/menu-icon/basket.png" },
-    { label: t('dashboard.menu.customerAccountManagement'), href: "/dashboard/customer-management", icon: "/menu-icon/wallet.png" },
-    { label: t('dashboard.menu.orderTracking'), href: "/dashboard/order-tracking", icon: "/menu-icon/order.png" },
-    { label: t('dashboard.menu.reporting'), href: "/dashboard/report", icon: "/menu-icon/report.png" },
-    { label: t('dashboard.menu.userManagement'), href: "/dashboard/user-management", icon: "/menu-icon/portfolio.png" },
-    { label: t('dashboard.menu.transfer'), href: "/dashboard/transfer", icon: "/menu-icon/virman.png" }
+    { label: t('dashboard.menu.dashboard'), href: "/dashboard", icon: "/menu-icon/kontrol.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.trading'), href: "/dashboard/trading", icon: "/menu-icon/trade.png", roles: ["CUSTOMER_TRADER", "CUSTOMER_SUPER_ADMIN"] },
+    { label: t('dashboard.menu.stocks'), href: "/dashboard/stock", icon: "/menu-icon/stock.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.stockDefinition'), href: "/dashboard/stock-management", icon: "/menu-icon/add_stock.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.customerDefinition'), href: "/dashboard/bireysel", icon: "/menu-icon/add_customer.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.customerPortfolio'), href: "/dashboard/customer-portfolio", icon: "/menu-icon/basket.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.customerAccountManagement'), href: "/dashboard/customer-management", icon: "/menu-icon/wallet.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.orderTracking'), href: "/dashboard/order-tracking", icon: "/menu-icon/order.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.reporting'), href: "/dashboard/report", icon: "/menu-icon/report.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] },
+    { label: t('dashboard.menu.userManagement'), href: "/dashboard/user-management", icon: "/menu-icon/portfolio.png", roles: ["CUSTOMER_SUPER_ADMIN"] },
+    { label: t('dashboard.menu.transfer'), href: "/dashboard/transfer", icon: "/menu-icon/virman.png", roles: ["CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER"] }
   ];
+
+  let userRoleType = null;
+  const userString = typeof window !== 'undefined' ? localStorage.getItem("user") : null;
+  if (userString) {
+    try {
+      const user = JSON.parse(userString);
+      if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
+        userRoleType = user.roles[0].roleType;
+      }
+    } catch (e) {
+      userRoleType = null;
+    }
+  }
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -123,8 +136,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
 
+  // Filter menu items by search and role
   const filteredItems = menuItems.filter((item) =>
-    item.label.toLowerCase().startsWith(searchTerm.toLowerCase())
+    item.label.toLowerCase().startsWith(searchTerm.toLowerCase()) &&
+    (userRoleType ? item.roles.includes(userRoleType) : true)
   );
 
   return (
@@ -255,7 +270,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {!searchTerm && (
             <nav className={styles.nav}>
-              {menuItems.map((item) => {
+              {menuItems.filter(item => userRoleType ? item.roles.includes(userRoleType) : true).map((item) => {
                 return (
                   <a key={item.label} href={item.href} className={`${path.endsWith(item.href) ? 'bg-[#813FB4]/30 ' : ''}`}>
                     <img src={item.icon} alt={item.label} className="w-6 h-6" />

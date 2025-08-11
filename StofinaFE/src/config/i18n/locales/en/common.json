@@ -636,9 +636,8 @@
                 "manager": "Manager"
             },
             "authorityOptions": {
-                "admin": "Admin",
-                "user": "User",
-                "manager": "Manager"
+                "trader": "Trader",
+                "admin": "Admin"
             }
         },
         "userList": {

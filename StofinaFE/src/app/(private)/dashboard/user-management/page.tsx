@@ -122,20 +122,19 @@ export default function Page() {
         return;
       }
 
-      const roleMapping: { [key: string]: string } = {
-        admin: "CUSTOMER_SUPER_ADMIN",
-        user: "CUSTOMER_TRADER", 
-        manager: "CUSTOMER_DEVELOPER"
-      };
-
-      const mappedRole = roleMapping[data.yetki.toLowerCase()] || "CUSTOMER_TRADER";
+      let mappedRole = "CUSTOMER_TRADER";
+      if (data.yetki === "admin") {
+        mappedRole = "CUSTOMER_SUPER_ADMIN";
+      } else if (data.yetki === "trader") {
+        mappedRole = "CUSTOMER_TRADER";
+      }
 
       const response = await fetch("http://localhost:9002/api/v1/users/create-user", {
         method: "POST",
         headers: {
           "accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           firstName: data.ad,
@@ -290,8 +289,7 @@ export default function Page() {
           <select {...register("yetki")} className={styles.select} defaultValue="">
             <option value="" disabled>{t("userManagement.form.authoritySelect")}</option>
             <option value="admin">{t("userManagement.form.authorityOptions.admin")}</option>
-            <option value="user">{t("userManagement.form.authorityOptions.user")}</option>
-            <option value="manager">{t("userManagement.form.authorityOptions.manager")}</option>
+            <option value="trader">{t("userManagement.form.authorityOptions.trader")}</option>
           </select>
         </div>
 
