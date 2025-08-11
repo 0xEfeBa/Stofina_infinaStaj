@@ -11,8 +11,14 @@ export const getOrdersByAccountId =
   ): AppThunk<Promise< Order[] | []>> =>
   async (dispatch) => {
     try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
       const response = await axiosInstance.get(
-        `${apiConfig.baseUrlOrder}${apiConfig.order.index}?accountId=${accountId}`
+        `${apiConfig.baseUrlOrder}${apiConfig.order.index}?accountId=${accountId}`,
+              {
+                  headers: {
+                      Authorization: `Bearer ${token}`
+                  }
+              }
       );
       console.log(response);
       const data = response.data?.content;
