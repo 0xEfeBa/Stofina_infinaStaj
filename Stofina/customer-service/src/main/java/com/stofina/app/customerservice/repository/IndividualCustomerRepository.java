@@ -13,4 +13,5 @@ public interface IndividualCustomerRepository extends JpaRepository<IndividualCu
 
     boolean existsByTckn(String tckn);
 
-    boolean existsByEmailIgnoreCase(String email);}
+
+    boolean existsByEmail(String email);}

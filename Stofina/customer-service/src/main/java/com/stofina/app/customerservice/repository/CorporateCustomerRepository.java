@@ -17,5 +17,5 @@ public interface CorporateCustomerRepository extends JpaRepository<CorporateCust
     
     boolean existsByTradeRegistryNumber(String tradeRegistryNumber);
 
-    boolean existsByRepresentativeEmailIgnoreCase(String representativeEmail);
+    boolean existsByRepresentativeEmail(String representativeEmail);
 }
