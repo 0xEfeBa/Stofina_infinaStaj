@@ -21,6 +21,7 @@ spring:
         format_sql: true
 
   kafka:
+    bootstrap-servers: localhost:9092
     consumer:
       group-id: order-service-group
       auto-offset-reset: earliest
@@ -50,7 +51,94 @@ management:
       exposure:
         include: "*"
 
+# Portfolio Service Integration Configuration
+portfolio-service:
+  base-url: ${PORTFOLIO_SERVICE_URL:http://localhost:9001}
+  endpoints:
+    # Basic Operations
+    buy-stock: /api/v1/stocks/buy
+    sell-stock: /api/v1/stocks/sell
+    
+    # Trade Confirmations
+    confirm-buy: /api/v1/stocks/confirm-buy
+    confirm-sell: /api/v1/stocks/confirm-sell
+    confirm-buy-partial: /api/v1/stocks/confirm-buy-partial
+    confirm-sell-partial: /api/v1/stocks/confirm-sell-partial
+    
+    # Order Cancellations
+    cancel-buy: /api/v1/stocks/cancel-buy/{orderId}
+    cancel-sell: /api/v1/stocks/cancel-sell/{orderId}
+    
+    # Compensation Operations
+    compensate-trade: /api/v1/compensation/trade
+    
+    # Health Check
+    health: /actuator/health
+    
+  connection:
+    timeout: 15000
+    read-timeout: 30000
+    max-connections: 100
+    max-idle-time: 60000
+    pending-acquire-timeout: 120000
+    
+  retry:
+    max-attempts: 3
+    delay: 1000
+    multiplier: 2
+    max-delay: 10000
 
+# Resilience4j Configuration for Portfolio Service
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 20
+        failure-rate-threshold: 80
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 5
+        minimum-number-of-calls: 10
+        automatic-transition-from-open-to-half-open-enabled: true
+    instances:
+      portfolio-service:
+        base-config: default
+        
+  retry:
+    configs:
+      default:
+        max-attempts: 5
+        wait-duration: 500ms
+        exponential-backoff-multiplier: 1.5
+        retry-exceptions:
+          - com.stofina.app.orderservice.exception.portfolio.PortfolioServiceException
+          - java.net.SocketTimeoutException
+          - java.util.concurrent.TimeoutException
+        ignore-exceptions:
+          - com.stofina.app.orderservice.exception.portfolio.InsufficientBalanceException
+          - com.stofina.app.orderservice.exception.portfolio.InsufficientStockException
+    instances:
+      portfolio-service:
+        base-config: default
+        
+  timeout:
+    configs:
+      default:
+        timeout-duration: 15s
+        cancel-running-future: true
+    instances:
+      portfolio-service:
+        base-config: default
+
+# Market Data Service Integration
+market-data:
+  base-url: ${MARKET_DATA_SERVICE_URL:http://localhost:9005}
+  endpoints:
+    symbols: /api/v1/market/symbols
+    price: /api/v1/market/symbols/{symbol}/price
+    health: /actuator/health
+  connection:
+    timeout: 5000
+    read-timeout: 10000
 
 security:
   jwt:

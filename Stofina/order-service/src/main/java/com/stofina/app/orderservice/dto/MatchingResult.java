@@ -1,6 +1,5 @@
 package com.stofina.app.orderservice.dto;
 
-
 import com.stofina.app.orderservice.entity.Order;
 import com.stofina.app.orderservice.entity.Trade;
 import com.stofina.app.orderservice.enums.MatchingStrategy;

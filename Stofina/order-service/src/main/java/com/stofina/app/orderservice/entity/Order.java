@@ -92,6 +92,7 @@ public class Order {
     @Column(nullable = false)
     private Boolean isBot = false;
 
+
     public BigDecimal getRemainingQuantity() {
         if (quantity == null || filledQuantity == null) {
             return BigDecimal.ZERO;
@@ -113,6 +114,7 @@ public class Order {
     public boolean canBeUpdated() {
         return status != null && status.canUpdate();
     }
+
 
     @PrePersist
     protected void onCreate() {

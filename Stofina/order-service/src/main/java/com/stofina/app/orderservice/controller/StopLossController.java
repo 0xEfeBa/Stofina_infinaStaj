@@ -3,6 +3,7 @@ package com.stofina.app.orderservice.controller;
 import com.stofina.app.orderservice.common.ServiceResult;
 import com.stofina.app.orderservice.entity.Order;
 import com.stofina.app.orderservice.service.IStopLossService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

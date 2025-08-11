@@ -42,6 +42,7 @@ public class CreateOrderRequest {
     // TODO: ENTEGRASYON SIRASINDA KALDIRILACAK - Test purpose field
     private Long tenantId = 1L; // Default test tenant
     
+    
     // Validation helper methods
     public boolean isMarketOrder() {
         return OrderType.MARKET_BUY.equals(orderType);
@@ -62,4 +63,5 @@ public class CreateOrderRequest {
     public boolean requiresStopPrice() {
         return orderType != null && orderType.requiresStopPrice();
     }
+    
 }

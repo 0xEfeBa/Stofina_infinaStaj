@@ -50,5 +50,13 @@ public enum OrderType {
             case LIMIT_SELL, MARKET_SELL, STOP_LOSS_SELL -> OrderSide.SELL;
         };
     }
+    
+    public boolean isBuyOrder() {
+        return getSide() == OrderSide.BUY;
+    }
+    
+    public boolean isSellOrder() {
+        return getSide() == OrderSide.SELL;
+    }
 
 }

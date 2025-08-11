@@ -1,5 +1,7 @@
 package com.stofina.app.orderservice.controller;
 
+import com.stofina.app.orderservice.constants.ApiEndpoints;
+
 import com.stofina.app.orderservice.dto.request.CreateOrderRequest;
 import com.stofina.app.orderservice.dto.request.OrderFilterRequest;
 import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
@@ -17,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @Validated
-@RequestMapping("api/v1/orders")
+@RequestMapping(ApiEndpoints.ORDERS_BASE)
 @RequiredArgsConstructor
 @Slf4j
 public class OrderController {
@@ -34,18 +36,18 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{orderId}")
+    @GetMapping(ApiEndpoints.ORDER_BY_ID)
     public ResponseEntity<OrderResponse> getOrder(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrder(orderId));
     }
 
-    @PatchMapping("/{orderId}")
+    @PatchMapping(ApiEndpoints.ORDER_BY_ID)
     public ResponseEntity<OrderResponse> updateOrder(@PathVariable Long orderId,
                                                      @RequestBody UpdateOrderRequest request) {
         return ResponseEntity.ok(orderService.updateOrder(orderId, request));
     }
 
-    @DeleteMapping("/{orderId}")
+    @DeleteMapping(ApiEndpoints.ORDER_BY_ID)
     public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId) {
         orderService.cancelOrder(orderId);
         return ResponseEntity.noContent().build();
@@ -56,17 +58,17 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrders(filter));
     }
 
-    @GetMapping("/account/{accountId}")
+    @GetMapping(ApiEndpoints.ORDERS_BY_ACCOUNT)
     public ResponseEntity<List<OrderResponse>> getOrdersByAccount(@PathVariable Long accountId) {
         return ResponseEntity.ok(orderService.getOrdersByAccount(accountId));
     }
 
-    @GetMapping("/symbol/{symbol}")
+    @GetMapping(ApiEndpoints.ORDERS_BY_SYMBOL)
     public ResponseEntity<List<OrderResponse>> getOrdersBySymbol(@PathVariable String symbol) {
         return ResponseEntity.ok(orderService.getActiveOrdersBySymbol(symbol));
     }
 
-    @PostMapping("/validate")
+    @PostMapping(ApiEndpoints.ORDERS_VALIDATE)
     public ResponseEntity<Map<String, Object>> validateOrder(@RequestBody CreateOrderRequest request) {
         return ResponseEntity.ok(orderService.validateOrder(request));
     }

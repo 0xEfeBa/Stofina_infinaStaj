@@ -8,6 +8,13 @@ import com.stofina.app.orderservice.enums.OrderType;
 import com.stofina.app.orderservice.repository.OrderRepository;
 import com.stofina.app.orderservice.repository.TradeRepository;
 import com.stofina.app.orderservice.service.AlgorithmicMatchingService;
+import com.stofina.app.orderservice.service.client.PortfolioClient;
+import com.stofina.app.orderservice.dto.portfolio.BuyStockRequest;
+import com.stofina.app.orderservice.dto.portfolio.SellStockRequest;
+import com.stofina.app.orderservice.dto.portfolio.PortfolioResponse;
+import com.stofina.app.orderservice.dto.portfolio.TradeConfirmationRequest;
+import com.stofina.app.orderservice.dto.portfolio.PartialTradeConfirmationRequest;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -32,6 +39,9 @@ public class AlgorithmicMatchingServiceImpl implements AlgorithmicMatchingServic
     private final OrderRepository orderRepository;
     private final TradeRepository tradeRepository;
     private final Random random = new Random();
+    
+    // CHECKPOINT 3.3 - Portfolio Service integration for algorithmic orders
+    private final PortfolioClient portfolioClient;
     
     // Order tracking: orderId -> algorithmic matching count (max 2)
     private final Map<Long, Integer> algorithmicMatchingCounts = new ConcurrentHashMap<>();
@@ -184,6 +194,13 @@ public class AlgorithmicMatchingServiceImpl implements AlgorithmicMatchingServic
         // Generate counter-bot order
         Order counterBotOrder = generateCounterBotOrder(userOrder, counterQuantity);
         
+        // CHECKPOINT 3.3 - Check if bot order creation failed due to portfolio validation
+        if (counterBotOrder == null) {
+            log.warn("🤖 ALGORITHMIC: Counter bot order creation failed → UserOrderId: {}, returning empty trades", 
+                    userOrder.getOrderId());
+            return new ArrayList<>();
+        }
+        
         // Create trade
         Trade trade = createAlgorithmicTrade(userOrder, counterBotOrder, counterQuantity);
         
@@ -196,6 +213,15 @@ public class AlgorithmicMatchingServiceImpl implements AlgorithmicMatchingServic
         
         log.info("Algorithmic trade executed: {} {} @ {} - Trade ID: {}", 
                 counterQuantity, userOrder.getSymbol(), userOrder.getPrice(), trade.getTradeId());
+        
+        // AUTO-CONFIRM: Automatically confirm filled/partially filled user order in Portfolio Service
+        if (userOrder.getStatus() == OrderStatus.FILLED) {
+            log.info("🤖 AUTO-CONFIRM: User Order FILLED via algorithmic matching, confirming in Portfolio Service → OrderId: {}", userOrder.getOrderId());
+            autoConfirmFilledOrder(userOrder, trade);
+        } else if (userOrder.getStatus() == OrderStatus.PARTIALLY_FILLED) {
+            log.info("🤖 AUTO-CONFIRM: User Order PARTIALLY_FILLED via algorithmic matching, confirming partial trade → OrderId: {}", userOrder.getOrderId());
+            autoConfirmFilledOrder(userOrder, trade);
+        }
         
         // Schedule next algorithmic matching if partially filled and eligible
         if (!fullFill && userOrder.getRemainingQuantity().compareTo(BigDecimal.ZERO) > 0 
@@ -242,8 +268,19 @@ public class AlgorithmicMatchingServiceImpl implements AlgorithmicMatchingServic
         counterBot.setStatus(OrderStatus.NEW);
         counterBot.setCreatedAt(LocalDateTime.now());
         
+        // CHECKPOINT 3.3 - Portfolio validation for algorithmic bot orders
+        if (!validateAlgorithmicBotPortfolio(counterBot)) {
+            log.warn("🤖 ALGORITHMIC: Bot portfolio validation failed for counter order → Symbol: {}, Side: {}, Quantity: {}", 
+                    counterBot.getSymbol(), counterBot.getSide(), quantity);
+            return null; // Return null if validation fails
+        }
+        
         // Save bot order to get auto-generated ID
-        return orderRepository.save(counterBot);
+        Order savedBot = orderRepository.save(counterBot);
+        log.info("🤖 ALGORITHMIC: Generated counter bot order → BotOrderId: {}, Symbol: {}, Side: {}, Quantity: {}", 
+                savedBot.getOrderId(), savedBot.getSymbol(), savedBot.getSide(), quantity);
+        
+        return savedBot;
     }
     
     private Trade createAlgorithmicTrade(Order userOrder, Order botOrder, BigDecimal quantity) {
@@ -302,5 +339,191 @@ public class AlgorithmicMatchingServiceImpl implements AlgorithmicMatchingServic
     public void shutdown() {
         log.info("Shutting down algorithmic matching scheduler...");
         scheduler.shutdown();
+    }
+
+    // CHECKPOINT 3.3 - Portfolio Service Integration Helper Methods
+
+    /**
+     * Validates that the algorithmic bot has sufficient portfolio capacity for the counter order.
+     * For demo purposes, this assumes the bot account (999999L) has unlimited capacity.
+     * In production, this would check actual bot account balances and positions.
+     */
+    private boolean validateAlgorithmicBotPortfolio(Order botOrder) {
+        try {
+            // Bot account validation - for demo, we assume unlimited capacity
+            log.debug("🤖 ALGORITHMIC: Validating bot portfolio → AccountId: {}, Side: {}, Symbol: {}, Quantity: {}", 
+                    botOrder.getAccountId(), botOrder.getSide(), botOrder.getSymbol(), botOrder.getQuantity());
+
+            if (botOrder.getSide() == OrderSide.BUY) {
+                // For buy orders, validate bot has sufficient balance
+                return validateBotBalance(botOrder);
+            } else {
+                // For sell orders, validate bot has sufficient stock
+                return validateBotStock(botOrder);
+            }
+
+        } catch (Exception e) {
+            log.error("🤖 ALGORITHMIC: Portfolio validation error for bot order → Symbol: {}, Error: {}", 
+                    botOrder.getSymbol(), e.getMessage(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Validates bot account balance for buy orders.
+     * In demo mode, always returns true (unlimited bot balance).
+     * In production, would call Portfolio Service for actual validation.
+     */
+    private boolean validateBotBalance(Order botBuyOrder) {
+        BigDecimal requiredAmount = botBuyOrder.getPrice().multiply(botBuyOrder.getQuantity());
+        
+        log.debug("🤖 ALGORITHMIC: Bot balance validation → Required: {}, Symbol: {}", 
+                requiredAmount, botBuyOrder.getSymbol());
+
+        // Demo Mode: Assume bot has unlimited balance
+        // TODO: In production, implement actual Portfolio Service call:
+        /*
+        try {
+            CompletableFuture<PortfolioResponse> validationFuture = portfolioClient.validateAccountBalance(
+                    botBuyOrder.getAccountId(), requiredAmount
+            );
+            PortfolioResponse response = validationFuture.get();
+            return response.isSuccess();
+        } catch (Exception e) {
+            log.error("🤖 ALGORITHMIC: Bot balance validation failed", e);
+            return false;
+        }
+        */
+
+        // For now, always return true for demo
+        return true;
+    }
+
+    /**
+     * Validates bot account stock position for sell orders.
+     * In demo mode, always returns true (unlimited bot stock).
+     * In production, would call Portfolio Service for actual validation.
+     */
+    private boolean validateBotStock(Order botSellOrder) {
+        log.debug("🤖 ALGORITHMIC: Bot stock validation → Symbol: {}, Quantity: {}", 
+                botSellOrder.getSymbol(), botSellOrder.getQuantity());
+
+        // Demo Mode: Assume bot has unlimited stock positions
+        // TODO: In production, implement actual Portfolio Service call:
+        /*
+        try {
+            CompletableFuture<PortfolioResponse> validationFuture = portfolioClient.validateStockPosition(
+                    botSellOrder.getAccountId(), 
+                    botSellOrder.getSymbol(), 
+                    botSellOrder.getQuantity().intValue()
+            );
+            PortfolioResponse response = validationFuture.get();
+            return response.isSuccess();
+        } catch (Exception e) {
+            log.error("🤖 ALGORITHMIC: Bot stock validation failed", e);
+            return false;
+        }
+        */
+
+        // For now, always return true for demo
+        return true;
+    }
+    
+    /**
+     * AUTO-CONFIRM: Automatically confirm filled order in Portfolio Service
+     * This method is called when an order is marked as FILLED or PARTIALLY_FILLED via algorithmic matching
+     * to automatically call the appropriate Portfolio Service confirm endpoint.
+     */
+    private void autoConfirmFilledOrder(Order filledOrder, Trade trade) {
+        try {
+            log.info("🤖 AUTO-CONFIRM (ALGORITHMIC): Processing order → OrderId: {}, Side: {}, Status: {}", 
+                    filledOrder.getOrderId(), filledOrder.getSide(), filledOrder.getStatus());
+            
+            // Skip auto-confirm for bot orders (account ID is 999999L)
+            if (filledOrder.getAccountId().equals(999999L)) {
+                log.info("🤖 AUTO-CONFIRM (ALGORITHMIC): Skipping auto-confirm for BOT account → OrderId: {}", filledOrder.getOrderId());
+                return;
+            }
+            
+            CompletableFuture<PortfolioResponse> confirmationFuture;
+            
+            if (filledOrder.getSide() == OrderSide.BUY) {
+                if (filledOrder.getStatus() == OrderStatus.FILLED) {
+                    // FULLY FILLED - Use normal confirmBuyTrade
+                    TradeConfirmationRequest buyRequest = TradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .executedQuantity(trade.getQuantity().intValue())  // Trade quantity
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ALGORITHMIC): Confirming FULLY FILLED BUY order → {}", buyRequest);
+                    confirmationFuture = portfolioClient.confirmBuyTrade(buyRequest);
+                } else if (filledOrder.getStatus() == OrderStatus.PARTIALLY_FILLED) {
+                    // PARTIALLY FILLED - Use confirmPartialBuyTrade
+                    PartialTradeConfirmationRequest partialBuyRequest = PartialTradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .partialQuantity(trade.getQuantity().intValue())  // Actually filled quantity
+                            .remainingQuantity(filledOrder.getRemainingQuantity().intValue())
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ALGORITHMIC): Confirming PARTIALLY FILLED BUY order → {}", partialBuyRequest);
+                    confirmationFuture = portfolioClient.confirmPartialBuyTrade(partialBuyRequest);
+                } else {
+                    log.warn("🤖 AUTO-CONFIRM (ALGORITHMIC): Unexpected order status for BUY order → OrderId: {}, Status: {}", 
+                            filledOrder.getOrderId(), filledOrder.getStatus());
+                    return;
+                }
+            } else {
+                if (filledOrder.getStatus() == OrderStatus.FILLED) {
+                    // FULLY FILLED - Use normal confirmSellTrade
+                    TradeConfirmationRequest sellRequest = TradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .executedQuantity(trade.getQuantity().intValue())  // Trade quantity
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ALGORITHMIC): Confirming FULLY FILLED SELL order → {}", sellRequest);
+                    confirmationFuture = portfolioClient.confirmSellTrade(sellRequest);
+                } else if (filledOrder.getStatus() == OrderStatus.PARTIALLY_FILLED) {
+                    // PARTIALLY FILLED - Use confirmPartialSellTrade
+                    PartialTradeConfirmationRequest partialSellRequest = PartialTradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .partialQuantity(trade.getQuantity().intValue())  // Actually filled quantity
+                            .remainingQuantity(filledOrder.getRemainingQuantity().intValue())
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ALGORITHMIC): Confirming PARTIALLY FILLED SELL order → {}", partialSellRequest);
+                    confirmationFuture = portfolioClient.confirmPartialSellTrade(partialSellRequest);
+                } else {
+                    log.warn("🤖 AUTO-CONFIRM (ALGORITHMIC): Unexpected order status for SELL order → OrderId: {}, Status: {}", 
+                            filledOrder.getOrderId(), filledOrder.getStatus());
+                    return;
+                }
+            }
+            
+            // Execute confirmation asynchronously without blocking
+            confirmationFuture.thenAccept(response -> {
+                if (response.isSuccess()) {
+                    log.info("✅ AUTO-CONFIRM (ALGORITHMIC): Order confirmation successful → OrderId: {}", filledOrder.getOrderId());
+                } else {
+                    log.error("❌ AUTO-CONFIRM (ALGORITHMIC): Order confirmation failed → OrderId: {}, Error: {}", 
+                            filledOrder.getOrderId(), response.getMessage());
+                }
+            }).exceptionally(throwable -> {
+                log.error("🚨 AUTO-CONFIRM (ALGORITHMIC): Exception during order confirmation → OrderId: {}, Error: {}", 
+                        filledOrder.getOrderId(), throwable.getMessage());
+                return null;
+            });
+            
+        } catch (Exception e) {
+            log.error("🚨 AUTO-CONFIRM (ALGORITHMIC): Unexpected error during auto-confirm → OrderId: {}, Error: {}", 
+                    filledOrder.getOrderId(), e.getMessage());
+        }
     }
 }

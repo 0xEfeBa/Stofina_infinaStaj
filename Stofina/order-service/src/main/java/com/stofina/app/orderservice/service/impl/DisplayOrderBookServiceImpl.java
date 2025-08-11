@@ -35,24 +35,24 @@ public class DisplayOrderBookServiceImpl implements DisplayOrderBookService {
     private static final String REDIS_KEY_ASKS = "orderbook:display:%s:asks";
     private static final Duration REDIS_TTL = Duration.ofHours(1);
     
-    // TODO: ENTEGRASYON SIRASINDA KALDIRILACAK - Mock BIST symbols
+    // TODO: ENTEGRASYON SIRASINDA KALDIRILACAK - Mock BIST symbols - Synced with Market Data Service
     private static final List<String> MOCK_BIST_SYMBOLS = Arrays.asList(
-        "THYAO", "GARAN", "AKBNK", "ISCTR", "TUPRS", 
-        "ASELS", "SISE", "BIMAS", "KCHOL", "TCELL"
+        "AKBNK", "CCOLA", "DOAS", "MGROS", "FROTO",
+        "TCELL", "THYAO", "YEOTK", "BRSAN", "TUPRS"
     );
     
-    // TODO: ENTEGRASYON SIRASINDA KALDIRILACAK - Mock initial prices
+    // TODO: ENTEGRASYON SIRASINDA KALDIRILACAK - Mock initial prices - Synced with Market Data Service
     private static final Map<String, BigDecimal> MOCK_INITIAL_PRICES = Map.of(
-        "THYAO", new BigDecimal("45.50"),
-        "GARAN", new BigDecimal("28.75"),
-        "AKBNK", new BigDecimal("42.30"),
-        "ISCTR", new BigDecimal("15.80"),
-        "TUPRS", new BigDecimal("38.90"),
-        "ASELS", new BigDecimal("35.20"),
-        "SISE", new BigDecimal("22.40"),
-        "BIMAS", new BigDecimal("95.50"),
-        "KCHOL", new BigDecimal("18.60"),
-        "TCELL", new BigDecimal("52.80")
+        "AKBNK", new BigDecimal("67.15"),
+        "CCOLA", new BigDecimal("49.92"),
+        "DOAS", new BigDecimal("183.10"),
+        "MGROS", new BigDecimal("531.00"),
+        "FROTO", new BigDecimal("92.95"),
+        "TCELL", new BigDecimal("92.55"),
+        "THYAO", new BigDecimal("290.25"),
+        "YEOTK", new BigDecimal("42.08"),
+        "BRSAN", new BigDecimal("354.00"),
+        "TUPRS", new BigDecimal("164.50")
     );
     
     @PostConstruct
