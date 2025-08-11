@@ -3,7 +3,7 @@
 import { useDispatchCustom } from '@/hooks/useDispatchCustom';
 import { SliceGlobalModal } from '@/slice/common/sliceGlobalModal';
 import { useSelectorCustom } from '@/store';
-import { mockOrders, Order } from '@/types/order';
+import { Order } from '@/types/order';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,15 +13,14 @@ export default function OrderTrackingTable() {
     const [search, setSearch] = useState('');
     const [orderTypeFilter, setOrderTypeFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const selectedCustomer = useSelectorCustom((state) => state.customer.selectedCustomer);
+    const { selectedIndividualCustomer, selectedCorporateCustomer } = useSelectorCustom(state => state.customer);
 
     const filteredOrders = useMemo(() => {
-        return mockOrders
-            .filter((order) =>  // arama yaparken emir filtreleme
-                `${order.symbol} ${order.orderNo}`
-                    .toLowerCase()
-                    .includes(search.toLowerCase())
-            )
+        return [].filter((order) =>  // arama yaparken emir filtreleme
+            `${order.symbol} ${order.orderNo}`
+                .toLowerCase()
+                .includes(search.toLowerCase())
+        )
             .filter((order) => !orderTypeFilter || order.orderType === orderTypeFilter)
             .filter((order) => !statusFilter || order.status === statusFilter)
     }, [search, orderTypeFilter, statusFilter]);

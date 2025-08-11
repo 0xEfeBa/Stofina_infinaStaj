@@ -1,7 +1,7 @@
 .container {
   min-height: 100vh;
   display: flex;
-  width: 100vw; 
+  width: 100vw;
   font-family: 'Quicksand', sans-serif;
   background-size: cover;
   background-position: center;
@@ -125,6 +125,7 @@
   transition: background-color 0.3s ease;
   font-weight: 600;
   margin-top: 8px;
+  cursor: pointer;
 }
 
 .button:hover {

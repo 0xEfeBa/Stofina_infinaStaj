@@ -1,15 +1,63 @@
 "use client";
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from '@/theme/common.module.css'
 import { useRouter } from "next/navigation";
 import AutoCompleteCustomerSearch from '@/components/common/AutoCompleteCustomerSearch';
 import OrderTrackingTable from '@/components/order-tracking/OrderTrackingTable';
 import { useTranslation } from 'react-i18next';
+import AccountSelector from '@/components/order-tracking/accountSelector';
+import { useDispatchCustom } from '@/hooks/useDispatchCustom';
+import { useSelectorCustom } from '@/store';
+import { thunkAccount } from '@/thunks/accountThunk';
+import { Account } from '@/types/account';
+import { Order } from '@/types/order';
+import { thunkOrder } from '@/thunks/orderThunk';
 
 
 const OrderTracking = () => {
+    const [openAccountSelector, setOpenAccountSelector] = useState(false);
     const router = useRouter();
+    const dispatch = useDispatchCustom();
     const { t } = useTranslation();
+    const { selectedIndividualCustomer, selectedCorporateCustomer } = useSelectorCustom(state => state.customer);
+    const [accounts, setAccounts] = useState<Account[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
+
+
+    useEffect(() => {
+        fetchAccounts();
+    }, [selectedIndividualCustomer, selectedCorporateCustomer]);
+
+    const fetchAccounts = async () => {
+        if (selectedIndividualCustomer) {
+            const response = await dispatch(thunkAccount.getAccountsByCustomerId(selectedIndividualCustomer?.customer.id));
+            if (response) {
+                setAccounts(response);
+                setOpenAccountSelector(true);
+            }
+        }
+        else if (selectedCorporateCustomer) {
+            const response = await dispatch(thunkAccount.getAccountsByCustomerId(selectedCorporateCustomer?.customer.id));
+            if (response) {
+                setAccounts(response);
+                setOpenAccountSelector(true);
+            }
+        }
+        else {
+            setAccounts([]);
+            setOpenAccountSelector(false);
+        }
+    }
+
+    const fetchOrders = async (account: Account) => {
+        const response = await dispatch(thunkOrder.getOrdersByAccountId(account.id));
+        if (response) {
+            setOrders(response);
+        }
+    }
+    console.log(orders)
+
+
     return (
         <div>
             <div className=' flex items-start'>
@@ -19,9 +67,10 @@ const OrderTracking = () => {
                 </button>
 
                 <AutoCompleteCustomerSearch />
+                <AccountSelector open={openAccountSelector} onClose={() => setOpenAccountSelector(false)} accounts={accounts} onSelect={fetchOrders} />
             </div>
             <div>
-                <OrderTrackingTable />
+                {/* <OrderTrackingTable /> */}
             </div>
 
         </div>

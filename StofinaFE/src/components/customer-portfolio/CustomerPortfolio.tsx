@@ -20,7 +20,6 @@ export default function CustomerPortfolio({ stocks, balance }: CustomerPortfolio
     const { selectedIndividualCustomer, selectedCorporateCustomer } = useSelectorCustom((state) => state.customer);
     const router = useRouter();
 
-    console.log(stocks);
     const filteredOrders = useMemo(() => {
         // Arama boş ise tüm hisseleri döndür
         if (!search || search.trim() === '') {
