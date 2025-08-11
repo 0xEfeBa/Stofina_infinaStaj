@@ -12,8 +12,14 @@ export const getStocksByAccountId =
   ): AppThunk<Promise< Stock[] | []>> =>
   async (dispatch) => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
       const response = await axiosInstance.get(
-        `${apiConfig.baseUrlPortfolio}${apiConfig.stock.index}/${accountId}`
+        `${apiConfig.baseUrlPortfolio}${apiConfig.stock.index}/${accountId}`,
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : ''
+          }
+        }
       );
       console.log(response);
       const data = response.data;
@@ -50,8 +56,14 @@ export const getStocksByAccountId =
   ): AppThunk<Promise< AccountBalance | null>> =>
   async (dispatch) => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
       const response = await axiosInstance.get(
-        `${apiConfig.baseUrlPortfolio}${apiConfig.balance.index}/${accountId}`
+        `${apiConfig.baseUrlPortfolio}${apiConfig.balance.index}/${accountId}`,
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : ''
+          }
+        }
       );
       console.log(response);
       const data = response.data;

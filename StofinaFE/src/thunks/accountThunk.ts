@@ -13,9 +13,15 @@ export const getAccountsByCustomerId =
   ): AppThunk<Promise< Account[] | []>> =>
   async (dispatch) => {
     try {
-      const response = await axiosInstance.get(
-        `${apiConfig.baseUrlPortfolio}${apiConfig.account.customer}${customerId}`
-      );
+        const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+        const response = await axiosInstance.get(
+          `${apiConfig.baseUrlPortfolio}${apiConfig.account.customer}${customerId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
       console.log(response);
       const data = response.data;
 
@@ -54,14 +60,20 @@ export const getAccountsByCustomerId =
   ): AppThunk<Promise< boolean>> =>
   async (dispatch) => {
     try {
-      const response = await axiosInstance.post(
-        `${apiConfig.baseUrlPortfolio}${apiConfig.account.index}`,
-        {
-          customerId: customerId,
-          initialBalance: initialBalance,
-          openingDate: openingDate
-        }
-      );
+        const token = localStorage.getItem('accessToken');
+        const response = await axiosInstance.post(
+          `${apiConfig.baseUrlPortfolio}${apiConfig.account.index}`,
+          {
+            customerId: customerId,
+            initialBalance: initialBalance,
+            openingDate: openingDate
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
       console.log(response);
       const data = response.data;
 
@@ -99,12 +111,18 @@ export const getAccountsByCustomerId =
   ): AppThunk<Promise< boolean>> =>
   async (dispatch) => {
     try {
-      const response = await axiosInstance.patch(
-        `${apiConfig.baseUrlPortfolio}${apiConfig.account.index}/${accountId}/status`,
-        {
-          newStatus: newStatus
-        }
-      );
+        const token = localStorage.getItem('accessToken');
+        const response = await axiosInstance.patch(
+          `${apiConfig.baseUrlPortfolio}${apiConfig.account.index}/${accountId}/status`,
+          {
+            newStatus: newStatus
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
       console.log(response);
       const data = response.data;
 
