@@ -1,6 +1,7 @@
 
 package com.stofina.app.portfolioservice.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
@@ -12,22 +13,25 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@MappedSuperclass
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
 @SuperBuilder
-public class BaseEntity {
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public abstract class BaseEntity {
+
     @CreatedDate
-    private Date creationDate;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime creationDate;
 
     @LastModifiedDate
-    private Date lastModificationDate;
+    @Column(name = "updated_at")
+    private LocalDateTime lastModificationDate;
 
     @Builder.Default
-    private boolean isDeleted=false;
-
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 }

@@ -11,23 +11,26 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import jakarta.persistence.Column;
+import java.time.LocalDateTime;
 
-import java.util.Date;
-
-@MappedSuperclass
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
 @SuperBuilder
-public class BaseEntity  {
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public abstract class BaseEntity {
+
     @CreatedDate
-    private Date creationDate;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime creationDate;
 
     @LastModifiedDate
-    private Date lastModificationDate;
+    @Column(name = "updated_at")
+    private LocalDateTime lastModificationDate;
 
     @Builder.Default
-    private boolean isDeleted=false;
-
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 }

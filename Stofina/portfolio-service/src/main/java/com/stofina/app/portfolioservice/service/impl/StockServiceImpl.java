@@ -98,14 +98,14 @@ public class StockServiceImpl implements IStockService {
 
         BigDecimal amount = transaction.getPrice().multiply(BigDecimal.valueOf(transaction.getQuantity()-transaction.getFulfilledQuantity()));
 
-        // 1. Update transaction
+        // Update transaction
         transaction.setTransactionStatus(TransactionStatus.SETTLED);
         transaction.setSettlementStatus(SettlementStatus.SETTLED);
         transaction.setSettlementDate(LocalDateTime.now());
         transaction.setBalanceAfterTransaction(account.getTotalBalance().subtract(amount));
         transactionRepository.save(transaction);
 
-        // 2. Update stock
+        // Update stock
         Stock stock = stockRepository.findByAccountIdAndSymbol(account.getId(), transaction.getSymbol())
                 .orElse(Stock.builder()
                         .accountId(account.getId())
@@ -130,13 +130,13 @@ public class StockServiceImpl implements IStockService {
         stock.setAverageCost(newAverageCost);
         stockRepository.save(stock);
 
-        // 3. Update account balances
+        // Update account balances
         account.setTotalBalance(account.getTotalBalance().subtract(amount));
         account.setReservedBalance(account.getReservedBalance().subtract(amount));
         withdrawableBalanceComponent.recalculateWithdrawableBalance(account);
         accountRepository.save(account);
 
-        // 4. Release reservation
+        // Release reservation
         BalanceReservation reservation = reservationRepository.findByAccountIdAndOrderId(account.getId(), orderId)
                 .orElseThrow(() -> new BalanceReservationNotFound("Reservation not found for order ID: " + orderId));
         reservation.setStatus(ReservationStatus.RELEASED);
@@ -166,12 +166,12 @@ public class StockServiceImpl implements IStockService {
         }
         BigDecimal refundAmount = transaction.getPrice().multiply(BigDecimal.valueOf(remainingQuantity));
         BigDecimal balanceBefore=transaction.getPrice().multiply(BigDecimal.valueOf(fulfilledQuantity)).add(account.getTotalBalance()).add(refundAmount);
-        // 1. Mark transaction as FAILED (or PARTIALLY_FAILED)
+        // Set transaction as FAILED (or PARTIALLY_FAILED)
         transaction.setTransactionStatus(TransactionStatus.FAILED);
         transaction.setSettlementStatus(SettlementStatus.FAILED);
         transactionRepository.save(transaction);
 
-        // 2. Create refund transaction
+        // Create refund transaction
         Transaction refund = Transaction.builder()
                 .accountId(account.getId())
                 .symbol("TRY")
@@ -188,13 +188,13 @@ public class StockServiceImpl implements IStockService {
                 .build();
         transactionRepository.save(refund);
 
-        // 3. Update account balances
+        // Update account balances
         account.setAvailableBalance(account.getAvailableBalance().add(refundAmount));
         account.setReservedBalance(account.getReservedBalance().subtract(refundAmount));
         withdrawableBalanceComponent.recalculateWithdrawableBalance(account);
         accountRepository.save(account);
 
-        // 4. Update reservation
+        // Update reservation
         reservation.setStatus(ReservationStatus.RELEASED);
         reservation.setUsedAmount(transaction.getPrice().multiply(BigDecimal.valueOf(fulfilledQuantity)));
         reservationRepository.save(reservation);
@@ -223,7 +223,7 @@ public class StockServiceImpl implements IStockService {
 
         BigDecimal totalProceeds = request.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
 
-        // 1. Reserve stock quantity
+        // Reserve stock quantity
         StockReservation stockReservation = StockReservation.builder()
                 .accountId(account.getId())
                 .orderId(request.getOrderId())
@@ -237,7 +237,7 @@ public class StockServiceImpl implements IStockService {
                 .build();
         stockReservationRepository.save(stockReservation);
 
-        // 2. Decrease stock quantity
+        // Decrease stock quantity
         stock.setQuantity(stock.getQuantity() - request.getQuantity());
         if (stock.getQuantity() <= 0) {
             stockRepository.delete(stock);
@@ -245,7 +245,7 @@ public class StockServiceImpl implements IStockService {
             stockRepository.save(stock);
         }
 
-        // 3. Create transaction (PENDING)
+        // Create transaction (PENDING)
         Transaction transaction = transactionMapper.fromSellRequest(request);
         transaction.setTradeDate(LocalDateTime.now());
         transaction.setSettlementDate(LocalDateTime.now().plusDays(2)); // T+2
@@ -257,7 +257,7 @@ public class StockServiceImpl implements IStockService {
         transaction.setBalanceAfterTransaction(account.getTotalBalance());
         transactionRepository.save(transaction);
 
-        // 4. Create withdrawal restriction
+        // Create withdrawal restriction
         WithdrawalRestriction restriction = WithdrawalRestriction.builder()
                 .accountId(account.getId())
                 .orderId(request.getOrderId())
@@ -288,12 +288,12 @@ public class StockServiceImpl implements IStockService {
 
         Account account = findAccount(transaction.getAccountId());
 
-        // 1. Transaction durumunu güncelle
+        // Transaction durumunu güncelle
         transaction.setTransactionStatus(TransactionStatus.FAILED);
         transaction.setSettlementStatus(SettlementStatus.FAILED);
         transactionRepository.save(transaction);
 
-        // 2. StockReservation geri alınmalı
+        // StockReservation geri alınmalı
         StockReservation stockReservation = stockReservationRepository.findByAccountIdAndOrderId(account.getId(), orderId)
                 .orElseThrow(() -> new RuntimeException("Stock reservation not found"));
 
@@ -337,7 +337,7 @@ public class StockServiceImpl implements IStockService {
 
         BigDecimal proceeds = transaction.getPrice().multiply(BigDecimal.valueOf(fulfilledQuantity));
 
-        // 1. Transaction güncelle
+        // Update Transaction
         transaction.setTransactionStatus(TransactionStatus.SETTLED);
         transaction.setSettlementStatus(SettlementStatus.SETTLED);
         transaction.setSettlementDate(LocalDateTime.now());
@@ -345,15 +345,13 @@ public class StockServiceImpl implements IStockService {
         transaction.setBalanceAfterTransaction(account.getTotalBalance().add(proceeds));
         transactionRepository.save(transaction);
 
-        // 2. Account güncelle
+        // Update Account
         account.setTotalBalance(account.getTotalBalance().add(proceeds));
         withdrawableBalanceComponent.recalculateWithdrawableBalance(account);
         accountRepository.save(account);
         WithdrawalRestriction restriction=restrictionRepository.findByOrderId((orderId)).orElseThrow(()->new RestrictionNotFoundException("Restriction not found for order ID: " + orderId));
         restriction.setRestrictedAmount(transaction.getPrice().multiply(BigDecimal.valueOf(transaction.getQuantity())));
 
-        // 3. StockReservation durumu zaten işlem sırasında güncellenmiş olmalı, buraya dokunmuyoruz
-        // 4. WithdrawalRestriction zaten T+2 için tutuldu, işlem tamamlandıktan sonra batch job iptal eder
         log.info("Sell order confirmed for account {}. Fulfilled quantity: {}, Proceeds {} settled.",
                 account.getId(), fulfilledQuantity, proceeds);
     }
@@ -406,7 +404,7 @@ public class StockServiceImpl implements IStockService {
 
         BigDecimal fulfilledAmount = transaction.getPrice().multiply(BigDecimal.valueOf(fulfilledQuantity));
 
-        // 1. Güncelleme: Transaction
+        // Update Transaction
         int newFulfilledQuantity = transaction.getFulfilledQuantity() + fulfilledQuantity;
         transaction.setFulfilledQuantity(newFulfilledQuantity);
 
@@ -422,7 +420,7 @@ public class StockServiceImpl implements IStockService {
         transaction.setBalanceAfterTransaction(account.getTotalBalance().subtract(fulfilledAmount));
         transactionRepository.save(transaction);
 
-        // 2. Güncelleme: Stock
+        // Update Stock
         Stock stock = stockRepository.findByAccountIdAndSymbol(account.getId(), transaction.getSymbol())
                 .orElse(Stock.builder()
                         .accountId(account.getId())
@@ -445,13 +443,13 @@ public class StockServiceImpl implements IStockService {
         stock.setAverageCost(newAverageCost);
         stockRepository.save(stock);
 
-        // 3. Güncelleme: Account
+        // Update Account
         account.setTotalBalance(account.getTotalBalance().subtract(fulfilledAmount));
         account.setReservedBalance(account.getReservedBalance().subtract(fulfilledAmount));
         withdrawableBalanceComponent.recalculateWithdrawableBalance(account);
         accountRepository.save(account);
 
-        // 4. Güncelleme: BalanceReservation
+        // Update BalanceReservation
         BalanceReservation reservation = reservationRepository.findByAccountIdAndOrderId(account.getId(), orderId)
                 .orElseThrow(() -> new BalanceReservationNotFound("Reservation not found for order ID: " + orderId));
         reservation.setStatus(newFulfilledQuantity == transaction.getQuantity()
@@ -484,11 +482,11 @@ public class StockServiceImpl implements IStockService {
 
         BigDecimal proceeds = transaction.getPrice().multiply(BigDecimal.valueOf(fulfilledQuantity));
 
-        // 1. Fulfilled quantity güncelle
+        // Update fulfilledQuantity
         int updatedFulfilled = transaction.getFulfilledQuantity() + fulfilledQuantity;
         transaction.setFulfilledQuantity(updatedFulfilled);
 
-        // 2. Status güncelle
+        // Update Status
         if (updatedFulfilled == transaction.getQuantity()) {
             transaction.setTransactionStatus(TransactionStatus.SETTLED);
             transaction.setSettlementStatus(SettlementStatus.SETTLED);
@@ -503,12 +501,12 @@ public class StockServiceImpl implements IStockService {
         WithdrawalRestriction restriction=restrictionRepository.findByOrderId((orderId)).orElseThrow(()->new RestrictionNotFoundException("Restriction not found for order ID: " + orderId));
         restriction.setRestrictedAmount(restriction.getRestrictedAmount().add(proceeds));
 
-        // 3. Hesap güncelle
+        // Update Account
         account.setTotalBalance(account.getTotalBalance().add(proceeds));
         withdrawableBalanceComponent.recalculateWithdrawableBalance(account);
         accountRepository.save(account);
 
-        // 4. Stock reservation
+        // Update Stock reservation
         StockReservation stockReservation = stockReservationRepository.findByAccountIdAndOrderId(account.getId(), orderId)
                 .orElseThrow(() -> new RuntimeException("Stock reservation not found"));
         stockReservation.setUsedQuantity(fulfilledQuantity);
@@ -547,19 +545,18 @@ public class StockServiceImpl implements IStockService {
             stockRepository.save(fromStock);
         }
 
-        // 2. Update destination stock (create or update)
+        // 2. Update destination stock
         Stock toStock = stockRepository.findByAccountIdAndSymbol(toAccount.getId(), request.getSymbol())
                 .orElse(Stock.builder()
                         .accountId(toAccount.getId())
                         .symbol(request.getSymbol())
                         .quantity(0)
-                        .averageCost(BigDecimal.ZERO) // not carried over
+                        .averageCost(BigDecimal.ZERO)
                         .build());
 
         toStock.setQuantity(toStock.getQuantity() + request.getQuantity());
         stockRepository.save(toStock);
 
-        // 3. Log transfer transactions (optional but clean)
         Transaction outTxn = Transaction.builder()
                 .accountId(fromAccount.getId())
                 .symbol(request.getSymbol())
