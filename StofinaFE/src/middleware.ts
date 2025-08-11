@@ -22,10 +22,11 @@ export default function middleware(request: NextRequest) {
         }
     }
     if (pathname === '/') {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        return NextResponse.redirect(new URL('/login', request.url));
     }
 }
 
-export const config = {
-    matcher: ['/', '/dashboard/:path*']
-};
+// export const config = {
+//     matcher: ['/', '/dashboard/:path*']
+// };
+

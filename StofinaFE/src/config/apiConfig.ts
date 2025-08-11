@@ -29,5 +29,8 @@ export const apiConfig = {
   },
   balance: {
     index: "/balances/account"
+  },
+  order: {
+    index: "/orders"
   }
 };

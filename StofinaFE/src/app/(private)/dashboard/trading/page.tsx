@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import styles from "./Trading.module.css";
 import { useDashboardContext } from "../../../../contexts/DashboardContext";
 
 // Import WebSocket hooks
-import { useMarketDataStreamSTOMP } from "../../../../hooks/websocket/useMarketDataStreamSTOMP";
-import { useOrderBookStreamSTOMP } from "../../../../hooks/websocket/useOrderBookStreamSTOMP";
-import { useTradeStreamSTOMP } from "../../../../hooks/websocket/useTradeStreamSTOMP";
+import { useMarketDataStreamSTOMP } from "@/hooks/websocket/useMarketDataStreamSTOMP";
+import { useOrderBookStreamSTOMP } from "@/hooks/websocket/useOrderBookStreamSTOMP";
+import { useTradeStreamSTOMP } from "@/hooks/websocket/useTradeStreamSTOMP";
 
 // Import components
 import { PriceDisplay } from "./components/PriceDisplay";
@@ -17,33 +17,36 @@ import { OrderBookTable } from "./components/OrderBookTable";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 
 // Import types
-import { WebSocketStatus } from "../../../../types/websocket.types";
+import { WebSocketStatus } from "@/types/websocket.types";
 
 // Import utilities
-import { 
-  calculateOrderTotalValue, 
-  InvalidQuantityError, 
-  InvalidPriceError 
-} from "../../../../utils/tradingCalculations";
-import { formatPriceToTurkishLira } from "../../../../utils/priceFormatters";
+import {
+  calculateOrderTotalValue,
+  InvalidQuantityError,
+  InvalidPriceError
+} from "@/utils/tradingCalculations";
+import { formatPriceToTurkishLira } from "@/utils/priceFormatters";
 
 // Import order submission hook
-import { useOrderSubmission } from "../../../../hooks/useOrderSubmission";
+import { useOrderSubmission } from "@/hooks/useOrderSubmission";
 
 // Import market data API hook
-import { useMarketDataAPI } from "../../../../hooks/useMarketDataAPI";
+import { useMarketDataAPI } from "@/hooks/useMarketDataAPI";
 
 // Import types
-import { OrderFormData } from "../../../../types/order.types";
+import { OrderFormData } from "@/types/order.types";
 
 // Import scheduled order components and hooks
-import { ScheduledOrderSection } from "../../../../components/ScheduledOrderSection";
-import { useScheduledOrder } from "../../../../hooks/useScheduledOrder";
-import { formatScheduledTimeForAPI, validateScheduledOrderForm } from "../../../../utils/scheduledOrderUtils";
+import { ScheduledOrderSection } from "@/components/ScheduledOrderSection";
+import { useScheduledOrder } from "@/hooks/useScheduledOrder";
+import { formatScheduledTimeForAPI, validateScheduledOrderForm } from "@/utils/scheduledOrderUtils";
+import AutoCompleteCustomerSearch from "@/components/common/AutoCompleteCustomerSearch";
+import AccountSelector from "@/components/order-tracking/accountSelector";
+import { Account } from "@/types/account";
+import { useSelectorCustom } from "@/store";
+import { useDispatchCustom } from "@/hooks/useDispatchCustom";
+import { thunkAccount } from "@/thunks/accountThunk";
 
-/**
- * Internal form state interface (different from API OrderFormData)
- */
 interface InternalOrderFormData {
   orderType: string;
   priceType: string;
@@ -53,32 +56,28 @@ interface InternalOrderFormData {
   scheduledTime?: Date;
 }
 
-/**
- * Available symbols for trading - Now using dynamic data from Market Data Service
- * Removed hardcoded symbols array
- */
 
-/**
- * TradingPage Component
- * Single Responsibility: Orchestrate trading interface components
- * Clean Code: Small, focused, well-named functions
- */
 export default function TradingPage() {
-  // ================================
-  // STATE MANAGEMENT - Clean, Minimal
-  // ================================
-  
+
+
   // i18n hook for translations
   const { t } = useTranslation();
-  
+  const router = useRouter();
+  const dispatch = useDispatchCustom();
+  const [openAccountSelector, setOpenAccountSelector] = useState(false);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const { selectedIndividualCustomer, selectedCorporateCustomer } = useSelectorCustom(state => state.customer);
+
+
   // Get URL parameters
   const searchParams = useSearchParams();
   const symbolParam = searchParams.get('symbol');
   const actionParam = searchParams.get('action');
-  
+
   // Current selected symbol for trading (starts with THYAO, will be updated from market data)
   const [currentTradingSymbol, setCurrentTradingSymbol] = useState<string>(symbolParam || "THYAO");
-  
+
   // Order form state - Initialize with URL parameters
   const [orderFormData, setOrderFormData] = useState<InternalOrderFormData>({
     orderType: actionParam === 'sell' ? "sell" : "buy",
@@ -91,48 +90,37 @@ export default function TradingPage() {
 
   // Order submission hook
   const { isSubmitting, submitOrder, lastSubmissionError, clearError } = useOrderSubmission();
-  
+
   // Market data API hook (for initial data loading)
   const { symbols: apiSymbols, isLoading: isLoadingSymbols, error: apiError } = useMarketDataAPI();
-  
+
   // UI state
   const [customerSearchQuery, setCustomerSearchQuery] = useState<string>("");
 
-  // ================================
-  // REAL-TIME DATA HOOKS
-  // ================================
-  
+
   // Dashboard context for user info
   const { dashboardData } = useDashboardContext();
-  
+
   // Market data stream (prices) - Using STOMP protocol
   const marketDataStream = useMarketDataStreamSTOMP();
-  
+
   // Order book stream (buy/sell orders) - Using STOMP protocol
   const orderBookStream = useOrderBookStreamSTOMP(currentTradingSymbol);
-  
+
   // Trade stream (executed trades) - Using STOMP protocol
   const tradeStream = useTradeStreamSTOMP(currentTradingSymbol);
 
-  // ================================
-  // DERIVED STATE - Memoized
-  // ================================
-  
-  /**
-   * Get available symbols from both API and WebSocket data
-   * Prioritize WebSocket data when available, fallback to API data
-   */
   const availableSymbols = useMemo(() => {
     // Try to get data from WebSocket first
     const webSocketPrices = marketDataStream.getAllStockPrices();
-    
+
     if (webSocketPrices.length > 0) {
       return webSocketPrices.map(stock => ({
         symbol: stock.symbol,
         name: stock.companyName || stock.symbol
       })).sort((a, b) => a.symbol.localeCompare(b.symbol));
     }
-    
+
     // Fallback to API data if WebSocket data is not available
     if (apiSymbols.length > 0) {
       return apiSymbols.map(stock => ({
@@ -140,22 +128,22 @@ export default function TradingPage() {
         name: stock.companyName || stock.symbol
       })).sort((a, b) => a.symbol.localeCompare(b.symbol));
     }
-    
+
     return [];
   }, [marketDataStream.stockPrices, apiSymbols]);
-  
+
   /**
    * Get current stock price data from WebSocket or API
    */
   const currentStockPrice = useMemo(() => {
     if (!currentTradingSymbol) return null;
-    
+
     // Try WebSocket data first
     const webSocketPrice = marketDataStream.getStockPrice(currentTradingSymbol);
     if (webSocketPrice) {
       return webSocketPrice;
     }
-    
+
     // Fallback to API data
     const apiStock = apiSymbols.find(stock => stock.symbol === currentTradingSymbol);
     if (apiStock) {
@@ -169,7 +157,7 @@ export default function TradingPage() {
         lastUpdated: new Date(apiStock.lastUpdated)
       };
     }
-    
+
     return null;
   }, [marketDataStream.stockPrices, currentTradingSymbol, apiSymbols]);
 
@@ -183,36 +171,7 @@ export default function TradingPage() {
     );
   }, [orderFormData.isScheduled, orderFormData.scheduledTime, currentTradingSymbol, orderFormData.quantity]);
 
-  /**
-   * Calculate order total value
-   */
-  const calculatedOrderTotal = useMemo(() => {
-    try {
-      const quantity = parseFloat(orderFormData.quantity) || 0;
-      let price = 0;
 
-      if (orderFormData.priceType === "market") {
-        price = currentStockPrice?.price || 0;
-      } else {
-        price = parseFloat(orderFormData.limitPrice) || 0;
-      }
-
-      if (quantity <= 0 || price <= 0) return 0;
-      
-      return calculateOrderTotalValue(quantity, price);
-    } catch (error) {
-      if (error instanceof InvalidQuantityError || error instanceof InvalidPriceError) {
-        return 0;
-      }
-      console.error('Order total calculation error:', error);
-      return 0;
-    }
-  }, [orderFormData.quantity, orderFormData.limitPrice, orderFormData.priceType, currentStockPrice?.price]);
-
-  // ================================
-  // EVENT HANDLERS - Pure Functions
-  // ================================
-  
   /**
    * Handle symbol selection change
    */
@@ -294,12 +253,37 @@ export default function TradingPage() {
     return validateOrderForm().isValid;
   }, [validateOrderForm]);
 
+  useEffect(() => {
+    fetchAccounts();
+  }, [selectedIndividualCustomer, selectedCorporateCustomer]);
+
+  const fetchAccounts = async () => {
+    if (selectedIndividualCustomer) {
+      const response = await dispatch(thunkAccount.getAccountsByCustomerId(selectedIndividualCustomer?.customer.id));
+      if (response) {
+        setAccounts(response);
+        setOpenAccountSelector(true);
+      }
+    }
+    else if (selectedCorporateCustomer) {
+      const response = await dispatch(thunkAccount.getAccountsByCustomerId(selectedCorporateCustomer?.customer.id));
+      if (response) {
+        setAccounts(response);
+        setOpenAccountSelector(true);
+      }
+    }
+    else {
+      setAccounts([]);
+      setOpenAccountSelector(false);
+    }
+  }
+
   /**
    * Handle order submission
    */
   const handleOrderSubmission = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     // Clear previous errors
     clearError();
 
@@ -324,7 +308,9 @@ export default function TradingPage() {
         // This shouldn't happen due to UI restrictions
         throw new Error("Invalid order type combination");
       }
-      
+
+
+
       const orderData: OrderFormData = {
         symbol: currentTradingSymbol,
         orderType: backendOrderType as any, // We'll need to update the type definition
@@ -333,8 +319,8 @@ export default function TradingPage() {
         price: orderFormData.priceType === "limit" ? parseFloat(orderFormData.limitPrice) : undefined,
         stopPrice: orderFormData.priceType === "stop" ? parseFloat(orderFormData.limitPrice) : undefined,
         isScheduled: orderFormData.isScheduled,
-        scheduledTime: orderFormData.isScheduled && orderFormData.scheduledTime 
-          ? formatScheduledTimeForAPI(orderFormData.scheduledTime) 
+        scheduledTime: orderFormData.isScheduled && orderFormData.scheduledTime
+          ? formatScheduledTimeForAPI(orderFormData.scheduledTime)
           : undefined
       };
 
@@ -345,7 +331,7 @@ export default function TradingPage() {
         // Show success message
         const orderTypeText = orderFormData.orderType === "buy" ? t('trading.orderTypes.buy') : t('trading.orderTypes.sell');
         alert(`${t('trading.messages.success', { type: orderTypeText })}\n${t('trading.messages.orderId', { id: result.data?.orderId })}`);
-        
+
         // Reset form
         setOrderFormData(prev => ({
           ...prev,
@@ -365,14 +351,7 @@ export default function TradingPage() {
     }
   }, [orderFormData, currentTradingSymbol, validateOrderForm, submitOrder, clearError, lastSubmissionError]);
 
-  // ================================
-  // EFFECTS
-  // ================================
 
-  /**
-   * Auto-select first available symbol when symbols are loaded
-   * Only change if current symbol is not in the available list
-   */
   useEffect(() => {
     if (availableSymbols.length > 0) {
       const currentSymbolExists = availableSymbols.some(stock => stock.symbol === currentTradingSymbol);
@@ -398,41 +377,36 @@ export default function TradingPage() {
     }
   }, [symbolParam, actionParam]);
 
-  // ================================
-  // RENDER HELPERS
-  // ================================
 
-  /**
-   * Render customer info section
-   */
   const renderCustomerInfo = () => (
     <div className={styles.customerInfo}>
-      <div className={styles.searchBox}>
-        <input
-          type="text"
-          placeholder={t('trading.interface.customerSearch')}
-          value={customerSearchQuery}
-          onChange={(e) => setCustomerSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
+
       <div className={styles.customerDetails}>
-        <span className={styles.customerName}>
-          {t('trading.interface.customerName', { name: dashboardData?.userInfo?.name || "XXXXXX" })}
-        </span>
-        <span className={styles.accountNo}>
-          {t('trading.interface.accountNumber', { number: "123456789" })}
-        </span>
+        <div className="flex flex-col gap-2">
+          <span className={styles.customerName}>
+            {t('trading.interface.customerName', {
+              name: selectedIndividualCustomer
+                ? selectedIndividualCustomer.firstName + " " + selectedIndividualCustomer.lastName
+                : selectedCorporateCustomer
+                  ? selectedCorporateCustomer.tradeName
+                  : ""
+            })}
+          </span>
+          <span className={styles.accountNo}>
+            {t('trading.interface.accountNumber', {
+              number: selectedIndividualCustomer?.id || selectedCorporateCustomer?.id
+            })}
+          </span>
+          <span className={styles.tutarText}>
+            {t('trading.interface.totalBalance', {
+              balance: selectedAccount?.availableBalance ? formatPriceToTurkishLira(selectedAccount.availableBalance) : ""
+            })}
+          </span>
+        </div>
+
       </div>
       <div className={styles.balanceInfo}>
-        <span className={styles.tutarText}>
-          {t('trading.interface.totalBalance', { 
-            balance: dashboardData?.totalBalance ? formatPriceToTurkishLira(dashboardData.totalBalance) : "₺0" 
-          })}
-        </span>
-        <span className={styles.tutarAmount}>
-          {t('trading.interface.totalCustomers', { count: dashboardData?.totalCustomers || 0 })}
-        </span>
+
       </div>
     </div>
   );
@@ -455,7 +429,7 @@ export default function TradingPage() {
         {/* Hisse Seçimi */}
         <div className={styles.formGroup}>
           <label className={styles.formLabel}>{t('trading.orderForm.stockSelectionRequired')}</label>
-          <select 
+          <select
             className={styles.stockSelect}
             value={currentTradingSymbol}
             onChange={(e) => handleSymbolChange(e.target.value)}
@@ -482,8 +456,8 @@ export default function TradingPage() {
                 name="orderType"
                 value="buy"
                 checked={orderFormData.orderType === "buy"}
-                onChange={() => setOrderFormData(prev => ({ 
-                  ...prev, 
+                onChange={() => setOrderFormData(prev => ({
+                  ...prev,
                   orderType: "buy",
                   priceType: prev.priceType === "stop" ? "market" : prev.priceType
                 }))}
@@ -513,8 +487,8 @@ export default function TradingPage() {
                 name="priceType"
                 value="market"
                 checked={orderFormData.priceType === "market"}
-                onChange={(e) => setOrderFormData(prev => ({ 
-                  ...prev, 
+                onChange={(e) => setOrderFormData(prev => ({
+                  ...prev,
                   priceType: e.target.value,
                   // Clear scheduled order when switching to market
                   isScheduled: e.target.value === "market" ? false : prev.isScheduled,
@@ -603,7 +577,7 @@ export default function TradingPage() {
           disabled={isSubmitting || !isFormValid}
           className={`${styles.submitButton} ${orderFormData.orderType === "buy" ? styles.buyButton : styles.sellButton} ${!isFormValid ? styles.disabledButton : ""}`}
         >
-          {isSubmitting 
+          {isSubmitting
             ? t('trading.messages.submitting')
             : orderFormData.orderType === "buy" ? t('trading.orderTypes.buyButton') : t('trading.orderTypes.sellButton')
           }
@@ -618,48 +592,58 @@ export default function TradingPage() {
 
   return (
     <div className={styles.container}>
-        {/* Header Section */}
+      <div className="flex  gap-4">
+        <div className=' flex items-start mb-14'>
+          <button type="button" className={styles.secondaryButton} onClick={() => router.back()}>
+            <img src="/menu-icon/back.png" alt={t('report.back')} className={styles.icon} />
+            {t('common.back')}
+          </button>
+          <AccountSelector open={openAccountSelector} onClose={() => setOpenAccountSelector(false)} accounts={accounts} onSelect={setSelectedAccount} />
+          <AutoCompleteCustomerSearch />
+        </div>
         <div className={styles.header}>
-          <h1 className={styles.title}>{t('trading.title')}</h1>
           {renderCustomerInfo()}
         </div>
 
-        {/* Trading Interface */}
-        <div className={styles.tradingInterface}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <p className={styles.interfaceDesc}>{t('trading.interface.description')}</p>
-            <ConnectionStatus
-              marketDataStatus={marketDataStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
-              orderBookStatus={orderBookStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
-              tradeStreamStatus={tradeStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
-              showDetails={false}
+      </div>
+
+
+      {/* Trading Interface */}
+      <div className={styles.tradingInterface}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          {/* <p className={styles.interfaceDesc}>{t('trading.interface.description')}</p> */}
+          <ConnectionStatus
+            marketDataStatus={marketDataStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
+            orderBookStatus={orderBookStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
+            tradeStreamStatus={tradeStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
+            showDetails={false}
+          />
+        </div>
+
+        <div className={styles.mainContent}>
+          {/* Left Panel - Real-time Order Book */}
+          <div className={styles.orderBookPanel}>
+            <PriceDisplay
+              stockData={currentStockPrice}
+              symbol={currentTradingSymbol}
+              showChange={true}
+              showVolume={false}
+              isLive={marketDataStream.isConnected}
+            />
+
+            <OrderBookTable
+              buyOrders={orderBookStream.buyOrders}
+              sellOrders={orderBookStream.sellOrders}
+              symbol={currentTradingSymbol}
+              maxLevels={20}
+              showSpread={true}
             />
           </div>
-          
-          <div className={styles.mainContent}>
-            {/* Left Panel - Real-time Order Book */}
-            <div className={styles.orderBookPanel}>
-              <PriceDisplay
-                stockData={currentStockPrice}
-                symbol={currentTradingSymbol}
-                showChange={true}
-                showVolume={false}
-                isLive={marketDataStream.isConnected}
-              />
 
-              <OrderBookTable
-                buyOrders={orderBookStream.buyOrders}
-                sellOrders={orderBookStream.sellOrders}
-                symbol={currentTradingSymbol}
-                maxLevels={20}
-                showSpread={true}
-              />
-            </div>
-
-            {/* Right Panel - Trading Form */}
-            {renderTradingForm()}
-          </div>
+          {/* Right Panel - Trading Form */}
+          {renderTradingForm()}
         </div>
       </div>
+    </div>
   );
 }
