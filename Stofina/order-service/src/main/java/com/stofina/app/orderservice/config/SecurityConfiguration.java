@@ -76,7 +76,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PATCH,
                                 "/api/v1/orders/**"
                         ).hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
-
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE,
                                 "/api/v1/orders/**",
                                 "/api/stop-loss/**"

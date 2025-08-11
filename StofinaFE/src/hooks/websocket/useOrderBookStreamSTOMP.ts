@@ -24,7 +24,7 @@ export const useOrderBookStreamSTOMP = (symbol: string) => {
     subscribe, 
     send 
   } = useSTOMPWebSocket({
-    url: 'http://localhost:8082/ws/orderbook', // SockJS endpoint
+    url: 'http://localhost:9006/ws/orderbook', // SockJS endpoint
     reconnectEnabled: true,
     reconnectDelay: 2000,
     maxReconnectAttempts: 10,
