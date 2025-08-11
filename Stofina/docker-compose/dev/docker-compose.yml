@@ -394,6 +394,7 @@ services:
     ports:
       - "9006:9006"
     environment:
+      PORTFOLIO_SERVICE_URL: http://portfolio-service:9001
       SPRING_PROFILES_ACTIVE: dev
       DEV_DB_HOST: azuresqledge
       DEV_DB_USER: sa

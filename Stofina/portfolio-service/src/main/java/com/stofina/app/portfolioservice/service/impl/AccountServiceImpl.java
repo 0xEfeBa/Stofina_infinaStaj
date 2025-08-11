@@ -142,17 +142,19 @@ public class AccountServiceImpl implements IAccountService {
     public BalanceDto getBalanceByAccountId(Long accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with ID: " + accountId));
+        BigDecimal restricted = balanceCalculator.computeActiveRestrictedTotal(accountId); // 👈 ek
 
         BalanceDto balanceDto = BalanceDto.builder()
                 .totalBalance(account.getTotalBalance())
                 .availableBalance(account.getAvailableBalance())
                 .reservedBalance(account.getReservedBalance())
                 .withdrawableBalance(account.getWithdrawableBalance())
+                .restrictedBalance(restricted)
                 .build();
 
         log.info("Balance retrieved for account {}: {}", accountId, balanceDto);
         return balanceDto;
-    }
+}
 
     @Override
     public WithdrawableBalanceDto getWithdrawableBalance(Long accountId) {
