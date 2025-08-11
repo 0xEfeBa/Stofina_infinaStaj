@@ -15,6 +15,12 @@ public class AccountBalanceCalculator {
 
     private final WithdrawalRestrictionRepository restrictionRepository;
 
+    public BigDecimal computeActiveRestrictedTotal(Long accountId) {
+        return restrictionRepository.findByAccountIdAndStatus(accountId, RestrictionStatus.ACTIVE)
+                .stream()
+                .map(WithdrawalRestriction::getRestrictedAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
     public void recalculateWithdrawableBalance(Account account) {
         BigDecimal activeRestrictions = restrictionRepository
                 .findByAccountIdAndStatus(account.getId(), RestrictionStatus.ACTIVE)

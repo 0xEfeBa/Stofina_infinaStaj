@@ -17,5 +17,5 @@ public class BalanceDto {
     private BigDecimal availableBalance;
     private BigDecimal reservedBalance;
     private BigDecimal withdrawableBalance;
-    private BigDecimal positionsMarketValue;
+    private BigDecimal restrictedBalance;
 }

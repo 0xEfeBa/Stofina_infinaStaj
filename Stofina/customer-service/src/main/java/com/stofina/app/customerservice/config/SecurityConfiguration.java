@@ -63,7 +63,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/v1/individual/**", "/api/v1/corporate/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
                         .requestMatchers(HttpMethod.POST, "/api/v1/individual/**", "/api/v1/corporate/**")
-                        .hasRole("CUSTOMER_SUPER_ADMIN")
+                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
