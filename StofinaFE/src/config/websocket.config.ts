@@ -22,9 +22,9 @@ export interface WebSocketUrls {
 export const WEBSOCKET_CONFIG = {
   // WebSocket URLs with fallbacks
   URLS: {
-    MARKET_DATA_URL: process.env.NEXT_PUBLIC_MARKET_DATA_WS_URL || 'ws://localhost:8081/ws/market-data',
-    ORDER_BOOK_URL: process.env.NEXT_PUBLIC_ORDER_SERVICE_WS_URL || 'ws://localhost:8082/ws/orderbook',
-    TRADE_EVENTS_URL: process.env.NEXT_PUBLIC_ORDER_SERVICE_WS_URL || 'ws://localhost:8082/ws/trades'
+    MARKET_DATA_URL: process.env.NEXT_PUBLIC_MARKET_DATA_WS_URL || 'ws://localhost:9005/ws/market-data',
+    ORDER_BOOK_URL: process.env.NEXT_PUBLIC_ORDER_SERVICE_WS_URL || 'ws://localhost:9006/ws/orderbook',
+    TRADE_EVENTS_URL: process.env.NEXT_PUBLIC_ORDER_SERVICE_WS_URL || 'ws://localhost:9006/ws/trades'
   } as WebSocketUrls,
 
   // Connection settings

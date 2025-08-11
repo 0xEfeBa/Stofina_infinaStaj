@@ -62,16 +62,18 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**"
                         ).permitAll()
-                       .requestMatchers(HttpMethod.GET,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                      .requestMatchers(HttpMethod.POST,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                       .requestMatchers(HttpMethod.PATCH,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+                        .requestMatchers(HttpMethod.PATCH,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                     .requestMatchers(HttpMethod.DELETE,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                      .requestMatchers(HttpMethod.PUT, "/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
-                                
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/market/**").hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+
+                        .requestMatchers("/ws/**").permitAll()
+
 
                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)

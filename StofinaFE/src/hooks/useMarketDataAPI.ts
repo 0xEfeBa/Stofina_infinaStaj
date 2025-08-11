@@ -28,7 +28,7 @@ export const useMarketDataAPI = (): UseMarketDataAPIReturn => {
       setError(null);
 
       const token = localStorage.getItem("accessToken");
-      const response = await fetch('http://localhost:8081/api/v1/market/symbols', {
+      const response = await fetch('http://localhost:9005/api/v1/market/symbols', {
         headers: {
           Authorization: `Bearer ${token}`,
           accept: "application/json",

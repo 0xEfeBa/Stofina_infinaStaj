@@ -138,7 +138,7 @@ export const useScheduledOrder = (): UseScheduledOrderReturn => {
       };
       
       const token = localStorage.getItem("accessToken");
-      const response = await fetch('http://localhost:8082/api/v1/orders', {
+      const response = await fetch('http://localhost:9006/api/v1/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

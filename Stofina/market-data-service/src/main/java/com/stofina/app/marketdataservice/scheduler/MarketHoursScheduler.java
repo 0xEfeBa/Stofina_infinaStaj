@@ -144,7 +144,7 @@ public class MarketHoursScheduler {
     }
 
     // FIYAT GÜNCELLEMESİ: TEST MODU - Her 20 saniyede çalışır (Market saati kontrolü KAPALI)
-    @Scheduled(cron = "*/20 * * * * *", zone = "Europe/Istanbul")
+    @Scheduled(cron = "*/5 * * * * *", zone = "Europe/Istanbul")
     public void updatePricesEvery20Seconds() {
         logger.debug("Fiyat güncellemesi başladı (Market saati kontrolü inaktif)");
         

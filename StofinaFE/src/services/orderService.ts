@@ -10,7 +10,7 @@ class OrderServiceAPI {
   private readonly defaultHeaders: HeadersInit;
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_ORDER_SERVICE_URL || 'http://localhost:8082';
+    this.baseUrl = process.env.NEXT_PUBLIC_ORDER_SERVICE_URL || 'http://localhost:9006';
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       'Accept': 'application/json'

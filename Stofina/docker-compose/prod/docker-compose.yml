@@ -285,7 +285,7 @@ services:
     ports:
       - "9003:9003"
     environment:
-      SPRING_JPA_HIBERNATE_DDL-AUTO: update
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create-drop
       SPRING_PROFILES_ACTIVE: prod
       PROD_DB_HOST: 192.168.144.76:1450
       PROD_DB_USER: grup5
@@ -417,6 +417,7 @@ services:
     ports:
       - "9002:9002"
     environment:
+      SPRING_JPA_HIBERNATE_DDL-AUTO: update
       SPRING_PROFILES_ACTIVE: prod
       PROD_DB_HOST: 192.168.144.76:1450
       PROD_DB_USER: grup5
