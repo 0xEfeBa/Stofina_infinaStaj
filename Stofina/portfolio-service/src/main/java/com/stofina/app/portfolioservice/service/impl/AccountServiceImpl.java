@@ -16,10 +16,10 @@ import com.stofina.app.portfolioservice.repository.TransactionRepository;
 import com.stofina.app.portfolioservice.request.account.*;
 import com.stofina.app.portfolioservice.service.IAccountService;
 import com.stofina.app.portfolioservice.util.AccountBalanceCalculator;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -56,6 +56,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AccountDto getAccountById(Long accountId) {
         Account account = findAccount(accountId);
         return accountMapper.toAccountDto(account);

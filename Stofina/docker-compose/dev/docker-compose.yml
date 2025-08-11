@@ -305,6 +305,7 @@ services:
     ports:
       - "9002:9002"
     environment:
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create-drop
       SPRING_PROFILES_ACTIVE: dev
       DEV_DB_HOST: azuresqledge
       DEV_DB_USER: sa
@@ -328,6 +329,7 @@ services:
     ports:
       - "9003:9003"
     environment:
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create-drop
       SPRING_PROFILES_ACTIVE: dev
       DEV_DB_HOST: azuresqledge
       DEV_DB_USER: sa
@@ -348,6 +350,7 @@ services:
     ports:
       - "9001:9001"
     environment:
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create-drop
       SPRING_PROFILES_ACTIVE: dev
       DEV_DB_HOST: azuresqledge
       DEV_DB_USER: sa
@@ -368,6 +371,7 @@ services:
     ports:
       - "9005:9005"
     environment:
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create-drop
       SPRING_PROFILES_ACTIVE: dev
       DEV_DB_HOST: azuresqledge
       DEV_DB_USER: sa
@@ -394,6 +398,8 @@ services:
     ports:
       - "9006:9006"
     environment:
+      PORTFOLIO_SERVICE_URL: http://portfolio-service:9001
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create-drop
       SPRING_PROFILES_ACTIVE: dev
       DEV_DB_HOST: azuresqledge
       DEV_DB_USER: sa
@@ -423,9 +429,6 @@ services:
       - "9004:9004"
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      DEV_DB_HOST: azuresqledge
-      DEV_DB_USER: sa
-      DEV_DB_PASSWORD: YourStrong!Passw0rd
       JWT_SECRET: 7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     depends_on:
