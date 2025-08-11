@@ -42,12 +42,39 @@ public class DBDataLoader {
         }
 
         createUserIfNotExists(
-                "cihan.dilsiz@stofina.com",
+                "cihandilsizdev@gmail.com",
                 "Cihan",
                 "Dilsiz",
                 "5462462787",
                 "System Administrator",
                 "Cihan@3333",
+                RoleType.CUSTOMER_SUPER_ADMIN
+        );
+        createUserIfNotExists(
+                "ebruebg@hotmail.com",
+                "Ebru",
+                "Uslu",
+                "5462462780",
+                "System Administrator",
+                "Ebru@6327",
+                RoleType.CUSTOMER_SUPER_ADMIN
+        );
+        createUserIfNotExists(
+                "efefromearth@gmail.com",
+                "Efe",
+                "Altop",
+                "5462462781",
+                "System Administrator",
+                "Efe@0606",
+                RoleType.CUSTOMER_SUPER_ADMIN
+        );
+        createUserIfNotExists(
+                "maxirem9@gmail.com",
+                "Irem",
+                "Turen",
+                "5462462789",
+                "System Administrator",
+                "irem1470T@",
                 RoleType.CUSTOMER_SUPER_ADMIN
         );
 
