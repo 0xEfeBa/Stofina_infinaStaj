@@ -11,38 +11,38 @@ public final class MockDataConstants {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
     
-    // BIST symbols for demo
+    // BIST symbols for demo - Synced with Market Data Service
     public static final Set<String> BIST_SYMBOLS = Set.of(
-        "THYAO", "GARAN", "AKBNK", "ISCTR", "TUPRS",
-        "ASELS", "SISE", "BIMAS", "KCHOL", "TCELL"
+        "AKBNK", "CCOLA", "DOAS", "MGROS", "FROTO",
+        "TCELL", "THYAO", "YEOTK", "BRSAN", "TUPRS"
     );
     
-    // Mock current prices
+    // Mock current prices - Synced with Market Data Service
     public static final Map<String, BigDecimal> INITIAL_PRICES = Map.of(
-        "THYAO", new BigDecimal("45.50"),
-        "GARAN", new BigDecimal("28.75"),
-        "AKBNK", new BigDecimal("42.30"),
-        "ISCTR", new BigDecimal("15.80"),
-        "TUPRS", new BigDecimal("38.90"),
-        "ASELS", new BigDecimal("35.20"),
-        "SISE", new BigDecimal("22.40"),
-        "BIMAS", new BigDecimal("95.50"),
-        "KCHOL", new BigDecimal("18.60"),
-        "TCELL", new BigDecimal("52.80")
+        "AKBNK", new BigDecimal("67.15"),
+        "CCOLA", new BigDecimal("49.92"),
+        "DOAS", new BigDecimal("183.10"),
+        "MGROS", new BigDecimal("531.00"),
+        "FROTO", new BigDecimal("92.95"),
+        "TCELL", new BigDecimal("92.55"),
+        "THYAO", new BigDecimal("290.25"),
+        "YEOTK", new BigDecimal("42.08"),
+        "BRSAN", new BigDecimal("354.00"),
+        "TUPRS", new BigDecimal("164.50")
     );
     
     // Symbol volatility percentages
     public static final Map<String, Double> SYMBOL_VOLATILITIES = Map.of(
-        "THYAO", 0.3,  // Banks: Low volatility
-        "GARAN", 0.3,
-        "AKBNK", 0.3,
-        "TUPRS", 0.6,  // Tech/Industrial: Medium
-        "ASELS", 0.6,
-        "BIMAS", 0.8,  // Volatile stocks
-        "TCELL", 0.8,
-        "ISCTR", 0.5,  // Default medium
-        "SISE", 0.5,
-        "KCHOL", 0.5
+        "AKBNK", 0.3,   // Banks: Low volatility
+        "CCOLA", 0.4,   // Consumer goods: Low-medium
+        "DOAS", 0.6,    // Automotive: Medium
+        "MGROS", 0.5,   // Retail: Medium
+        "FROTO", 0.6,   // Automotive: Medium
+        "TCELL", 0.4,   // Telecom: Low-medium
+        "THYAO", 0.7,   // Airlines: High
+        "YEOTK", 0.8,   // Small cap: High
+        "BRSAN", 0.8,   // Industrial: High
+        "TUPRS", 0.6    // Energy: Medium
     );
     
     // Default values

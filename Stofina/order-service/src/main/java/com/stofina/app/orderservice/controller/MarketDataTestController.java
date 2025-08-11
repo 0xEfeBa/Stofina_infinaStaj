@@ -1,5 +1,7 @@
 package com.stofina.app.orderservice.controller;
 
+import com.stofina.app.orderservice.constants.ApiEndpoints;
+
 import com.stofina.app.orderservice.service.client.MarketDataClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/market-data")
+@RequestMapping(ApiEndpoints.MARKET_DATA_BASE)
 @RequiredArgsConstructor
 public class MarketDataTestController {
 
     private final MarketDataClient marketDataClient;
 
-    @GetMapping("/{symbol}")
+    @GetMapping(ApiEndpoints.MARKET_DATA_GET_SYMBOL)
     public ResponseEntity<Map<String, Object>> getPrice(@PathVariable String symbol) {
         try {
             BigDecimal price = marketDataClient.getCurrentPrice(symbol);

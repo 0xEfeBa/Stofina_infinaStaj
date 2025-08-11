@@ -28,6 +28,7 @@ public class OrderMapper {
         order.setTimeInForce(request.getTimeInForce());
         order.setExpiryDate(request.getExpiryDate());
         order.setClientOrderId(request.getClientOrderId());
+        
         // Status, filledQuantity, remainingQuantity, createdAt vb. burada set edilebilir
         return order;
     }

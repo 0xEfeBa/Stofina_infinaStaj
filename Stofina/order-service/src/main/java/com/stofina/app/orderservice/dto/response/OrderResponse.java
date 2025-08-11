@@ -36,6 +36,7 @@ public class OrderResponse {
     private LocalDateTime updatedAt;
     private Boolean isBot;
     
+    
     public static OrderResponse fromEntity(Order order) {
         if (order == null) {
             return null;

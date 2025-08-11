@@ -5,6 +5,8 @@ import com.stofina.app.orderservice.dto.request.UpdateOrderRequest;
 import com.stofina.app.orderservice.entity.Order;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
 public interface ValidationService {
 
@@ -14,9 +16,9 @@ public interface ValidationService {
 
     void checkPriceLimits(String symbol, BigDecimal price);
 
-    void checkAccountBalance(Long accountId, BigDecimal requiredAmount);
+    CompletableFuture<Void> checkAccountBalance(Long accountId, BigDecimal requiredAmount);
 
-    void checkAccountPosition(Long accountId, String symbol, BigDecimal quantity);
+    CompletableFuture<Void> checkAccountPosition(Long accountId, String symbol, Integer quantity);
 
     void validateOrderUpdate(Order existing, UpdateOrderRequest request);
 }

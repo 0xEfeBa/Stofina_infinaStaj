@@ -2,15 +2,19 @@ package com.stofina.app.orderservice.service.impl;
 
 import com.stofina.app.orderservice.entity.Order;
 import com.stofina.app.orderservice.entity.Trade;
+import com.stofina.app.orderservice.model.OrderLevel;
 import com.stofina.app.orderservice.enums.OrderSide;
 import com.stofina.app.orderservice.enums.OrderStatus;
-import com.stofina.app.orderservice.model.OrderLevel;
 import com.stofina.app.orderservice.model.SimpleOrderBook;
 import com.stofina.app.orderservice.model.SimpleOrderBookSnapshot;
 import com.stofina.app.orderservice.repository.OrderRepository;
 import com.stofina.app.orderservice.repository.TradeRepository;
 import com.stofina.app.orderservice.service.AlgorithmicMatchingService;
 import com.stofina.app.orderservice.service.SimpleOrderBookManager;
+import com.stofina.app.orderservice.service.client.PortfolioClient;
+import com.stofina.app.orderservice.service.CompensationService;
+import com.stofina.app.orderservice.dto.portfolio.*;
+import com.stofina.app.orderservice.exception.portfolio.PortfolioServiceException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -38,10 +44,16 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
     // CHECKPOINT C3 - Algorithmic matching integration
     private final AlgorithmicMatchingService algorithmicMatchingService;
     
+    // CHECKPOINT 2.3 - Portfolio Service integration
+    private final PortfolioClient portfolioClient;
+    
+    // CHECKPOINT 3.2 - Compensation Service integration
+    private final CompensationService compensationService;
+    
     // TODO: ENTEGRASYON SIRASINDA KALDIRILACAK - Mock BIST symbols for testing
     private static final List<String> MOCK_BIST_SYMBOLS = Arrays.asList(
-        "THYAO", "GARAN", "AKBNK", "ISCTR", "TUPRS", 
-        "ASELS", "SISE", "BIMAS", "KCHOL", "TCELL"
+        "AKBNK", "CCOLA", "DOAS", "MGROS", "FROTO",
+        "TCELL", "THYAO", "YEOTK", "BRSAN", "TUPRS"
     );
     
     @PostConstruct
@@ -293,7 +305,7 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
         );
     }
     
-    private int calculateTotalQuantity(List<OrderLevel> levels) {
+    private int calculateTotalQuantity(java.util.List<OrderLevel> levels) {
         return levels != null ? 
             levels.stream().mapToInt(level -> level.getQuantity().intValue()).sum() : 0;
     }
@@ -328,9 +340,41 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
             BigDecimal tradePrice = oppositeOrder.getPrice(); // Price from existing order (price-time priority)
             
             Trade trade = createTrade(newOrder, oppositeOrder, tradePrice, tradeQuantity);
+            
+            // CHECKPOINT 2.3 - Portfolio Service Trade Confirmation BEFORE updating order state
+            log.info("🏦 PORTFOLIO: Starting trade confirmation → TradeId: {}, NewOrder: {}, OppositeOrder: {}", 
+                    trade.getTradeId(), newOrder.getOrderId(), oppositeOrder.getOrderId());
+            
+            boolean portfolioConfirmationSuccess = performPortfolioTradeConfirmation(trade, newOrder, oppositeOrder, tradeQuantity);
+            if (!portfolioConfirmationSuccess) {
+                log.error("🏦 PORTFOLIO: Trade confirmation failed → TradeId: {}, attempting compensation", 
+                        trade.getTradeId());
+                
+                // CHECKPOINT 3.2 - Trigger compensation for failed trade confirmation
+                try {
+                    Order buyOrder = newOrder.getSide() == OrderSide.BUY ? newOrder : oppositeOrder;
+                    Order sellOrder = newOrder.getSide() == OrderSide.SELL ? newOrder : oppositeOrder;
+                    
+                    boolean compensationSuccess = compensationService.compensateFailedTrade(
+                            trade, buyOrder, sellOrder, "Portfolio trade confirmation failed"
+                    );
+                    
+                    if (compensationSuccess) {
+                        log.info("✅ COMPENSATION: Trade compensation successful → TradeId: {}", trade.getTradeId());
+                    } else {
+                        log.error("❌ COMPENSATION: Trade compensation failed → TradeId: {}", trade.getTradeId());
+                    }
+                } catch (Exception compensationEx) {
+                    log.error("🚨 COMPENSATION: Exception during trade compensation → TradeId: {}", 
+                            trade.getTradeId(), compensationEx);
+                }
+                
+                continue; // Skip this trade, try next matching order
+            }
+            
             trades.add(trade);
             
-            // Update order quantities
+            // Update order quantities AFTER portfolio confirmation
             updateOrderAfterTrade(newOrder, tradeQuantity, tradePrice);
             updateOrderAfterTrade(oppositeOrder, tradeQuantity, tradePrice);
             
@@ -346,6 +390,10 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
                 orderBook.removeOrder(oppositeOrder.getOrderId());
                 oppositeOrder.setStatus(OrderStatus.FILLED);
                 orderRepository.save(oppositeOrder);
+                
+                // AUTO-CONFIRM: Automatically confirm filled order in Portfolio Service
+                log.info("🔄 AUTO-CONFIRM: Order FILLED, confirming in Portfolio Service → OrderId: {}", oppositeOrder.getOrderId());
+                autoConfirmFilledOrder(oppositeOrder, trade);
             }
             
             log.info("Trade executed: {} {} @ {} between orders {} and {}", 
@@ -355,8 +403,27 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
         // Update new order status
         if (newOrder.getRemainingQuantity().compareTo(BigDecimal.ZERO) <= 0) {
             newOrder.setStatus(OrderStatus.FILLED);
+            
+            // AUTO-CONFIRM: Automatically confirm filled new order in Portfolio Service
+            log.info("🔄 AUTO-CONFIRM: New Order FILLED, confirming in Portfolio Service → OrderId: {}", newOrder.getOrderId());
+            // Use the last trade for this new order
+            if (!trades.isEmpty()) {
+                Trade lastTrade = trades.get(trades.size() - 1);
+                autoConfirmFilledOrder(newOrder, lastTrade);
+            }
         } else if (newOrder.getFilledQuantity().compareTo(BigDecimal.ZERO) > 0) {
             newOrder.setStatus(OrderStatus.PARTIALLY_FILLED);
+            
+            // AUTO-CONFIRM: PARTIALLY_FILLED emirler için de otomatik onay
+            log.info("🔄 AUTO-CONFIRM: New Order PARTIALLY_FILLED, confirming partial trades → OrderId: {}", newOrder.getOrderId());
+            
+            // PARTIALLY_FILLED emirlerde tüm trade'leri onayla
+            for (Trade trade : trades) {
+                if (trade.getBuyOrderId().equals(newOrder.getOrderId()) || 
+                    trade.getSellOrderId().equals(newOrder.getOrderId())) {
+                    autoConfirmFilledOrder(newOrder, trade);
+                }
+            }
         }
         
         return trades;
@@ -449,5 +516,255 @@ public class SimpleOrderBookManagerImpl implements SimpleOrderBookManager {
         }
         
         order.setUpdatedAt(LocalDateTime.now());
+    }
+
+    // PORTFOLIO SERVICE INTEGRATION HELPER METHODS
+
+    /**
+     * Performs portfolio trade confirmation for both buy and sell sides of a trade.
+     * This method handles both full and partial trade confirmations.
+     * @param trade The executed trade
+     * @param newOrder The new order that triggered the trade
+     * @param oppositeOrder The existing order that matched
+     * @param executedQuantity The quantity that was executed in this trade
+     * @return true if portfolio confirmation successful, false otherwise
+     */
+    private boolean performPortfolioTradeConfirmation(Trade trade, Order newOrder, Order oppositeOrder, 
+                                                     BigDecimal executedQuantity) {
+        try {
+            // Determine buy and sell orders
+            Order buyOrder = newOrder.getSide() == OrderSide.BUY ? newOrder : oppositeOrder;
+            Order sellOrder = newOrder.getSide() == OrderSide.SELL ? newOrder : oppositeOrder;
+            
+            // Calculate remaining quantities after this trade
+            BigDecimal buyOrderRemainingAfterTrade = buyOrder.getRemainingQuantity().subtract(executedQuantity);
+            BigDecimal sellOrderRemainingAfterTrade = sellOrder.getRemainingQuantity().subtract(executedQuantity);
+            
+            // Determine confirmation type (full vs partial)
+            boolean isBuyOrderPartial = buyOrderRemainingAfterTrade.compareTo(BigDecimal.ZERO) > 0;
+            boolean isSellOrderPartial = sellOrderRemainingAfterTrade.compareTo(BigDecimal.ZERO) > 0;
+            
+            CompletableFuture<PortfolioResponse> buyConfirmationFuture = null;
+            CompletableFuture<PortfolioResponse> sellConfirmationFuture = null;
+            
+            // Only confirm portfolio operations for real users (non-bot orders)
+            boolean shouldConfirmBuyOrder = !buyOrder.getIsBot();
+            boolean shouldConfirmSellOrder = !sellOrder.getIsBot();
+            
+            log.info("🤖 BOT CHECK: BuyOrder isBot={}, SellOrder isBot={} → Confirming: Buy={}, Sell={}", 
+                    buyOrder.getIsBot(), sellOrder.getIsBot(), shouldConfirmBuyOrder, shouldConfirmSellOrder);
+            
+            if (shouldConfirmBuyOrder && isBuyOrderPartial) {
+                // Partial buy trade confirmation
+                PartialTradeConfirmationRequest buyRequest = PartialTradeConfirmationRequest.builder()
+                        .tradeId(trade.getTradeId())
+                        .orderId(buyOrder.getOrderId())
+                        .accountId(buyOrder.getAccountId())
+                        .symbol(buyOrder.getSymbol())
+                        .partialQuantity(executedQuantity.intValue())
+                        .remainingQuantity(buyOrderRemainingAfterTrade.intValue())
+                        .executedPrice(trade.getPrice())
+                        .build();
+                
+                log.info("🏦 PORTFOLIO: Confirming PARTIAL BUY trade → {}", buyRequest);
+                buyConfirmationFuture = portfolioClient.confirmPartialBuyTrade(buyRequest);
+            } else if (shouldConfirmBuyOrder) {
+                // Full buy trade confirmation
+                TradeConfirmationRequest buyRequest = TradeConfirmationRequest.builder()
+                        .tradeId(trade.getTradeId())
+                        .orderId(buyOrder.getOrderId())
+                        .accountId(buyOrder.getAccountId())
+                        .symbol(buyOrder.getSymbol())
+                        .executedQuantity(executedQuantity.intValue())
+                        .executedPrice(trade.getPrice())
+                        .build();
+                
+                log.info("🏦 PORTFOLIO: Confirming FULL BUY trade → {}", buyRequest);
+                buyConfirmationFuture = portfolioClient.confirmBuyTrade(buyRequest);
+            } else {
+                log.info("🤖 PORTFOLIO: Skipping BUY confirmation - Order is from BOT → OrderId: {}", buyOrder.getOrderId());
+            }
+            
+            if (shouldConfirmSellOrder && isSellOrderPartial) {
+                // Partial sell trade confirmation
+                PartialTradeConfirmationRequest sellRequest = PartialTradeConfirmationRequest.builder()
+                        .tradeId(trade.getTradeId())
+                        .orderId(sellOrder.getOrderId())
+                        .accountId(sellOrder.getAccountId())
+                        .symbol(sellOrder.getSymbol())
+                        .partialQuantity(executedQuantity.intValue())
+                        .remainingQuantity(sellOrderRemainingAfterTrade.intValue())
+                        .executedPrice(trade.getPrice())
+                        .build();
+                
+                log.info("🏦 PORTFOLIO: Confirming PARTIAL SELL trade → {}", sellRequest);
+                sellConfirmationFuture = portfolioClient.confirmPartialSellTrade(sellRequest);
+            } else if (shouldConfirmSellOrder) {
+                // Full sell trade confirmation
+                TradeConfirmationRequest sellRequest = TradeConfirmationRequest.builder()
+                        .tradeId(trade.getTradeId())
+                        .orderId(sellOrder.getOrderId())
+                        .accountId(sellOrder.getAccountId())
+                        .symbol(sellOrder.getSymbol())
+                        .executedQuantity(executedQuantity.intValue())
+                        .executedPrice(trade.getPrice())
+                        .build();
+                
+                log.info("🏦 PORTFOLIO: Confirming FULL SELL trade → {}", sellRequest);
+                sellConfirmationFuture = portfolioClient.confirmSellTrade(sellRequest);
+            } else {
+                log.info("🤖 PORTFOLIO: Skipping SELL confirmation - Order is from BOT → OrderId: {}", sellOrder.getOrderId());
+            }
+            
+            // Wait for confirmations to complete (only for real users)
+            PortfolioResponse buyResponse = null;
+            PortfolioResponse sellResponse = null;
+            
+            if (buyConfirmationFuture != null) {
+                buyResponse = buyConfirmationFuture.get();
+            }
+            if (sellConfirmationFuture != null) {
+                sellResponse = sellConfirmationFuture.get();
+            }
+            
+            // Check responses (consider success if no confirmation was needed due to bot orders)
+            boolean buySuccess = (buyResponse == null) || buyResponse.isSuccess(); // null means bot order (no confirmation needed)
+            boolean sellSuccess = (sellResponse == null) || sellResponse.isSuccess(); // null means bot order (no confirmation needed)
+            
+            if (buySuccess && sellSuccess) {
+                log.info("🏦 PORTFOLIO: Trade confirmations successful → TradeId: {}, BuySuccess: {}, SellSuccess: {}", 
+                        trade.getTradeId(), buySuccess, sellSuccess);
+                return true;
+            } else {
+                log.error("🏦 PORTFOLIO: Trade confirmation failed → TradeId: {}, BuySuccess: {}, SellSuccess: {}", 
+                        trade.getTradeId(), buySuccess, sellSuccess);
+                
+                if (buyResponse != null && !buyResponse.isSuccess()) {
+                    log.error("🏦 PORTFOLIO: Buy confirmation error → {}", buyResponse.getMessage());
+                }
+                if (sellResponse != null && !sellResponse.isSuccess()) {
+                    log.error("🏦 PORTFOLIO: Sell confirmation error → {}", sellResponse.getMessage());
+                }
+                
+                // TODO: In Phase 3, implement compensation mechanism for failed confirmations
+                return false;
+            }
+            
+        } catch (ExecutionException e) {
+            log.error("🏦 PORTFOLIO: Trade confirmation execution error → TradeId: {}", trade.getTradeId(), e);
+            
+            // Check if the cause is a known portfolio exception
+            if (e.getCause() instanceof PortfolioServiceException portfolioEx) {
+                log.error("🏦 PORTFOLIO: Portfolio service error during trade confirmation → ErrorCode: {}, Message: {}", 
+                        portfolioEx.getErrorCode(), portfolioEx.getMessage());
+            }
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("🏦 PORTFOLIO: Trade confirmation interrupted → TradeId: {}", trade.getTradeId(), e);
+            return false;
+        } catch (Exception e) {
+            log.error("🏦 PORTFOLIO: Unexpected error during trade confirmation → TradeId: {}", trade.getTradeId(), e);
+            return false;
+        }
+    }
+    
+    /**
+     * AUTO-CONFIRM: Automatically confirm filled order in Portfolio Service
+     * This method is called when an order is marked as FILLED to automatically
+     * call the appropriate Portfolio Service confirm endpoint.
+     */
+    private void autoConfirmFilledOrder(Order filledOrder, Trade trade) {
+        try {
+            log.info("🤖 AUTO-CONFIRM: Processing filled order → OrderId: {}, Side: {}, Quantity: {}", 
+                    filledOrder.getOrderId(), filledOrder.getSide(), filledOrder.getQuantity());
+            
+            // Skip auto-confirm for bot orders (account ID contains "BOT")
+            String accountIdStr = String.valueOf(filledOrder.getAccountId());
+            if (accountIdStr.contains("BOT")) {
+                log.info("🤖 AUTO-CONFIRM: Skipping auto-confirm for BOT order → OrderId: {}", filledOrder.getOrderId());
+                return;
+            }
+            
+            CompletableFuture<PortfolioResponse> confirmationFuture;
+            
+            if (filledOrder.getSide() == OrderSide.BUY) {
+                if (filledOrder.getStatus() == OrderStatus.FILLED) {
+                    // FULLY FILLED - Use normal confirmBuyTrade
+                    TradeConfirmationRequest buyRequest = TradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .executedQuantity(trade.getQuantity().intValue())  // Trade quantity
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ORDER BOOK): Confirming FULLY FILLED BUY order → {}", buyRequest);
+                    confirmationFuture = portfolioClient.confirmBuyTrade(buyRequest);
+                } else if (filledOrder.getStatus() == OrderStatus.PARTIALLY_FILLED) {
+                    // PARTIALLY FILLED - Use confirmPartialBuyTrade
+                    PartialTradeConfirmationRequest partialBuyRequest = PartialTradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .partialQuantity(trade.getQuantity().intValue())  // Actually filled quantity in this trade
+                            .remainingQuantity(filledOrder.getRemainingQuantity().intValue())
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ORDER BOOK): Confirming PARTIALLY FILLED BUY order → {}", partialBuyRequest);
+                    confirmationFuture = portfolioClient.confirmPartialBuyTrade(partialBuyRequest);
+                } else {
+                    log.warn("🤖 AUTO-CONFIRM (ORDER BOOK): Unexpected order status for BUY order → OrderId: {}, Status: {}", 
+                            filledOrder.getOrderId(), filledOrder.getStatus());
+                    return;
+                }
+            } else {
+                if (filledOrder.getStatus() == OrderStatus.FILLED) {
+                    // FULLY FILLED - Use normal confirmSellTrade
+                    TradeConfirmationRequest sellRequest = TradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .executedQuantity(trade.getQuantity().intValue())  // Trade quantity
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ORDER BOOK): Confirming FULLY FILLED SELL order → {}", sellRequest);
+                    confirmationFuture = portfolioClient.confirmSellTrade(sellRequest);
+                } else if (filledOrder.getStatus() == OrderStatus.PARTIALLY_FILLED) {
+                    // PARTIALLY FILLED - Use confirmPartialSellTrade
+                    PartialTradeConfirmationRequest partialSellRequest = PartialTradeConfirmationRequest.builder()
+                            .tradeId(trade.getTradeId())
+                            .orderId(filledOrder.getOrderId())
+                            .partialQuantity(trade.getQuantity().intValue())  // Actually filled quantity in this trade
+                            .remainingQuantity(filledOrder.getRemainingQuantity().intValue())
+                            .executedPrice(trade.getPrice())
+                            .build();
+                    
+                    log.info("🤖 AUTO-CONFIRM (ORDER BOOK): Confirming PARTIALLY FILLED SELL order → {}", partialSellRequest);
+                    confirmationFuture = portfolioClient.confirmPartialSellTrade(partialSellRequest);
+                } else {
+                    log.warn("🤖 AUTO-CONFIRM (ORDER BOOK): Unexpected order status for SELL order → OrderId: {}, Status: {}", 
+                            filledOrder.getOrderId(), filledOrder.getStatus());
+                    return;
+                }
+            }
+            
+            // Execute confirmation asynchronously without blocking
+            confirmationFuture.thenAccept(response -> {
+                if (response.isSuccess()) {
+                    log.info("✅ AUTO-CONFIRM: Order confirmation successful → OrderId: {}", filledOrder.getOrderId());
+                } else {
+                    log.error("❌ AUTO-CONFIRM: Order confirmation failed → OrderId: {}, Error: {}", 
+                            filledOrder.getOrderId(), response.getMessage());
+                }
+            }).exceptionally(throwable -> {
+                log.error("🚨 AUTO-CONFIRM: Exception during order confirmation → OrderId: {}, Error: {}", 
+                        filledOrder.getOrderId(), throwable.getMessage());
+                return null;
+            });
+            
+        } catch (Exception e) {
+            log.error("🚨 AUTO-CONFIRM: Unexpected error during auto-confirm → OrderId: {}, Error: {}", 
+                    filledOrder.getOrderId(), e.getMessage());
+        }
     }
 }

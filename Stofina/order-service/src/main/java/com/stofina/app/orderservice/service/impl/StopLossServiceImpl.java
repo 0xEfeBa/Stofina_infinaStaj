@@ -10,8 +10,15 @@ import com.stofina.app.orderservice.model.SimpleStopLossWatcher;
 import com.stofina.app.orderservice.repository.StopLossWatcherRepository;
 import com.stofina.app.orderservice.service.IOrderService;
 import com.stofina.app.orderservice.service.IStopLossService;
+import com.stofina.app.orderservice.service.client.PortfolioClient;
+import com.stofina.app.orderservice.dto.portfolio.SellStockRequest;
+import com.stofina.app.orderservice.dto.portfolio.OrderCancellationRequest;
+import com.stofina.app.orderservice.dto.portfolio.PortfolioResponse;
+import com.stofina.app.orderservice.exception.portfolio.InsufficientStockException;
+import com.stofina.app.orderservice.exception.portfolio.PortfolioServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -21,6 +28,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
@@ -29,6 +38,9 @@ public class StopLossServiceImpl implements IStopLossService {
 
     private final IOrderService orderService;
     private final StopLossWatcherRepository stopLossWatcherRepository;
+    
+    // CHECKPOINT 3.4 - Portfolio Service integration for stop loss validation
+    private final PortfolioClient portfolioClient;
 
     // Thread-safe in-memory cache (database ile senkronize)
     private final List<SimpleStopLossWatcher> stopLossWatchers = new CopyOnWriteArrayList<>();
@@ -285,6 +297,13 @@ public class StopLossServiceImpl implements IStopLossService {
     }
 
     private Order createLimitSellOrder(SimpleStopLossWatcher watcher, BigDecimal currentPrice) {
+        // CHECKPOINT 3.4 - Portfolio validation before creating stop-loss sell order
+        if (!validateStopLossPortfolio(watcher)) {
+            log.error("🛑 STOP LOSS: Portfolio validation failed → OrderId: {}, AccountId: {}, Symbol: {}, Quantity: {}", 
+                    watcher.getOrderId(), watcher.getAccountId(), watcher.getSymbol(), watcher.getQuantity());
+            return null; // Return null if portfolio validation fails
+        }
+
         Order limitSellOrder = new Order();
         limitSellOrder.setSymbol(watcher.getSymbol());
         limitSellOrder.setOrderType(OrderType.LIMIT_SELL);
@@ -298,7 +317,97 @@ public class StopLossServiceImpl implements IStopLossService {
         // Stop-loss referansı için özel alan varsa eklenebilir
         limitSellOrder.setClientOrderId("STOP_TRIGGERED_" + watcher.getOrderId());
 
+        log.info("🛑 STOP LOSS: Created limit sell order after portfolio validation → OrderId: {}, Symbol: {}, Quantity: {}, Price: {}", 
+                watcher.getOrderId(), limitSellOrder.getSymbol(), limitSellOrder.getQuantity(), currentPrice);
+
         return limitSellOrder;
+    }
+
+    /**
+     * Validates that the account has sufficient stock quantity before creating a stop-loss sell order.
+     * This prevents creating stop-loss orders for stocks that the account doesn't own.
+     * @param watcher The stop-loss watcher containing order details
+     * @return true if account has sufficient stock, false otherwise
+     */
+    private boolean validateStopLossPortfolio(SimpleStopLossWatcher watcher) {
+        try {
+            log.info("🛑 STOP LOSS: Validating portfolio → AccountId: {}, Symbol: {}, RequiredQuantity: {}", 
+                    watcher.getAccountId(), watcher.getSymbol(), watcher.getQuantity());
+
+            // Create sell stock validation request
+            SellStockRequest validationRequest = SellStockRequest.builder()
+                    .orderId(watcher.getOrderId())
+                    .accountId(watcher.getAccountId())
+                    .symbol(watcher.getSymbol())
+                    .quantity(watcher.getQuantity().intValue())
+                    .build();
+
+            // Call Portfolio Service for stock position validation
+            CompletableFuture<PortfolioResponse> validationFuture = portfolioClient.reserveSellStock(validationRequest);
+            PortfolioResponse response = validationFuture.get();
+
+            if (response.isSuccess()) {
+                log.info("✅ STOP LOSS: Portfolio validation successful → AccountId: {}, Symbol: {}, Message: {}", 
+                        watcher.getAccountId(), watcher.getSymbol(), response.getMessage());
+                
+                // Important: Cancel the reservation immediately as this was just for validation
+                OrderCancellationRequest cancellationRequest = OrderCancellationRequest.builder()
+                        .orderId(watcher.getOrderId())
+                        .accountId(watcher.getAccountId())
+                        .symbol(watcher.getSymbol())
+                        .orderType(OrderType.LIMIT_SELL)
+                        .originalQuantity(watcher.getQuantity().intValue())
+                        .filledQuantity(0) // No quantity was actually filled, this was just validation
+                        .reason("Stop-loss portfolio validation - reservation cancelled")
+                        .build();
+                
+                // Cancel the validation reservation asynchronously (no need to wait)
+                portfolioClient.cancelSellOrder(cancellationRequest)
+                        .thenAccept(cancelResponse -> {
+                            if (cancelResponse.isSuccess()) {
+                                log.debug("🛑 STOP LOSS: Validation reservation cancelled → OrderId: {}", watcher.getOrderId());
+                            } else {
+                                log.warn("🛑 STOP LOSS: Failed to cancel validation reservation → OrderId: {}, Error: {}", 
+                                        watcher.getOrderId(), cancelResponse.getMessage());
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            log.error("🛑 STOP LOSS: Error cancelling validation reservation → OrderId: {}", 
+                                    watcher.getOrderId(), ex);
+                            return null;
+                        });
+                
+                return true;
+            } else {
+                log.warn("🛑 STOP LOSS: Portfolio validation failed → AccountId: {}, Symbol: {}, Error: {}", 
+                        watcher.getAccountId(), watcher.getSymbol(), response.getMessage());
+                return false;
+            }
+
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof InsufficientStockException) {
+                log.warn("🛑 STOP LOSS: Insufficient stock for stop-loss → AccountId: {}, Symbol: {}, RequiredQuantity: {}", 
+                        watcher.getAccountId(), watcher.getSymbol(), watcher.getQuantity());
+                return false;
+            } else if (e.getCause() instanceof PortfolioServiceException portfolioEx) {
+                log.error("🛑 STOP LOSS: Portfolio service error during validation → ErrorCode: {}, Message: {}", 
+                        portfolioEx.getErrorCode(), portfolioEx.getMessage());
+                return false;
+            } else {
+                log.error("🛑 STOP LOSS: Execution error during portfolio validation → AccountId: {}, Symbol: {}", 
+                        watcher.getAccountId(), watcher.getSymbol(), e);
+                return false;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("🛑 STOP LOSS: Portfolio validation interrupted → AccountId: {}, Symbol: {}", 
+                    watcher.getAccountId(), watcher.getSymbol(), e);
+            return false;
+        } catch (Exception e) {
+            log.error("🛑 STOP LOSS: Unexpected error during portfolio validation → AccountId: {}, Symbol: {}", 
+                    watcher.getAccountId(), watcher.getSymbol(), e);
+            return false;
+        }
     }
 
     private void updateOriginalOrderStatus(Long orderId, OrderStatus newStatus) {

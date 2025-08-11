@@ -117,9 +117,9 @@ public class MarketDataClientImpl implements MarketDataClient {
         if (currentPrice == null || price == null) {
             return false;
         }
-        // %10 limit kontrolü
+        // %1.5 limit kontrolü (Fintek gereksinimi)
         BigDecimal deviation = price.subtract(currentPrice).abs().divide(currentPrice, 6, BigDecimal.ROUND_HALF_UP);
-        return deviation.compareTo(new BigDecimal("0.10")) <= 0;
+        return deviation.compareTo(new BigDecimal("0.015")) <= 0;
     }
 
     @Override
