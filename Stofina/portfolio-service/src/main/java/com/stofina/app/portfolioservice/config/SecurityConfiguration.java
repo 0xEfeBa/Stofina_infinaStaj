@@ -64,16 +64,23 @@ public class SecurityConfiguration {
                                 "/actuator/**"
                                 ).permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/stocks/**", "/api/v1/accounts/**","/api/v1/balances/**" )
+                        .requestMatchers(HttpMethod.GET,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
+
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
+                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
+
+                        .requestMatchers(HttpMethod.PATCH,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
+                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
                         .requestMatchers(HttpMethod.POST,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/v1/transactions/**")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
-                  )
+
+                )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
