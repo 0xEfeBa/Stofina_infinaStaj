@@ -67,11 +67,12 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/v1/stocks/**", "/api/v1/accounts/**","/api/v1/balances/**" )
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/v1/portfolios/**")
-                        .hasRole("CUSTOMER_SUPER_ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/portfolios/**","/api/v1/accounts/**")
+                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/transactions/**")
-                        .hasRole("CUSTOMER_SUPER_ADMIN")
+                        .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
                   )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
