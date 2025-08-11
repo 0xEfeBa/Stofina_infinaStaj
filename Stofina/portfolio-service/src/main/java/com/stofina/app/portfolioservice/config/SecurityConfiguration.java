@@ -68,7 +68,7 @@ public class SecurityConfiguration {
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
 
-                        .requestMatchers(HttpMethod.POST, "/api/v1/portfolios/**","/api/v1/accounts/**")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/transactions/**")

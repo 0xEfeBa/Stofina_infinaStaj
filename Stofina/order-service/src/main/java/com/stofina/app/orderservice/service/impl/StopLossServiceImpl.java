@@ -255,7 +255,7 @@ public class StopLossServiceImpl implements IStopLossService {
     }
 
     @Transactional
-    private Order triggerStopLoss(SimpleStopLossWatcher watcher, BigDecimal currentPrice) {
+    public Order triggerStopLoss(SimpleStopLossWatcher watcher, BigDecimal currentPrice) {
         try {
             // Database'de watcher'ı tetiklenmiş olarak işaretle
             Optional<StopLossWatcher> dbWatcherOpt = stopLossWatcherRepository.findByOrderIdAndActiveTrue(watcher.getOrderId());
