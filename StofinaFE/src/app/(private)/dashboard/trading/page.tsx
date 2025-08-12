@@ -164,10 +164,10 @@ export default function TradingPage() {
 
   const scheduledOrderValidation = useMemo(() => {
     return validateScheduledOrderForm(
-      orderFormData.isScheduled,
-      orderFormData.scheduledTime,
-      currentTradingSymbol,
-      parseFloat(orderFormData.quantity) || 0
+        orderFormData.isScheduled,
+        orderFormData.scheduledTime,
+        currentTradingSymbol,
+        parseFloat(orderFormData.quantity) || 0
     );
   }, [orderFormData.isScheduled, orderFormData.scheduledTime, currentTradingSymbol, orderFormData.quantity]);
 
@@ -198,7 +198,7 @@ export default function TradingPage() {
   }, []);
 
   /**
-   * Handle limit price input change  
+   * Handle limit price input change
    */
   const handleLimitPriceChange = useCallback((value: string) => {
     // Validate numeric input
@@ -236,6 +236,19 @@ export default function TradingPage() {
     // Market price validation
     if (!currentStockPrice && orderFormData.priceType === "market") {
       return { isValid: false, errorMessage: t('trading.messages.marketPriceError') };
+    }
+
+    // WebSocket bağlantı kontrolü - Market order için
+    if (orderFormData.priceType === "market" && !marketDataStream.isConnected) {
+      return { isValid: false, errorMessage: "Market emri için canlı veri bağlantısı gereklidir" };
+    }
+
+    // Market fiyat yaşı kontrolü (30 saniye)
+    if (orderFormData.priceType === "market" && currentStockPrice) {
+      const priceAge = new Date().getTime() - currentStockPrice.lastUpdated.getTime();
+      if (priceAge > 30000) { // 30 saniye
+        return { isValid: false, errorMessage: "Fiyat verisi güncel değil. Lütfen birkaç saniye bekleyin" };
+      }
     }
 
     // Scheduled order validation
@@ -320,12 +333,16 @@ export default function TradingPage() {
         orderType: backendOrderType as any, // We'll need to update the type definition
         side: orderFormData.orderType.toUpperCase() as 'BUY' | 'SELL',
         quantity: parseFloat(orderFormData.quantity),
-        price: orderFormData.priceType === "limit" ? parseFloat(orderFormData.limitPrice) : undefined,
+        price: orderFormData.priceType === "market"
+            ? currentStockPrice?.price  // Market emirler için anlık fiyat
+            : orderFormData.priceType === "limit"
+                ? parseFloat(orderFormData.limitPrice)  // Limit emirler için kullanıcı fiyatı
+                : undefined,
         stopPrice: orderFormData.priceType === "stop" ? parseFloat(orderFormData.limitPrice) : undefined,
         isScheduled: orderFormData.isScheduled,
         scheduledTime: orderFormData.isScheduled && orderFormData.scheduledTime
-          ? formatScheduledTimeForAPI(orderFormData.scheduledTime)
-          : undefined
+            ? formatScheduledTimeForAPI(orderFormData.scheduledTime)
+            : undefined
       };
 
       // Submit order to backend
@@ -383,211 +400,222 @@ export default function TradingPage() {
 
 
   const renderCustomerInfo = () => (
-    <div className={styles.customerInfo}>
+      <div className={styles.customerInfo}>
 
-      <div className={styles.customerDetails}>
-        <div className="flex flex-col gap-2">
+        <div className={styles.customerDetails}>
+          <div className="flex flex-col gap-2">
           <span className={styles.customerName}>
             {t('trading.interface.customerName', {
               name: selectedIndividualCustomer
-                ? selectedIndividualCustomer.firstName + " " + selectedIndividualCustomer.lastName
-                : selectedCorporateCustomer
-                  ? selectedCorporateCustomer.tradeName
-                  : ""
+                  ? selectedIndividualCustomer.firstName + " " + selectedIndividualCustomer.lastName
+                  : selectedCorporateCustomer
+                      ? selectedCorporateCustomer.tradeName
+                      : ""
             })}
           </span>
-          <span className={styles.accountNo}>
+            <span className={styles.accountNo}>
             {t('trading.interface.accountNumber', {
               number: selectedIndividualCustomer?.id || selectedCorporateCustomer?.id
             })}
           </span>
-          <span className={styles.tutarText}>
+            <span className={styles.tutarText}>
             {t('trading.interface.totalBalance', {
               balance: selectedAccount?.availableBalance ? formatPriceToTurkishLira(selectedAccount.availableBalance) : ""
             })}
           </span>
+          </div>
+
         </div>
+        <div className={styles.balanceInfo}>
 
+        </div>
       </div>
-      <div className={styles.balanceInfo}>
-
-      </div>
-    </div>
   );
 
   /**
    * Render trading form
    */
   const renderTradingForm = () => (
-    <div className={styles.tradingFormPanel}>
-      {/* Emir Ver Header */}
-      <div className={styles.formHeader}>
-        <span className={styles.formTitle}>{t('trading.orderForm.title')}</span>
-        <span className={styles.orderTypeIndicator}>
+      <div className={styles.tradingFormPanel}>
+        {/* Emir Ver Header */}
+        <div className={styles.formHeader}>
+          <span className={styles.formTitle}>{t('trading.orderForm.title')}</span>
+          <span className={styles.orderTypeIndicator}>
           {orderFormData.orderType === "buy" ? t('trading.orderTypes.buyOrder') : t('trading.orderTypes.sellOrder')}
         </span>
-      </div>
-
-      <form onSubmit={handleOrderSubmission} className={styles.tradingForm}>
-
-        {/* Hisse Seçimi */}
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>{t('trading.orderForm.stockSelectionRequired')}</label>
-          <select
-            className={styles.stockSelect}
-            value={currentTradingSymbol}
-            onChange={(e) => handleSymbolChange(e.target.value)}
-          >
-            {availableSymbols.length > 0 ? (
-              availableSymbols.map(stock => (
-                <option key={stock.symbol} value={stock.symbol}>
-                  {stock.symbol} - {stock.name}
-                </option>
-              ))
-            ) : (
-              <option value="">{t('trading.orderForm.stocksLoading')}</option>
-            )}
-          </select>
         </div>
 
-        {/* İşlem Tipi Selection */}
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>{t('trading.orderForm.orderType')}</label>
-          <div className={styles.radioGroup}>
-            <label className={styles.radioOption}>
-              <input
-                type="radio"
-                name="orderType"
-                value="buy"
-                checked={orderFormData.orderType === "buy"}
-                onChange={() => setOrderFormData(prev => ({
-                  ...prev,
-                  orderType: "buy",
-                  priceType: prev.priceType === "stop" ? "market" : prev.priceType
-                }))}
-              />
-              <span className={styles.radioText}>{t('trading.orderTypes.buy')}</span>
-            </label>
-            <label className={styles.radioOption}>
-              <input
-                type="radio"
-                name="orderType"
-                value="sell"
-                checked={orderFormData.orderType === "sell"}
-                onChange={() => setOrderFormData(prev => ({ ...prev, orderType: "sell" }))}
-              />
-              <span className={styles.radioText}>{t('trading.orderTypes.sell')}</span>
-            </label>
+        <form onSubmit={handleOrderSubmission} className={styles.tradingForm}>
+
+          {/* Hisse Seçimi */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>{t('trading.orderForm.stockSelectionRequired')}</label>
+            <select
+                className={styles.stockSelect}
+                value={currentTradingSymbol}
+                onChange={(e) => handleSymbolChange(e.target.value)}
+            >
+              {availableSymbols.length > 0 ? (
+                  availableSymbols.map(stock => (
+                      <option key={stock.symbol} value={stock.symbol}>
+                        {stock.symbol} - {stock.name}
+                      </option>
+                  ))
+              ) : (
+                  <option value="">{t('trading.orderForm.stocksLoading')}</option>
+              )}
+            </select>
           </div>
-        </div>
 
-        {/* Fiyat Tipi Selection */}
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>{t('trading.orderForm.priceType')}</label>
-          <div className={styles.radioGroup}>
-            <label className={styles.radioOption}>
-              <input
-                type="radio"
-                name="priceType"
-                value="market"
-                checked={orderFormData.priceType === "market"}
-                onChange={(e) => setOrderFormData(prev => ({
-                  ...prev,
-                  priceType: e.target.value,
-                  // Clear scheduled order when switching to market
-                  isScheduled: e.target.value === "market" ? false : prev.isScheduled,
-                  scheduledTime: e.target.value === "market" ? undefined : prev.scheduledTime
-                }))}
-              />
-              <span className={styles.radioText}>{t('trading.priceTypes.market')}</span>
-            </label>
-            <label className={styles.radioOption}>
-              <input
-                type="radio"
-                name="priceType"
-                value="limit"
-                checked={orderFormData.priceType === "limit"}
-                onChange={(e) => setOrderFormData(prev => ({ ...prev, priceType: e.target.value }))}
-              />
-              <span className={styles.radioText}>{t('trading.priceTypes.limit')}</span>
-            </label>
-            {orderFormData.orderType === "sell" && (
+          {/* İşlem Tipi Selection */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>{t('trading.orderForm.orderType')}</label>
+            <div className={styles.radioGroup}>
               <label className={styles.radioOption}>
                 <input
-                  type="radio"
-                  name="priceType"
-                  value="stop"
-                  checked={orderFormData.priceType === "stop"}
-                  onChange={(e) => setOrderFormData(prev => ({ ...prev, priceType: e.target.value }))}
+                    type="radio"
+                    name="orderType"
+                    value="buy"
+                    checked={orderFormData.orderType === "buy"}
+                    onChange={() => setOrderFormData(prev => ({
+                      ...prev,
+                      orderType: "buy",
+                      priceType: prev.priceType === "stop" ? "market" : prev.priceType
+                    }))}
                 />
-                <span className={styles.radioText}>{t('trading.priceTypes.stop')}</span>
+                <span className={styles.radioText}>{t('trading.orderTypes.buy')}</span>
               </label>
-            )}
+              <label className={styles.radioOption}>
+                <input
+                    type="radio"
+                    name="orderType"
+                    value="sell"
+                    checked={orderFormData.orderType === "sell"}
+                    onChange={() => setOrderFormData(prev => ({ ...prev, orderType: "sell" }))}
+                />
+                <span className={styles.radioText}>{t('trading.orderTypes.sell')}</span>
+              </label>
+            </div>
           </div>
-        </div>
 
-        {/* Adet Input */}
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>{t('trading.orderForm.quantity')}</label>
-          <input
-            type="text"
-            className={styles.standardInput}
-            value={orderFormData.quantity}
-            onChange={(e) => handleQuantityChange(e.target.value)}
-            placeholder="0"
-          />
-        </div>
-
-        {/* Limit Fiyat Input - Only show for limit/stop orders */}
-        {orderFormData.priceType !== "market" && (
+          {/* Fiyat Tipi Selection */}
           <div className={styles.formGroup}>
-            <label className={styles.formLabel}>
-              {orderFormData.priceType === "limit" ? t('trading.orderForm.limitPrice') : t('trading.orderForm.stopPrice')}
-            </label>
+            <label className={styles.formLabel}>{t('trading.orderForm.priceType')}</label>
+            <div className={styles.radioGroup}>
+              <label className={styles.radioOption}>
+                <input
+                    type="radio"
+                    name="priceType"
+                    value="market"
+                    checked={orderFormData.priceType === "market"}
+                    onChange={(e) => setOrderFormData(prev => ({
+                      ...prev,
+                      priceType: e.target.value,
+                      // Clear scheduled order when switching to market
+                      isScheduled: e.target.value === "market" ? false : prev.isScheduled,
+                      scheduledTime: e.target.value === "market" ? undefined : prev.scheduledTime
+                    }))}
+                />
+                <span className={styles.radioText}>{t('trading.priceTypes.market')}</span>
+              </label>
+              <label className={styles.radioOption}>
+                <input
+                    type="radio"
+                    name="priceType"
+                    value="limit"
+                    checked={orderFormData.priceType === "limit"}
+                    onChange={(e) => setOrderFormData(prev => ({ ...prev, priceType: e.target.value }))}
+                />
+                <span className={styles.radioText}>{t('trading.priceTypes.limit')}</span>
+              </label>
+              {orderFormData.orderType === "sell" && (
+                  <label className={styles.radioOption}>
+                    <input
+                        type="radio"
+                        name="priceType"
+                        value="stop"
+                        checked={orderFormData.priceType === "stop"}
+                        onChange={(e) => setOrderFormData(prev => ({ ...prev, priceType: e.target.value }))}
+                    />
+                    <span className={styles.radioText}>{t('trading.priceTypes.stop')}</span>
+                  </label>
+              )}
+            </div>
+          </div>
+
+          {/* Adet Input */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>{t('trading.orderForm.quantity')}</label>
             <input
-              type="text"
-              className={styles.standardInput}
-              value={orderFormData.limitPrice}
-              onChange={(e) => handleLimitPriceChange(e.target.value)}
-              placeholder="0.00"
+                type="text"
+                className={styles.standardInput}
+                value={orderFormData.quantity}
+                onChange={(e) => handleQuantityChange(e.target.value)}
+                placeholder="0"
             />
           </div>
-        )}
 
-        {/* Güncel Fiyat Display */}
-        <div className={styles.currentPriceDisplay}>
-          <span className={styles.currentPriceLabel}>{t('trading.orderForm.currentPrice')} </span>
-          <span className={styles.currentPriceValue}>
+          {/* Limit Fiyat Input - Only show for limit/stop orders */}
+          {orderFormData.priceType !== "market" && (
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>
+                  {orderFormData.priceType === "limit" ? t('trading.orderForm.limitPrice') : t('trading.orderForm.stopPrice')}
+                </label>
+                <input
+                    type="text"
+                    className={styles.standardInput}
+                    value={orderFormData.limitPrice}
+                    onChange={(e) => handleLimitPriceChange(e.target.value)}
+                    placeholder="0.00"
+                />
+              </div>
+          )}
+
+          {/* Güncel Fiyat Display */}
+          <div className={styles.currentPriceDisplay}>
+            <span className={styles.currentPriceLabel}>{t('trading.orderForm.currentPrice')} </span>
+            <span className={styles.currentPriceValue}>
             {currentStockPrice ? formatPriceToTurkishLira(currentStockPrice.price) : "₺180,30"}
           </span>
-        </div>
+            {/* Market order uyarısı */}
+            {orderFormData.priceType === "market" && (
+                <div className={styles.marketOrderNote}>
+                  <small style={{color: '#666', fontSize: '12px'}}>
+                    {marketDataStream.isConnected
+                        ? "Bu emir anlık piyasa fiyatından işleme alınacaktır"
+                        : "Canlı veri bağlantısı yok - Market emri verilemez"
+                    }
+                  </small>
+                </div>
+            )}
+          </div>
 
 
-        {/* Scheduled Order Section - Enhanced UI - Only for non-market orders */}
-        {orderFormData.priceType !== "market" && (
-          <ScheduledOrderSection
-            isScheduled={orderFormData.isScheduled}
-            scheduledTime={orderFormData.scheduledTime}
-            onScheduledChange={(isScheduled) => setOrderFormData(prev => ({ ...prev, isScheduled }))}
-            onTimeChange={(time) => setOrderFormData(prev => ({ ...prev, scheduledTime: time }))}
-            validation={scheduledOrderValidation}
-            disabled={isSubmitting}
-          />
-        )}
+          {/* Scheduled Order Section - Enhanced UI - Only for non-market orders */}
+          {orderFormData.priceType !== "market" && (
+              <ScheduledOrderSection
+                  isScheduled={orderFormData.isScheduled}
+                  scheduledTime={orderFormData.scheduledTime}
+                  onScheduledChange={(isScheduled) => setOrderFormData(prev => ({ ...prev, isScheduled }))}
+                  onTimeChange={(time) => setOrderFormData(prev => ({ ...prev, scheduledTime: time }))}
+                  validation={scheduledOrderValidation}
+                  disabled={isSubmitting}
+              />
+          )}
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitting || !isFormValid}
-          className={`${styles.submitButton} ${orderFormData.orderType === "buy" ? styles.buyButton : styles.sellButton} ${!isFormValid ? styles.disabledButton : ""}`}
-        >
-          {isSubmitting
-            ? t('trading.messages.submitting')
-            : orderFormData.orderType === "buy" ? t('trading.orderTypes.buyButton') : t('trading.orderTypes.sellButton')
-          }
-        </button>
-      </form>
-    </div>
+          {/* Submit Button */}
+          <button
+              type="submit"
+              disabled={isSubmitting || !isFormValid}
+              className={`${styles.submitButton} ${orderFormData.orderType === "buy" ? styles.buyButton : styles.sellButton} ${!isFormValid ? styles.disabledButton : ""}`}
+          >
+            {isSubmitting
+                ? t('trading.messages.submitting')
+                : orderFormData.orderType === "buy" ? t('trading.orderTypes.buyButton') : t('trading.orderTypes.sellButton')
+            }
+          </button>
+        </form>
+      </div>
   );
 
   // ================================
@@ -595,59 +623,59 @@ export default function TradingPage() {
   // ================================
 
   return (
-    <div className={styles.container}>
-      <div className="flex  gap-4">
-        <div className=' flex items-start mb-14'>
-          <button type="button" className={styles.secondaryButton} onClick={() => router.back()}>
-            <img src="/menu-icon/back.png" alt={t('report.back')} className={styles.icon} />
-            {t('common.back')}
-          </button>
-          <AccountSelector open={openAccountSelector} onClose={() => setOpenAccountSelector(false)} accounts={accounts} onSelect={setSelectedAccount} />
-          <AutoCompleteCustomerSearch />
-        </div>
-        <div className={styles.header}>
-          {renderCustomerInfo()}
-        </div>
+      <div className={styles.container}>
+        <div className="flex  gap-4">
+          <div className=' flex items-start mb-14'>
+            <button type="button" className={styles.secondaryButton} onClick={() => router.back()}>
+              <img src="/menu-icon/back.png" alt={t('report.back')} className={styles.icon} />
+              {t('common.back')}
+            </button>
+            <AccountSelector open={openAccountSelector} onClose={() => setOpenAccountSelector(false)} accounts={accounts} onSelect={setSelectedAccount} />
+            <AutoCompleteCustomerSearch />
+          </div>
+          <div className={styles.header}>
+            {renderCustomerInfo()}
+          </div>
 
-      </div>
-
-
-      {/* Trading Interface */}
-      <div className={styles.tradingInterface}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          {/* <p className={styles.interfaceDesc}>{t('trading.interface.description')}</p> */}
-          <ConnectionStatus
-            marketDataStatus={marketDataStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
-            orderBookStatus={orderBookStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
-            tradeStreamStatus={tradeStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
-            showDetails={false}
-          />
         </div>
 
-        <div className={styles.mainContent}>
-          {/* Left Panel - Real-time Order Book */}
-          <div className={styles.orderBookPanel}>
-            <PriceDisplay
-              stockData={currentStockPrice}
-              symbol={currentTradingSymbol}
-              showChange={true}
-              showVolume={false}
-              isLive={marketDataStream.isConnected}
-            />
 
-            <OrderBookTable
-              buyOrders={orderBookStream.buyOrders}
-              sellOrders={orderBookStream.sellOrders}
-              symbol={currentTradingSymbol}
-              maxLevels={20}
-              showSpread={true}
+        {/* Trading Interface */}
+        <div className={styles.tradingInterface}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            {/* <p className={styles.interfaceDesc}>{t('trading.interface.description')}</p> */}
+            <ConnectionStatus
+                marketDataStatus={marketDataStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
+                orderBookStatus={orderBookStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
+                tradeStreamStatus={tradeStream.isConnected ? WebSocketStatus.CONNECTED : WebSocketStatus.DISCONNECTED}
+                showDetails={false}
             />
           </div>
 
-          {/* Right Panel - Trading Form */}
-          {renderTradingForm()}
+          <div className={styles.mainContent}>
+            {/* Left Panel - Real-time Order Book */}
+            <div className={styles.orderBookPanel}>
+              <PriceDisplay
+                  stockData={currentStockPrice}
+                  symbol={currentTradingSymbol}
+                  showChange={true}
+                  showVolume={false}
+                  isLive={marketDataStream.isConnected}
+              />
+
+              <OrderBookTable
+                  buyOrders={orderBookStream.buyOrders}
+                  sellOrders={orderBookStream.sellOrders}
+                  symbol={currentTradingSymbol}
+                  maxLevels={20}
+                  showSpread={true}
+              />
+            </div>
+
+            {/* Right Panel - Trading Form */}
+            {renderTradingForm()}
+          </div>
         </div>
       </div>
-    </div>
   );
 }

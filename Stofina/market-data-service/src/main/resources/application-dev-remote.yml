@@ -1,5 +1,7 @@
 spring:
-
+  jpa:
+    hibernate:
+      ddl-auto: update
   datasource:
     url: jdbc:sqlserver://${DB_HOST:192.168.144.76:1450};databaseName=Troya;encrypt=true;trustServerCertificate=true
     username: ${DB_USER:grup5}

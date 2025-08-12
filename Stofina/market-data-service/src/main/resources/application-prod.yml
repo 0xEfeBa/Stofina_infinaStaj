@@ -1,5 +1,7 @@
 spring:
-
+  jpa:
+    hibernate:
+      ddl-auto: validate
   datasource:
     url: jdbc:sqlserver://${PROD_DB_HOST};databaseName=Troya;encrypt=true;trustServerCertificate=true
     username: ${PROD_DB_USER}

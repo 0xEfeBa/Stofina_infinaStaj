@@ -1,5 +1,7 @@
 spring:
-
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
   datasource:
     url: jdbc:sqlserver://${DB_HOST:localhost};databaseName=Troya;encrypt=true;trustServerCertificate=true
     username: ${DB_USER:sa}
