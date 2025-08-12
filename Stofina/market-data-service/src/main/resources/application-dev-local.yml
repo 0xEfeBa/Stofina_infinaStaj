@@ -1,9 +1,9 @@
 spring:
 
   datasource:
-    url: jdbc:sqlserver://${DEV_DB_HOST:localhost};databaseName=Troya;encrypt=true;trustServerCertificate=true
-    username: ${DEV_DB_USER:sa}
-    password: ${DEV_DB_PASSWORD:YourStrong!Passw0rd}
+    url: jdbc:sqlserver://${DB_HOST:localhost};databaseName=Troya;encrypt=true;trustServerCertificate=true
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:YourStrong!Passw0rd}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   kafka:

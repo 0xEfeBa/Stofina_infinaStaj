@@ -216,7 +216,7 @@ services:
 
   redis:
     image: redis:latest
-    container_name: redis-dev
+    container_name: redis-dev-local
     ports:
       - "6379:6379"
     networks:
@@ -290,7 +290,7 @@ services:
     ports:
       - "8761:8761"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: dev-local
     networks:
       - spring
     healthcheck:
@@ -305,10 +305,10 @@ services:
     ports:
       - "9002:9002"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      DEV_DB_HOST: azuresqledge
-      DEV_DB_USER: sa
-      DEV_DB_PASSWORD: YourStrong!Passw0rd
+      SPRING_PROFILES_ACTIVE: dev-local
+      DB_HOST: azuresqledge
+      DB_USER: sa
+      DB_PASSWORD: YourStrong!Passw0rd
       JWT_SECRET: 7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       REDIS_HOST: redis
@@ -328,10 +328,10 @@ services:
     ports:
       - "9003:9003"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      DEV_DB_HOST: azuresqledge
-      DEV_DB_USER: sa
-      DEV_DB_PASSWORD: YourStrong!Passw0rd
+      SPRING_PROFILES_ACTIVE: dev-local
+      DB_HOST: azuresqledge
+      DB_USER: sa
+      DB_PASSWORD: YourStrong!Passw0rd
       JWT_SECRET: 7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     depends_on:
@@ -348,10 +348,10 @@ services:
     ports:
       - "9001:9001"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      DEV_DB_HOST: azuresqledge
-      DEV_DB_USER: sa
-      DEV_DB_PASSWORD: YourStrong!Passw0rd
+      SPRING_PROFILES_ACTIVE: dev-local
+      DB_HOST: azuresqledge
+      DB_USER: sa
+      DB_PASSWORD: YourStrong!Passw0rd
       JWT_SECRET: 7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     depends_on:
@@ -368,10 +368,10 @@ services:
     ports:
       - "9005:9005"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      DEV_DB_HOST: azuresqledge
-      DEV_DB_USER: sa
-      DEV_DB_PASSWORD: YourStrong!Passw0rd
+      SPRING_PROFILES_ACTIVE: dev-local
+      DB_HOST: azuresqledge
+      DB_USER: sa
+      DB_PASSWORD: YourStrong!Passw0rd
       JWT_SECRET: 7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -395,10 +395,10 @@ services:
       - "9006:9006"
     environment:
       PORTFOLIO_SERVICE_URL: http://portfolio-service:9001
-      SPRING_PROFILES_ACTIVE: dev
-      DEV_DB_HOST: azuresqledge
-      DEV_DB_USER: sa
-      DEV_DB_PASSWORD: YourStrong!Passw0rd
+      SPRING_PROFILES_ACTIVE: dev-local
+      DB_HOST: azuresqledge
+      DB_USER: sa
+      DB_PASSWORD: YourStrong!Passw0rd
       JWT_SECRET: 7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -423,10 +423,10 @@ services:
     ports:
       - "9004:9004"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      DEV_DB_HOST: azuresqledge
-      DEV_DB_USER: sa
-      DEV_DB_PASSWORD: YourStrong!Passw0rd
+      SPRING_PROFILES_ACTIVE: dev-local
+      DB_HOST: azuresqledge
+      DB_USER: sa
+      DB_PASSWORD: YourStrong!Passw0rd
       JWT_SECRET: 7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
     depends_on:
@@ -441,7 +441,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: dev-local
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       REDIS_HOST: redis
     depends_on:
