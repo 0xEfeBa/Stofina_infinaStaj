@@ -714,7 +714,8 @@
         },
         "sendResultDocument": {
             "button": "Send Result Document"
-        }
+        },
+        "back": "Back"
     },
     "modal": {
         "titles": {
@@ -793,6 +794,24 @@
             "passive": "Passive",
             "yes": "Yes",
             "no": "No"
+        },
+        "refresh": "Refresh",
+        "refreshing": "Refreshing...",
+        "table": {
+            "actions": {
+                "cancel": "Cancel",
+                "cancelDisabled": "Cancel",
+                "cancelling": "Cancelling...",
+                "fullyFilledTooltip": "Order is fully filled",
+                "cancelledTooltip": "Order is cancelled or completed"
+            }
+        },
+        "pagination": {
+            "rowsPerPage": "Rows per page:",
+            "showing": "Showing:",
+            "of": "of",
+            "previous": "Previous",
+            "next": "Next"
         }
     },
     "types": {
@@ -953,13 +972,17 @@
         },
         "messages": {
             "submitting": "SUBMITTING ORDER...",
-            "success": "{{type}} order placed successfully!",
+            "success": "Order placed successfully!",
             "orderId": "Order ID: {{id}}",
             "invalidSymbol": "Stock selection is required",
             "invalidQuantity": "Enter a valid quantity",
             "invalidPrice": "Enter a valid price",
             "marketPriceError": "Cannot get market price",
-            "unexpectedError": "An unexpected error occurred. Please try again."
+            "unexpectedError": "An unexpected error occurred. Please try again.",
+            "accountRequired": "Account selection is required",
+            "marketOrderNote": "This order will be executed at current market price",
+            "liveDataRequired": "Live data connection required for market orders",
+            "priceDataStale": "Price data is not current. Please wait a few seconds"
         }
     },
     "stock": {
@@ -1002,6 +1025,110 @@
             "pastTime": "Cannot select past time",
             "marketHours": "Cannot place orders outside market hours"
         }
+    },
+    "websocket": {
+        "status": {
+            "connected": "Connected",
+            "connecting": "Connecting",
+            "disconnected": "Disconnected",
+            "reconnecting": "Reconnecting",
+            "error": "Connection Error"
+        },
+        "messages": {
+            "connectionLost": "Connection lost. Attempting to reconnect...",
+            "reconnected": "Connection restored",
+            "connectionFailed": "Failed to establish connection"
+        }
+    },
+    "marketData": {
+        "live": "Live",
+        "delayed": "Delayed",
+        "lastUpdate": "Last Update",
+        "noData": "No data available",
+        "loading": "Loading market data..."
+    },
+    "orderBook": {
+        "depth": "Depth",
+        "levels": "Levels",
+        "noOrders": "No orders available",
+        "loading": "Loading order book...",
+        "spread": "Spread",
+        "bid": "Bid",
+        "ask": "Ask"
+    },
+    "trades": {
+        "title": "Recent Trades",
+        "time": "Time",
+        "price": "Price",
+        "quantity": "Quantity",
+        "side": "Side",
+        "noTrades": "No recent trades",
+        "loading": "Loading trades..."
+    },
+    "form": {
+        "validation": {
+            "required": "This field is required",
+            "numeric": "Please enter only numeric values",
+            "positive": "Please enter a positive value",
+            "minValue": "Value must be at least {{min}}",
+            "maxValue": "Value must be at most {{max}}",
+            "invalidFormat": "Invalid format",
+            "futureDate": "Please select a future date",
+            "pastDate": "Please select a past date",
+            "timeRequired": "Time selection is required",
+            "dateRequired": "Date selection is required"
+        },
+        "placeholders": {
+            "selectOption": "Select an option",
+            "enterValue": "Enter value",
+            "search": "Search...",
+            "selectDate": "Select date",
+            "selectTime": "Select time"
+        },
+        "labels": {
+            "required": "Required",
+            "optional": "Optional",
+            "loading": "Loading...",
+            "noOptions": "No options available"
+        }
+    },
+    "notifications": {
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Information",
+        "close": "Close",
+        "dismiss": "Dismiss"
+    },
+    "time": {
+        "now": "Now",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "tomorrow": "Tomorrow",
+        "thisWeek": "This Week",
+        "lastWeek": "Last Week",
+        "thisMonth": "This Month",
+        "lastMonth": "Last Month",
+        "thisYear": "This Year",
+        "lastYear": "Last Year",
+        "minutes": "minutes",
+        "hours": "hours",
+        "days": "days",
+        "weeks": "weeks",
+        "months": "months",
+        "years": "years"
+    },
+    "currency": {
+        "symbol": "₺",
+        "format": "{{value}} ₺",
+        "decimalPlaces": 2
+    },
+    "dateTime": {
+        "format": "DD/MM/YYYY HH:mm",
+        "dateFormat": "DD/MM/YYYY",
+        "timeFormat": "HH:mm",
+        "shortDateFormat": "DD/MM/YY",
+        "longDateFormat": "DD MMMM YYYY"
     },
     "account": {
         "getAccountsByCustomerId": {
