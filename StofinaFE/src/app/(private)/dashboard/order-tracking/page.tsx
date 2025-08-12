@@ -55,7 +55,6 @@ const OrderTracking = () => {
             setOrders(response);
         }
     }
-    console.log(orders)
 
 
     return (
@@ -70,7 +69,11 @@ const OrderTracking = () => {
                 <AccountSelector open={openAccountSelector} onClose={() => setOpenAccountSelector(false)} accounts={accounts} onSelect={fetchOrders} />
             </div>
             <div>
-                {/* <OrderTrackingTable /> */}
+                {
+                    orders && orders.length > 0
+                    &&
+                    <OrderTrackingTable orders={orders} />
+                }
             </div>
 
         </div>

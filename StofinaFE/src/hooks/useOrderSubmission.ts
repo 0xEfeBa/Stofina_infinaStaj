@@ -36,7 +36,7 @@ export const useOrderSubmission = (): UseOrderSubmissionReturn => {
         quantity: orderData.quantity,
         price: orderData.price,
         stopPrice: orderData.stopPrice,
-        accountId: '1', // Default demo account ID
+        accountId: orderData.accountId || "", // Default demo account ID
         tenantId: 1, // Default demo tenant ID
         isScheduled: orderData.isScheduled || false,
         scheduledTime: orderData.scheduledTime
@@ -53,7 +53,7 @@ export const useOrderSubmission = (): UseOrderSubmissionReturn => {
       if (!validation.success) {
         const errorMessage = formatOrderError(validation.error!);
         setLastSubmissionError(errorMessage);
-        return validation as ApiResponse<OrderResponse>;
+        return validation as unknown as ApiResponse<OrderResponse>;
       }
 
       if (validation.data && !validation.data.valid) {

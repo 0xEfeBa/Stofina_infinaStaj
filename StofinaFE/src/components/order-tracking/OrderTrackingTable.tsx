@@ -6,8 +6,30 @@ import { useSelectorCustom } from '@/store';
 import { Order } from '@/types/order';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-export default function OrderTrackingTable() {
+// export interface Order {
+//     orderId: number;
+//     accountId: number;
+//     tenantId: number;
+//     symbol: string;
+//     orderType: string; // Enum tanımı yapılabilir
+//     side: string; // Enum tanımı yapılabilir
+//     quantity: number;
+//     price: number;
+//     filledQuantity: number;
+//     remainingQuantity: number;
+//     averagePrice: number;
+//     status: string; // Enum tanımı yapılabilir
+//     timeInForce: string; // Enum tanımı yapılabilir
+//     stopPrice: number;
+//     expiryDate: string; // ISO date format
+//     clientOrderId: string;
+//     createdAt: string; // ISO date format
+//     updatedAt: string; // ISO date format
+//     isBot: boolean;
+//     active: boolean;
+//     fullyFilled: boolean;
+//   }
+export default function OrderTrackingTable({ orders }: { orders: Order[] }) {
     const dispatch = useDispatchCustom();
     const { t } = useTranslation();
     const [search, setSearch] = useState('');
@@ -16,8 +38,8 @@ export default function OrderTrackingTable() {
     const { selectedIndividualCustomer, selectedCorporateCustomer } = useSelectorCustom(state => state.customer);
 
     const filteredOrders = useMemo(() => {
-        return [].filter((order) =>  // arama yaparken emir filtreleme
-            `${order.symbol} ${order.orderNo}`
+        return orders.filter((order) =>  // arama yaparken emir filtreleme
+            `${order.symbol} ${order.symbol}`
                 .toLowerCase()
                 .includes(search.toLowerCase())
         )
@@ -27,14 +49,28 @@ export default function OrderTrackingTable() {
 
     const handleCancelOrder = (order: Order) => {
         console.log('Cancel order:', order);
+
+        // Müşteri türüne göre mesaj oluştur
+        let customerInfo = '';
+        if (selectedIndividualCustomer) {
+            customerInfo = selectedIndividualCustomer.firstName + " " + selectedIndividualCustomer.lastName;
+        } else if (selectedCorporateCustomer) {
+            customerInfo = selectedCorporateCustomer.tradeName;
+        }
+
+        const customerId = selectedIndividualCustomer?.id || selectedCorporateCustomer?.id;
+
         dispatch(SliceGlobalModal.actions.openModal({
             modalType: "warning",
-            message: selectedCustomer?.accountNumber + " " + t('orderTracking.modal.cancelOrder') + " " + selectedCustomer?.firstName + " " + t('orderTracking.modal.customer') + " " + order.orderNo + " " + t('orderTracking.modal.orderNumber'),
-            multipleButtons: true
+            message: customerId + " " + t('orderTracking.modal.cancelOrder') + " " + customerInfo + " " + t('orderTracking.modal.customer') + " " + order.orderId + " " + t('orderTracking.modal.orderNumber'),
+            multipleButtons: true,
+            modalAction: () => {
+                console.log('Cancel order:', order);
+            }
         }))
     };
 
-    if (!selectedCustomer) {
+    if (!selectedIndividualCustomer && !selectedCorporateCustomer) {
         return <></>
     }
 
@@ -90,11 +126,20 @@ export default function OrderTrackingTable() {
                         <th className="p-2">{t('orderTracking.table.headers.orderNo')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.symbol')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.orderType')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.side')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.orderStatus')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.price')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.quantity')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.filledQuantity')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.remainingQuantity')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.filledPrice')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.stopPrice')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.timeInForce')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.expiryDate')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.clientOrderId')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.isBot')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.active')}</th>
+                        <th className="p-2">{t('orderTracking.table.headers.fullyFilled')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.status')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.date')}</th>
                         <th className="p-2">{t('orderTracking.table.headers.action')}</th>
@@ -102,15 +147,36 @@ export default function OrderTrackingTable() {
                 </thead>
                 <tbody>
                     {filteredOrders.map((order, index) => (
-                        <tr key={order.orderNo} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-[#813FB4]/10' : 'bg-white'}`}>
-                            <td className="p-2">{order.orderNo}</td>
+                        <tr key={index} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-[#813FB4]/10' : 'bg-white'}`}>
+                            <td className="p-2">{order.orderId}</td>
                             <td className="p-2">{order.symbol}</td>
-                            <td className="p-2">{order.orderSide}</td>
+                            <td className="p-2">{order.orderType}</td>
+                            <td className="p-2">{order.side}</td>
                             <td className="p-2">{order.orderType}</td>
                             <td className="p-2">{order.price.toFixed(2) + " TL"}</td>
                             <td className="p-2">{order.quantity}</td>
                             <td className="p-2">{order.filledQuantity}</td>
-                            <td className="p-2">{order.filledPrice.toFixed(2) + " TL"}</td>
+                            <td className="p-2">{order.remainingQuantity}</td>
+                            <td className="p-2">{order.averagePrice.toFixed(2) + " TL"}</td>
+                            <td className="p-2">{order.stopPrice ? order.stopPrice.toFixed(2) + " TL" : "-"}</td>
+                            <td className="p-2">{order.timeInForce}</td>
+                            <td className="p-2">{order.expiryDate ? new Date(order.expiryDate).toLocaleDateString() : "-"}</td>
+                            <td className="p-2">{order.clientOrderId || "-"}</td>
+                            <td className="p-2">
+                                <span className={order.isBot ? "text-blue-600 font-bold" : "text-gray-500"}>
+                                    {order.isBot ? t('orderTracking.status.bot') : t('orderTracking.status.manual')}
+                                </span>
+                            </td>
+                            <td className="p-2">
+                                <span className={order.active ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
+                                    {order.active ? t('orderTracking.status.active') : t('orderTracking.status.passive')}
+                                </span>
+                            </td>
+                            <td className="p-2">
+                                <span className={order.fullyFilled ? "text-green-600 font-bold" : "text-gray-500"}>
+                                    {order.fullyFilled ? t('orderTracking.status.yes') : t('orderTracking.status.no')}
+                                </span>
+                            </td>
                             <td className="p-2">
                                 <span className={
                                     order.status === 'GERÇEKLEŞTİ' ? 'font-bold text-green-600' :

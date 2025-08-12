@@ -758,11 +758,20 @@
                 "orderNo": "Order No",
                 "symbol": "Stock Symbol",
                 "orderType": "Order Type",
+                "side": "Side",
                 "orderStatus": "Order Status",
                 "price": "Price",
                 "quantity": "Quantity",
                 "filledQuantity": "Filled Quantity",
+                "remainingQuantity": "Remaining Quantity",
                 "filledPrice": "Filled Price",
+                "stopPrice": "Stop Price",
+                "timeInForce": "Time In Force",
+                "expiryDate": "Expiry Date",
+                "clientOrderId": "Client Order ID",
+                "isBot": "Bot Order",
+                "active": "Active",
+                "fullyFilled": "Fully Filled",
                 "status": "Status",
                 "date": "Date",
                 "action": "Action"
@@ -776,6 +785,14 @@
             "cancelOrder": "account number",
             "customer": "customer's",
             "orderNumber": "numbered order transaction?"
+        },
+        "status": {
+            "bot": "Bot",
+            "manual": "Manual",
+            "active": "Active",
+            "passive": "Passive",
+            "yes": "Yes",
+            "no": "No"
         }
     },
     "types": {

@@ -211,6 +211,9 @@ export default function TradingPage() {
    * Validate order form data
    */
   const validateOrderForm = useCallback((): { isValid: boolean; errorMessage?: string } => {
+    if (!selectedAccount) {
+      return { isValid: false, errorMessage: t('trading.messages.accountRequired') };
+    }
     // Symbol validation
     if (!currentTradingSymbol || currentTradingSymbol.trim() === "") {
       return { isValid: false, errorMessage: t('trading.messages.invalidSymbol') };
@@ -312,6 +315,7 @@ export default function TradingPage() {
 
 
       const orderData: OrderFormData = {
+        accountId: selectedAccount?.id?.toString() || "",
         symbol: currentTradingSymbol,
         orderType: backendOrderType as any, // We'll need to update the type definition
         side: orderFormData.orderType.toUpperCase() as 'BUY' | 'SELL',

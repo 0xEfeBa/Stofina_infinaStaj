@@ -791,11 +791,20 @@
                 "orderNo": "Emir No",
                 "symbol": "Hisse Senedi",
                 "orderType": "İşlem Türü",
+                "side": "Yön",
                 "orderStatus": "Emir Tipi",
                 "price": "Fiyat",
                 "quantity": "Adet",
                 "filledQuantity": "Gerçekleşen Adet",
+                "remainingQuantity": "Kalan Adet",
                 "filledPrice": "Gerçekleşen Fiyat",
+                "stopPrice": "Stop Fiyatı",
+                "timeInForce": "Geçerlilik Süresi",
+                "expiryDate": "Son Kullanma Tarihi",
+                "clientOrderId": "Müşteri Emir ID",
+                "isBot": "Bot Emri",
+                "active": "Aktif",
+                "fullyFilled": "Tamamen Gerçekleşti",
                 "status": "Emir Durum",
                 "date": "Tarih",
                 "action": "İşlem"
@@ -809,6 +818,14 @@
             "cancelOrder": "hesap numaralı",
             "customer": "müşterisine ait",
             "orderNumber": "numaralı emir işlemini iptal etmeyi onaylıyor musunuz?"
+        },
+        "status": {
+            "bot": "Bot",
+            "manual": "Manuel",
+            "active": "Aktif",
+            "passive": "Pasif",
+            "yes": "Evet",
+            "no": "Hayır"
         }
     },
     "types": {

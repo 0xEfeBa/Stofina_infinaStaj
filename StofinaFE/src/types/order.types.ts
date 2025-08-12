@@ -28,6 +28,7 @@ export interface OrderResponse {
 }
 
 export interface OrderFormData {
+  accountId?: string;
   symbol: string;
   orderType?: string; // MARKET_BUY, LIMIT_SELL, STOP_LOSS_SELL etc.
   side: 'BUY' | 'SELL';
