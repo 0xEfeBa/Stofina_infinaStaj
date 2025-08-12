@@ -339,10 +339,6 @@ export default function TradingPage() {
                 ? parseFloat(orderFormData.limitPrice)  // Limit emirler için kullanıcı fiyatı
                 : undefined,
         stopPrice: orderFormData.priceType === "stop" ? parseFloat(orderFormData.limitPrice) : undefined,
-        isScheduled: orderFormData.isScheduled,
-        scheduledTime: orderFormData.isScheduled && orderFormData.scheduledTime
-            ? formatScheduledTimeForAPI(orderFormData.scheduledTime)
-            : undefined
       };
 
       // Submit order to backend

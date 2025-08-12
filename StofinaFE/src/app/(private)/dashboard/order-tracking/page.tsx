@@ -49,10 +49,22 @@ const OrderTracking = () => {
         }
     }
 
+    const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+
     const fetchOrders = async (account: Account) => {
+        setSelectedAccount(account);
         const response = await dispatch(thunkOrder.getOrdersByAccountId(account.id));
         if (response) {
             setOrders(response);
+        }
+    }
+
+    const refreshOrders = async () => {
+        if (selectedAccount) {
+            const response = await dispatch(thunkOrder.getOrdersByAccountId(selectedAccount.id));
+            if (response) {
+                setOrders(response);
+            }
         }
     }
 
@@ -72,7 +84,7 @@ const OrderTracking = () => {
                 {
                     orders && orders.length > 0
                     &&
-                    <OrderTrackingTable orders={orders} />
+                    <OrderTrackingTable orders={orders} onRefresh={refreshOrders} />
                 }
             </div>
 
