@@ -31,13 +31,13 @@ const SimpleCustomerSearch: React.FC<SimpleCustomerSearchProps> = ({
           fetch("http://localhost:9003/api/v1/individual", {
             headers: {
               accept: "*/*",
-              Authorization: `Bearer ${token}`,  // Bearer token ekle
+              Authorization: `Bearer ${token}`,
             },
           }),
           fetch("http://localhost:9003/api/v1/corporate", {
             headers: {
               accept: "*/*",
-              Authorization: `Bearer ${token}`,  // Bearer token ekle
+              Authorization: `Bearer ${token}`,
             },
           }),
         ]);
