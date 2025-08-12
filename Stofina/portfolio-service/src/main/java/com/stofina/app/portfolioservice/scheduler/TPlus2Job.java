@@ -1,4 +1,4 @@
-package com.stofina.app.portfolioservice.job;
+package com.stofina.app.portfolioservice.scheduler;
 
 import com.stofina.app.portfolioservice.enums.RestrictionStatus;
 import com.stofina.app.portfolioservice.exception.AccountNotFoundException;
