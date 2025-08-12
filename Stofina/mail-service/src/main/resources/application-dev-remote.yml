@@ -1,11 +1,8 @@
-spring:
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      timeout: 1s
-      connect-timeout: 2s
-
+app:
+  frontend-url: "http://localhost:3030"
+security:
+  jwt:
+    secret: ${JWT_SECRET:7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=}
 
 eureka:
   client:
@@ -13,4 +10,3 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
-

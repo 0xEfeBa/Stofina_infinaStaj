@@ -1,0 +1,25 @@
+spring:
+
+  datasource:
+    url: jdbc:sqlserver://${DB_HOST:192.168.144.76:1450};databaseName=Troya;encrypt=true;trustServerCertificate=true
+    username: ${DB_USER:grup5}
+    password: ${DB_PASSWORD:iWzwn9ud962h9}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 60000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=}

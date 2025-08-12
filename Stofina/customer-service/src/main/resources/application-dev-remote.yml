@@ -1,0 +1,27 @@
+app:
+  url: http://localhost:3000
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  datasource:
+    url: jdbc:sqlserver://${DB_HOST:192.168.144.76:1450};databaseName=Troya;encrypt=true;trustServerCertificate=true
+    username: ${DB_USER:grup5}
+    password: ${DB_PASSWORD:iWzwn9ud962h9}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:7A74h6Ne+6Dw2EQZ0VL7YpTeLYYa6iZ9Z3dJq1LC3Yg=}
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}

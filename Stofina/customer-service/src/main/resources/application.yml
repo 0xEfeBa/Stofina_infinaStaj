@@ -2,7 +2,7 @@ server:
   port: 9003
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE:dev-remote}
   application:
     name: customer-service
   security:

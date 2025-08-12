@@ -2,7 +2,7 @@ server:
   port: 9005
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE:dev-remote}
   application:
     name: market-data-service
 

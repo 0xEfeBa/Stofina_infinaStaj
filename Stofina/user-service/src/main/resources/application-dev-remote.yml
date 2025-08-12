@@ -11,16 +11,16 @@ spring:
         format_sql: false
 
   datasource:
-    url: jdbc:sqlserver://${DEV_DB_HOST:localhost};databaseName=Troya;encrypt=true;trustServerCertificate=true
-    username: ${DEV_DB_USER:sa}
-    password: ${DEV_DB_PASSWORD:YourStrong!Passw0rd}
+    url: jdbc:sqlserver://${DB_HOST:192.168.144.76:1450};databaseName=Troya;encrypt=true;trustServerCertificate=true
+    username: ${DB_USER:grup5}
+    password: ${DB_PASSWORD:iWzwn9ud962h9}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      timeout: 60000
+      timeout: ${REDIS_TIMEOUT:60000}
 
 security:
   jwt:
@@ -31,4 +31,5 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+
