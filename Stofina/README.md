@@ -18,8 +18,6 @@ A production-ready, Docker-orchestrated **stock trading** backend built with **J
 - [Build & Images](#build--images)
 - [Observability](#observability)
 - [Troubleshooting](#troubleshooting)
-- [License](#license)
-
 ---
 
 ## Architecture
