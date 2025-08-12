@@ -747,7 +747,8 @@
         },
         "sendResultDocument": {
             "button": "İşlem Sonuç Belgesi Gönder"
-        }
+        },
+        "back": "Geri"
     },
     "modal": {
         "titles": {
@@ -826,6 +827,24 @@
             "passive": "Pasif",
             "yes": "Evet",
             "no": "Hayır"
+        },
+        "refresh": "Yenile",
+        "refreshing": "Yenileniyor...",
+        "table": {
+            "actions": {
+                "cancel": "İptal Et",
+                "cancelDisabled": "İptal Et",
+                "cancelling": "İptal Ediliyor...",
+                "fullyFilledTooltip": "Emir tamamen dolmuş",
+                "cancelledTooltip": "Emir iptal edilmiş veya gerçekleşmiş"
+            }
+        },
+        "pagination": {
+            "rowsPerPage": "Sayfa başına satır:",
+            "showing": "Gösterilen:",
+            "of": "toplam",
+            "previous": "Önceki",
+            "next": "Sonraki"
         }
     },
     "types": {
@@ -992,7 +1011,11 @@
             "invalidQuantity": "Geçerli bir miktar girin",
             "invalidPrice": "Geçerli bir fiyat girin",
             "marketPriceError": "Piyasa fiyatı alınamıyor",
-            "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin."
+            "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+            "accountRequired": "Hesap seçimi gereklidir",
+            "marketOrderNote": "Bu emir anlık piyasa fiyatından işleme alınacaktır",
+            "liveDataRequired": "Market emri için canlı veri bağlantısı gereklidir",
+            "priceDataStale": "Fiyat verisi güncel değil. Lütfen birkaç saniye bekleyin"
         }
     },
     "stock": {
@@ -1035,5 +1058,109 @@
             "pastTime": "Geçmiş bir zaman seçilemez",
             "marketHours": "Piyasa saatleri dışında emir verilemez"
         }
+    },
+    "websocket": {
+        "status": {
+            "connected": "Bağlı",
+            "connecting": "Bağlanıyor",
+            "disconnected": "Bağlantı Yok",
+            "reconnecting": "Yeniden Bağlanıyor",
+            "error": "Bağlantı Hatası"
+        },
+        "messages": {
+            "connectionLost": "Bağlantı kesildi. Yeniden bağlanmaya çalışılıyor...",
+            "reconnected": "Bağlantı yeniden kuruldu",
+            "connectionFailed": "Bağlantı kurulamadı"
+        }
+    },
+    "marketData": {
+        "live": "Canlı",
+        "delayed": "Gecikmeli",
+        "lastUpdate": "Son Güncelleme",
+        "noData": "Veri bulunamadı",
+        "loading": "Market verisi yükleniyor..."
+    },
+    "orderBook": {
+        "depth": "Derinlik",
+        "levels": "Seviyeler",
+        "noOrders": "Emir bulunamadı",
+        "loading": "Emir defteri yükleniyor...",
+        "spread": "Spread",
+        "bid": "Alış",
+        "ask": "Satış"
+    },
+    "trades": {
+        "title": "Son İşlemler",
+        "time": "Saat",
+        "price": "Fiyat",
+        "quantity": "Miktar",
+        "side": "Yön",
+        "noTrades": "Son işlem bulunamadı",
+        "loading": "İşlemler yükleniyor..."
+    },
+    "form": {
+        "validation": {
+            "required": "Bu alan zorunludur",
+            "numeric": "Sadece sayısal değer giriniz",
+            "positive": "Pozitif bir değer giriniz",
+            "minValue": "Değer en az {{min}} olmalıdır",
+            "maxValue": "Değer en fazla {{max}} olmalıdır",
+            "invalidFormat": "Geçersiz format",
+            "futureDate": "Gelecek bir tarih seçiniz",
+            "pastDate": "Geçmiş bir tarih seçiniz",
+            "timeRequired": "Saat seçimi gereklidir",
+            "dateRequired": "Tarih seçimi gereklidir"
+        },
+        "placeholders": {
+            "selectOption": "Seçenek seçiniz",
+            "enterValue": "Değer giriniz",
+            "search": "Ara...",
+            "selectDate": "Tarih seçiniz",
+            "selectTime": "Saat seçiniz"
+        },
+        "labels": {
+            "required": "Zorunlu",
+            "optional": "İsteğe bağlı",
+            "loading": "Yükleniyor...",
+            "noOptions": "Seçenek bulunamadı"
+        }
+    },
+    "notifications": {
+        "success": "Başarılı",
+        "error": "Hata",
+        "warning": "Uyarı",
+        "info": "Bilgi",
+        "close": "Kapat",
+        "dismiss": "Kapat"
+    },
+    "time": {
+        "now": "Şimdi",
+        "today": "Bugün",
+        "yesterday": "Dün",
+        "tomorrow": "Yarın",
+        "thisWeek": "Bu Hafta",
+        "lastWeek": "Geçen Hafta",
+        "thisMonth": "Bu Ay",
+        "lastMonth": "Geçen Ay",
+        "thisYear": "Bu Yıl",
+        "lastYear": "Geçen Yıl",
+        "minutes": "dakika",
+        "hours": "saat",
+        "days": "gün",
+        "weeks": "hafta",
+        "months": "ay",
+        "years": "yıl"
+    },
+    "currency": {
+        "symbol": "₺",
+        "format": "{{value}} ₺",
+        "decimalPlaces": 2
+    },
+    "dateTime": {
+        "format": "DD/MM/YYYY HH:mm",
+        "dateFormat": "DD/MM/YYYY",
+        "timeFormat": "HH:mm",
+        "shortDateFormat": "DD/MM/YY",
+        "longDateFormat": "DD MMMM YYYY"
     }
 }
