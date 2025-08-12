@@ -33,7 +33,7 @@ export default function CustomerPortfolio({ stocks, balance }: CustomerPortfolio
                     .includes(search.toLowerCase())
             )
 
-    }, [search]);
+    }, [search, stocks]);
     if (!selectedIndividualCustomer && !selectedCorporateCustomer) {
         return <></>
     }
