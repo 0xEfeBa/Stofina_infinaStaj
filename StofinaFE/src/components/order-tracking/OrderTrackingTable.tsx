@@ -153,7 +153,9 @@ export default function OrderTrackingTable({ orders }: { orders: Order[] }) {
                             <td className="p-2">{order.orderType}</td>
                             <td className="p-2">{order.side}</td>
                             <td className="p-2">{order.orderType}</td>
-                            <td className="p-2">{order.price.toFixed(2) + " TL"}</td>
+                            <td className="p-2">
+                                {order.price != null ? order.price.toFixed(2) + " TL" : "—"}
+                            </td>
                             <td className="p-2">{order.quantity}</td>
                             <td className="p-2">{order.filledQuantity}</td>
                             <td className="p-2">{order.remainingQuantity}</td>

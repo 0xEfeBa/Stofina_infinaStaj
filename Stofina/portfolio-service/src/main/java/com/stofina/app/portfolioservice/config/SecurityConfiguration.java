@@ -50,7 +50,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})
+                .cors(cors -> {})          // CORS bean'in varsa çalışır, yoksa aşağıdaki notu gör
                 .httpBasic(conf -> conf.disable())
                 .formLogin(conf -> conf.disable())
                 .exceptionHandling(ex -> ex
@@ -58,28 +58,35 @@ public class SecurityConfiguration {
                         .accessDeniedHandler(accessDeniedHandler()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/actuator/**"
-                                ).permitAll()
+                        ).permitAll()
+                        .requestMatchers("/api/v1/stocks/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/transactions/**", "/api/v1/accounts/**", "/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/v1/transactions/**", "/api/v1/accounts/**", "/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                        .requestMatchers(HttpMethod.PATCH,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
+                        .requestMatchers(HttpMethod.PATCH,
+                                "/api/v1/transactions/**", "/api/v1/accounts/**", "/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                        .requestMatchers(HttpMethod.POST,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/transactions/**", "/api/v1/accounts/**", "/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/stocks/**", "/api/v1/portfolios/**","/api/v1/accounts/**","/api/v1/balances/**")
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/api/v1/transactions/**", "/api/v1/accounts/**", "/api/v1/balances/**")
                         .hasAnyRole("CUSTOMER_SUPER_ADMIN", "CUSTOMER_TRADER")
 
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
