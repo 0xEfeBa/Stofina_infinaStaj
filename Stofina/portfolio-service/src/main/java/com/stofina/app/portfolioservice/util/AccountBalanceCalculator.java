@@ -32,6 +32,7 @@ public class AccountBalanceCalculator {
                 .subtract(account.getReservedBalance())
                 .subtract(activeRestrictions);
 
+
         account.setWithdrawableBalance(newWithdrawable.max(BigDecimal.ZERO));
     }
 }

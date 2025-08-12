@@ -87,7 +87,7 @@ public class StockServiceImpl implements IStockService {
 
         if (transaction.getTransactionStatus() != TransactionStatus.PENDING &&
                 transaction.getTransactionStatus() != TransactionStatus.PARTIALLY_SETTLED) {
-            throw new OrderAlreadySettledException("Sell order {} already confirmed or cancelled with Order Id:"+ orderId);
+            throw new OrderAlreadySettledException("Buy order {} already confirmed or cancelled with Order Id:"+ orderId);
         }
 
         Account account = findAccount(transaction.getAccountId());

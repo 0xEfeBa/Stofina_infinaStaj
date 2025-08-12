@@ -72,46 +72,46 @@ export default function CustomerPortfolio({ stocks, balance }: CustomerPortfolio
             </div>
             <table className="min-w-full border border-gray-300 rounded-md overflow-hidden text-sm">
                 <thead className="bg-gray-100">
-                    <tr className="text-left">
-                        <th className="px-4 py-3">{t('customerPortfolio.table.headers.id')}</th>
-                        <th className="px-4 py-3">{t('customerPortfolio.table.headers.symbol')}</th>
-                        <th className="px-4 py-3">{t('customerPortfolio.table.headers.quantity')}</th>
-                        <th className="px-4 py-3">{t('customerPortfolio.table.headers.averageCost')}</th>
-                        <th className="px-4 py-3">{t('customerPortfolio.table.headers.actions')}</th>
-                    </tr>
+                <tr className="text-left">
+                    <th className="px-4 py-3">{t('customerPortfolio.table.headers.id')}</th>
+                    <th className="px-4 py-3">{t('customerPortfolio.table.headers.symbol')}</th>
+                    <th className="px-4 py-3">{t('customerPortfolio.table.headers.quantity')}</th>
+                    <th className="px-4 py-3">{t('customerPortfolio.table.headers.averageCost')}</th>
+                    <th className="px-4 py-3">{t('customerPortfolio.table.headers.actions')}</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {filteredOrders && filteredOrders.map((stock, index) => (
-                        <tr key={stock.symbol} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-[#813FB4]/10' : 'bg-white'}`}>
-                            <td className="px-4 py-1">{stock.id}</td>
-                            <td className="px-4 py-1">{stock.symbol}</td>
-                            <td className="px-4 py-1">{stock.quantity}</td>
-                            <td className="px-4 py-1">{stock.averageCost}</td>
-                            <td className="px-4 py-1">
-                                <div className="flex gap-2 justify items-center">
-                                    <button
-                                        onClick={() => handleBuyOrder()}
-                                        className="bg-gradient-to-r cursor-pointer from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-green-400"
-                                        title={t('customerPortfolio.table.actions.buyTitle')}
-                                    >
-                                        <div className="flex items-center gap-1">
-                                            {t('customerPortfolio.table.actions.buy')}
-                                        </div>
-                                    </button>
-                                    <button
-                                        onClick={() => handleSellOrder()}
-                                        className="bg-gradient-to-r cursor-pointer from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-red-400"
-                                        title={t('customerPortfolio.table.actions.sellTitle')}
-                                    >
-                                        <div className="flex items-center gap-1">
-                                            {t('customerPortfolio.table.actions.sell')}
-                                        </div>
-                                    </button>
-                                </div>
-                            </td>
+                {filteredOrders && filteredOrders.map((stock, index) => (
+                    <tr key={stock.symbol} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-[#813FB4]/10' : 'bg-white'}`}>
+                        <td className="px-4 py-1">{stock.id}</td>
+                        <td className="px-4 py-1">{stock.symbol}</td>
+                        <td className="px-4 py-1">{stock.quantity}</td>
+                        <td className="px-4 py-1">{stock.averageCost}</td>
+                        <td className="px-4 py-1">
+                            <div className="flex gap-2 justify items-center">
+                                <button
+                                    onClick={() => handleBuyOrder()}
+                                    className="bg-gradient-to-r cursor-pointer from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-green-400"
+                                    title={t('customerPortfolio.table.actions.buyTitle')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        {t('customerPortfolio.table.actions.buy')}
+                                    </div>
+                                </button>
+                                <button
+                                    onClick={() => handleSellOrder()}
+                                    className="bg-gradient-to-r cursor-pointer from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-red-400"
+                                    title={t('customerPortfolio.table.actions.sellTitle')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        {t('customerPortfolio.table.actions.sell')}
+                                    </div>
+                                </button>
+                            </div>
+                        </td>
 
-                        </tr>
-                    ))}
+                    </tr>
+                ))}
                 </tbody>
             </table>
 
@@ -197,7 +197,7 @@ export default function CustomerPortfolio({ stocks, balance }: CustomerPortfolio
                                     style: 'currency',
                                     currency: 'TRY',
                                     minimumFractionDigits: 2
-                                }).format(balance?.reservedBalance || 0)}
+                                }).format(balance?.restrictedBalance || 0)}
                             </div>
                         </div>
                     </div>
@@ -217,7 +217,7 @@ export default function CustomerPortfolio({ stocks, balance }: CustomerPortfolio
                                     style: 'currency',
                                     currency: 'TRY',
                                     minimumFractionDigits: 2
-                                }).format(balance?.withdrawableBalance || 0)}
+                                }).format(balance?.reservedBalance || 0)}
                             </div>
                         </div>
                     </div>
