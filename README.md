@@ -1,4 +1,5 @@
-# Stofina: Bir Başarı Hikayesi
+# Stofina
+
 
 Bu proje, kısıtlı bir sürede bir ekip ruhuyla geliştirilen ve katıldığı yarışmada birincilik ödülü kazanan bir staj projesidir. Amaç, Infina gibi endüstri standardı finansal ürünlerden ilham alarak modern ve kapsamlı bir hisse senedi alım satım platformu oluşturmaktı. Ortaya çıkan ürün, sadece bir yarışma projesi olmanın ötesinde, gerçek dünya senaryolarına hazır, sağlam ve ölçeklenebilir bir sistem olan Stofina oldu.
 
