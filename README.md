@@ -1,7 +1,6 @@
 # Stofina
 
 
-Bu proje, kısıtlı bir sürede bir ekip ruhuyla geliştirilen ve katıldığı yarışmada birincilik ödülü kazanan bir staj projesidir. Amaç, Infina gibi endüstri standardı finansal ürünlerden ilham alarak modern ve kapsamlı bir hisse senedi alım satım platformu oluşturmaktı. Ortaya çıkan ürün, sadece bir yarışma projesi olmanın ötesinde, gerçek dünya senaryolarına hazır, sağlam ve ölçeklenebilir bir sistem olan Stofina oldu.
 
 
 Stofina, gücünü Java 17, Spring Boot 3 ve Spring Cloud ekosistemi üzerine kurulu modern bir mikroservis mimarisinden alır. Tüm sistem, Docker Compose ile tek bir komutla ayağa kaldırılabilecek şekilde tasarlanmıştır. Bu, geliştirme ve dağıtım süreçlerini oldukça basitleştirir.
